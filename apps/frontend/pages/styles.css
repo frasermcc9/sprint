@@ -1,0 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@100;300;400;500;700;800;900&family=Overpass:wght@100;200;300;400;500;600;700;800;900&family=Palanquin+Dark:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
