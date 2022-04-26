@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "nx run-many --parallel --target=serve --all --max-parallel=100",
+    "build": "nx run-many --parallel --target=build --all --max-parallel=100",
     "start": "nx serve",
-    "build": "nx build",
     "test": "nx test"
   },
   "private": true,
