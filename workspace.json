@@ -1,7 +1,11 @@
 {
   "version": 2,
   "projects": {
-    "app": "apps/app",
-    "app-e2e": "apps/app-e2e"
+    "assets": "libs/assets",
+    "backend": "apps/backend",
+    "common": "libs/common",
+    "components": "libs/components",
+    "frontend": "apps/frontend",
+    "frontend-e2e": "apps/frontend-e2e"
   }
 }
