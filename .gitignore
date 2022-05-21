@@ -4,6 +4,7 @@
 /dist
 /tmp
 /out-tsc
+/data
 
 # dependencies
 node_modules
@@ -52,4 +53,3 @@ npm-debug.*
 web-build/
 
 apps/app-e2e/artifacts
-./data
