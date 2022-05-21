@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Sprint</string>
+    <string name="title_activity_main">Sprint</string>
+    <string name="package_name">ac.uoa.sprint</string>
+    <string name="custom_url_scheme">ac.uoa.sprint</string>
+</resources>

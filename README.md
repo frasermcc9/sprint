@@ -10,3 +10,11 @@ This project was generated using [Nx](https://nx.dev).
 
 1. Install dependencies with `npm i`
 2. Run the app with `npm run dev`
+
+
+## Android
+
+1. npm run build
+2. (npx) nx run frontend:export
+3. (npx) nx run frontend:sync:android
+4. (npx) nx run frontend:open:android

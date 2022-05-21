@@ -1,0 +1,6 @@
+{
+	"appId": "ac.uoa.sprint",
+	"appName": "Sprint",
+	"webDir": "../../dist/apps/frontend/out",
+	"bundledWebRuntime": false
+}

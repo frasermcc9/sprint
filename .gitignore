@@ -51,5 +51,5 @@ npm-debug.*
 *.orig.*
 web-build/
 
-
 apps/app-e2e/artifacts
+./data

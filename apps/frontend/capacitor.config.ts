@@ -1,9 +1,9 @@
 import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.uoa.sprint",
-  appName: "sprint",
-  webDir: "../../dist/apps/frontend",
+  appId: "ac.uoa.sprint",
+  appName: "Sprint",
+  webDir: "../../dist/apps/frontend/exported",
   bundledWebRuntime: false,
 };
 
