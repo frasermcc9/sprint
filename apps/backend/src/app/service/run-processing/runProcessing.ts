@@ -1,3 +1,5 @@
+import { toUnicode } from "punycode";
+
 /**
  * Mock Data
  */
@@ -48,4 +50,9 @@ const calculateNewParams = (currentParams, rpeFeedback) => {
   newParams.restPeriod = Math.min(rest - newParams.lowIntensity, 120);
 
   return newParams;
+};
+
+//TODO
+const calculateHrrs = (run, baseline) => {
+  return null;
 };
