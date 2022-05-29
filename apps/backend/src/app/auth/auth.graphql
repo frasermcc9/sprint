@@ -1,0 +1,16 @@
+type Auth {
+  access_token: String
+  expires_in: Int
+  refresh_token: String
+  scope: String
+  token_type: String
+  user_id: String
+}
+
+type Query {
+  getAuthLink: String
+}
+
+type Mutation {
+  login(code: String!): Auth
+}

@@ -6,6 +6,7 @@
     "common": "libs/common",
     "components": "libs/components",
     "frontend": "apps/frontend",
-    "frontend-e2e": "apps/frontend-e2e"
+    "frontend-e2e": "apps/frontend-e2e",
+    "gql": "libs/gql"
   }
 }

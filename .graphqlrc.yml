@@ -1,0 +1,2 @@
+schema:
+  - "apps/backend/src/app/auth/auth.graphql"
