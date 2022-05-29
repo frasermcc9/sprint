@@ -13,6 +13,15 @@ export class AuthResolver {
     });
   }
 
+  @Mutation()
+  refresh(@Args("token") token: string) {
+    return this.authService.refresh({
+      token,
+      clientId: process.env.FITBIT_OAUTH_CLIENT_ID,
+      clientSecret: process.env.FITBIT_OAUTH_CLIENT_SECRET,
+    });
+  }
+
   @Query()
   getAuthLink() {
     return this.authService.buildAuthLink({

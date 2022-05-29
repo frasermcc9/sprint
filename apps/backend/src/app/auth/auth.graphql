@@ -13,4 +13,5 @@ type Query {
 
 type Mutation {
   login(code: String!): Auth
+  refresh(token: String!): Auth
 }

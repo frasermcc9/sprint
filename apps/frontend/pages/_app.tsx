@@ -15,7 +15,15 @@ import "./styles.css";
 import { ReactComponent as Home } from "../../../libs/assets/icons/home.svg";
 import { ReactComponent as HomeFilled } from "../../../libs/assets/icons/home-filled.svg";
 import React, { useState } from "react";
-import { LoginMutation } from "@sprint/gql";
+import {
+  LoginMutation,
+  RefreshDocument,
+  RefreshMutation,
+  RefreshMutationFn,
+  RefreshMutationOptions,
+  RefreshMutationResult,
+  RefreshMutationVariables,
+} from "@sprint/gql";
 
 const tabs: Tab[] = [
   {
@@ -63,15 +71,40 @@ const authLink = setContext(async (_, { headers }) => {
   // get the authentication token from local storage if it exists
   const authDetailsStr = localStorage.getItem("auth_details");
 
-  const { access_token, expires_in, refresh_token }: LoginMutation["login"] =
-    authDetailsStr ? JSON.parse(authDetailsStr) : {};
-  // TODO: update access token with refresh token if expired
+  const { access_token, refresh_token }: LoginMutation["login"] = authDetailsStr
+    ? JSON.parse(authDetailsStr)
+    : {};
 
-  // return the headers to the context so httpLink can read them
+  const expiryTime = localStorage.getItem("auth_expiry");
+
+  if (Date.now() > +expiryTime) {
+    const {
+      data: {
+        data: { refresh },
+      },
+    } = await client.mutate<RefreshMutationResult, RefreshMutationVariables>({
+      mutation: RefreshDocument,
+      variables: {
+        token: refresh_token,
+      },
+    });
+
+    const expiryTime = Date.now() + refresh.expires_in - 1000;
+    localStorage.setItem("auth_details", JSON.stringify(refresh));
+    localStorage.setItem("auth_expiry", expiryTime.toString());
+
+    return {
+      headers: {
+        ...headers,
+        authorization: `Bearer ${refresh.access_token}`,
+      },
+    };
+  }
+
   return {
     headers: {
       ...headers,
-      authorization: access_token ? `Bearer ${access_token}` : "",
+      authorization: `Bearer ${access_token}`,
     },
   };
 });

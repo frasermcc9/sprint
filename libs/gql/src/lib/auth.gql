@@ -6,3 +6,12 @@ mutation Login($code: String!) {
     user_id
   }
 }
+
+mutation Refresh($token: String!) {
+  refresh(token: $token) {
+    access_token
+    expires_in
+    refresh_token
+    user_id
+  }
+}

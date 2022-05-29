@@ -46,6 +46,7 @@ export class AuthService {
     const authData = clientId + ":" + clientSecret;
     const buff = Buffer.from(authData);
     const base64data = buff.toString("base64");
+
     try {
       const { data } = await this.httpService.axiosRef({
         url: "https://api.fitbit.com/oauth2/token",
@@ -58,6 +59,40 @@ export class AuthService {
           code,
           grant_type: "authorization_code",
           redirect_uri: process.env.FRONTEND_HOST + "/get_token",
+          client_id: clientId,
+        }),
+      });
+
+      return data;
+    } catch (e) {
+      console.log(e.toJSON());
+    }
+  }
+
+  async refresh({
+    clientId,
+    clientSecret,
+    token,
+  }: {
+    token: string;
+    clientId: string;
+    clientSecret: string;
+  }) {
+    const authData = clientId + ":" + clientSecret;
+    const buff = Buffer.from(authData);
+    const base64data = buff.toString("base64");
+
+    try {
+      const { data } = await this.httpService.axiosRef({
+        url: "https://api.fitbit.com/oauth2/token",
+        method: "post",
+        headers: {
+          Authorization: `Basic ${base64data}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        data: stringify({
+          refresh_token: token,
+          grant_type: "refresh_token",
           client_id: clientId,
         }),
       });
