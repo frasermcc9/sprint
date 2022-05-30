@@ -17,7 +17,7 @@ export interface Auth {
 }
 
 export interface IQuery {
-    getAuthLink(): Nullable<string> | Promise<Nullable<string>>;
+    getAuthLink(): string | Promise<string>;
     testAuth(): Nullable<string> | Promise<Nullable<string>>;
 }
 

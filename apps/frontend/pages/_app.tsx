@@ -17,15 +17,14 @@ import {
 import { AppProps } from "next/app";
 import Head from "next/head";
 import React, { useState } from "react";
-import { ReactComponent as HomeFilled } from "../../../libs/assets/icons/home-filled.svg";
-import { ReactComponent as Home } from "../../../libs/assets/icons/home.svg";
+import { HomeFilledIcon, HomeOutlineIcon } from "@sprint/assets";
 import "./styles.css";
 
 const tabs: Tab[] = [
   {
     label: "Home",
-    displayActive: <HomeFilled className="h-12 w-12" />,
-    displayInactive: <Home className="h-12 w-12" />,
+    displayActive: <HomeFilledIcon className="h-12 w-12" />,
+    displayInactive: <HomeOutlineIcon className="h-12 w-12" />,
     link: "/",
   },
   {

@@ -15,3 +15,7 @@ mutation Refresh($token: String!) {
     user_id
   }
 }
+
+query GetAuthUrl {
+  getAuthLink
+}

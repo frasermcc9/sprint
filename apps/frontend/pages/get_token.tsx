@@ -19,12 +19,16 @@ export const useGetTokenPageController = () => {
   const [doLogin] = useLoginMutation();
 
   useEffect(() => {
-    if (isReady && typeof code === "string") {
-      doLogin({
-        variables: {
-          code,
-        },
-      }).then(({ data: { login } }) => {
+    (async () => {
+      if (isReady && typeof code === "string") {
+        const {
+          data: { login },
+        } = await doLogin({
+          variables: {
+            code,
+          },
+        });
+
         if (login) {
           const expiryTime = Date.now() + login.expires_in - 1000;
 
@@ -38,8 +42,8 @@ export const useGetTokenPageController = () => {
           );
         }
         push("/");
-      });
-    }
+      }
+    })();
   }, [isReady, code, doLogin, push]);
 
   return {};

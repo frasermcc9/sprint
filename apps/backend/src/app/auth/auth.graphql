@@ -8,7 +8,7 @@ type Auth {
 }
 
 type Query {
-  getAuthLink: String
+  getAuthLink: String!
   testAuth: String
 }
 

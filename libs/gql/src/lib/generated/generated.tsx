@@ -43,7 +43,8 @@ export type MutationRefreshArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  getAuthLink?: Maybe<Scalars['String']>;
+  getAuthLink: Scalars['String'];
+  testAuth?: Maybe<Scalars['String']>;
 };
 
 export type LoginMutationVariables = Exact<{
@@ -59,6 +60,11 @@ export type RefreshMutationVariables = Exact<{
 
 
 export type RefreshMutation = { __typename?: 'Mutation', refresh?: { __typename?: 'Auth', access_token?: string | null, expires_in?: number | null, refresh_token?: string | null, user_id?: string | null } | null };
+
+export type GetAuthUrlQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAuthUrlQuery = { __typename?: 'Query', getAuthLink: string };
 
 
 export const LoginDocument = gql`
@@ -133,3 +139,35 @@ export function useRefreshMutation(baseOptions?: Apollo.MutationHookOptions<Refr
 export type RefreshMutationHookResult = ReturnType<typeof useRefreshMutation>;
 export type RefreshMutationResult = Apollo.MutationResult<RefreshMutation>;
 export type RefreshMutationOptions = Apollo.BaseMutationOptions<RefreshMutation, RefreshMutationVariables>;
+export const GetAuthUrlDocument = gql`
+    query GetAuthUrl {
+  getAuthLink
+}
+    `;
+
+/**
+ * __useGetAuthUrlQuery__
+ *
+ * To run a query within a React component, call `useGetAuthUrlQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAuthUrlQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAuthUrlQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAuthUrlQuery(baseOptions?: Apollo.QueryHookOptions<GetAuthUrlQuery, GetAuthUrlQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAuthUrlQuery, GetAuthUrlQueryVariables>(GetAuthUrlDocument, options);
+      }
+export function useGetAuthUrlLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAuthUrlQuery, GetAuthUrlQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAuthUrlQuery, GetAuthUrlQueryVariables>(GetAuthUrlDocument, options);
+        }
+export type GetAuthUrlQueryHookResult = ReturnType<typeof useGetAuthUrlQuery>;
+export type GetAuthUrlLazyQueryHookResult = ReturnType<typeof useGetAuthUrlLazyQuery>;
+export type GetAuthUrlQueryResult = Apollo.QueryResult<GetAuthUrlQuery, GetAuthUrlQueryVariables>;
