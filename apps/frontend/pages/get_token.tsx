@@ -1,3 +1,4 @@
+import { LocalStorageKeys } from "@sprint/common";
 import { useLoginMutation } from "@sprint/gql";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
@@ -25,8 +26,15 @@ export const useGetTokenPageController = () => {
       }).then(({ data: { login } }) => {
         if (login) {
           const expiryTime = Date.now() + login.expires_in - 1000;
-          localStorage.setItem("auth_details", JSON.stringify(login));
-          localStorage.setItem("auth_expiry", expiryTime.toString());
+
+          localStorage.setItem(
+            LocalStorageKeys.AUTH_DETAILS,
+            JSON.stringify(login),
+          );
+          localStorage.setItem(
+            LocalStorageKeys.AUTH_EXPIRY,
+            expiryTime.toString(),
+          );
         }
       });
     }

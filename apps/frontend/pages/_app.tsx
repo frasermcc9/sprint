@@ -1,6 +1,3 @@
-import { AppProps } from "next/app";
-import Head from "next/head";
-import { Navigation, Tab, useNavigationController } from "@sprint/components";
 import {
   ApolloClient,
   ApolloProvider,
@@ -9,21 +6,20 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-
-import "./styles.css";
-
-import { ReactComponent as Home } from "../../../libs/assets/icons/home.svg";
-import { ReactComponent as HomeFilled } from "../../../libs/assets/icons/home-filled.svg";
-import React, { useState } from "react";
+import { LocalStorageKeys } from "@sprint/common";
+import { Navigation, Tab, useNavigationController } from "@sprint/components";
 import {
   LoginMutation,
   RefreshDocument,
-  RefreshMutation,
-  RefreshMutationFn,
-  RefreshMutationOptions,
   RefreshMutationResult,
   RefreshMutationVariables,
 } from "@sprint/gql";
+import { AppProps } from "next/app";
+import Head from "next/head";
+import React, { useState } from "react";
+import { ReactComponent as HomeFilled } from "../../../libs/assets/icons/home-filled.svg";
+import { ReactComponent as Home } from "../../../libs/assets/icons/home.svg";
+import "./styles.css";
 
 const tabs: Tab[] = [
   {
@@ -69,13 +65,13 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
 const authLink = setContext(async (_, { headers }) => {
   // get the authentication token from local storage if it exists
-  const authDetailsStr = localStorage.getItem("auth_details");
+  const authDetailsStr = localStorage.getItem(LocalStorageKeys.AUTH_DETAILS);
 
   const { access_token, refresh_token }: LoginMutation["login"] = authDetailsStr
     ? JSON.parse(authDetailsStr)
     : {};
 
-  const expiryTime = localStorage.getItem("auth_expiry");
+  const expiryTime = localStorage.getItem(LocalStorageKeys.AUTH_EXPIRY);
 
   if (Date.now() > +expiryTime) {
     const {
@@ -90,8 +86,11 @@ const authLink = setContext(async (_, { headers }) => {
     });
 
     const expiryTime = Date.now() + refresh.expires_in - 1000;
-    localStorage.setItem("auth_details", JSON.stringify(refresh));
-    localStorage.setItem("auth_expiry", expiryTime.toString());
+    localStorage.setItem(
+      LocalStorageKeys.AUTH_DETAILS,
+      JSON.stringify(refresh),
+    );
+    localStorage.setItem(LocalStorageKeys.AUTH_EXPIRY, expiryTime.toString());
 
     return {
       headers: {
