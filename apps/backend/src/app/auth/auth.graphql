@@ -9,6 +9,7 @@ type Auth {
 
 type Query {
   getAuthLink: String
+  testAuth: String
 }
 
 type Mutation {

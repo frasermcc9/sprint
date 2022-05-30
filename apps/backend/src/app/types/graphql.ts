@@ -18,10 +18,12 @@ export interface Auth {
 
 export interface IQuery {
     getAuthLink(): Nullable<string> | Promise<Nullable<string>>;
+    testAuth(): Nullable<string> | Promise<Nullable<string>>;
 }
 
 export interface IMutation {
     login(code: string): Nullable<Auth> | Promise<Nullable<Auth>>;
+    refresh(token: string): Nullable<Auth> | Promise<Nullable<Auth>>;
 }
 
 type Nullable<T> = T | null;

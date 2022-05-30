@@ -1,4 +1,8 @@
+import { UseGuards } from "@nestjs/common";
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+import { FitbitGuard } from "../middleware/fitbit.guard";
+import { FitbitUser } from "../middleware/fitbit.types";
+import { User } from "../middleware/user.decorator";
 import { AuthService } from "./auth.service";
 
 @Resolver("Auth")
@@ -28,5 +32,11 @@ export class AuthResolver {
       clientId: process.env.FITBIT_OAUTH_CLIENT_ID,
       redirectUrl: process.env.FRONTEND_HOST + "/get_token",
     });
+  }
+
+  @Query()
+  @UseGuards(FitbitGuard)
+  testAuth(@User() user: FitbitUser) {
+    console.log(user.id);
   }
 }

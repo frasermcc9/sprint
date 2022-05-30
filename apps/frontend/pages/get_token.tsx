@@ -13,6 +13,7 @@ export const useGetTokenPageController = () => {
   const {
     query: { code },
     isReady,
+    push,
   } = useRouter();
 
   const [doLogin] = useLoginMutation();
@@ -36,9 +37,10 @@ export const useGetTokenPageController = () => {
             expiryTime.toString(),
           );
         }
+        push("/");
       });
     }
-  }, [isReady, code, doLogin]);
+  }, [isReady, code, doLogin, push]);
 
   return {};
 };

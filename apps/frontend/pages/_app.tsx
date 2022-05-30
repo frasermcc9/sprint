@@ -11,7 +11,7 @@ import { Navigation, Tab, useNavigationController } from "@sprint/components";
 import {
   LoginMutation,
   RefreshDocument,
-  RefreshMutationResult,
+  RefreshMutation,
   RefreshMutationVariables,
 } from "@sprint/gql";
 import { AppProps } from "next/app";
@@ -73,12 +73,15 @@ const authLink = setContext(async (_, { headers }) => {
 
   const expiryTime = localStorage.getItem(LocalStorageKeys.AUTH_EXPIRY);
 
-  if (Date.now() > +expiryTime) {
+  console.log(expiryTime);
+
+  if (expiryTime && Date.now() > +expiryTime) {
     const {
-      data: {
-        data: { refresh },
-      },
-    } = await client.mutate<RefreshMutationResult, RefreshMutationVariables>({
+      data: { refresh },
+    } = await unauthenticatedClient.mutate<
+      RefreshMutation,
+      RefreshMutationVariables
+    >({
       mutation: RefreshDocument,
       variables: {
         token: refresh_token,
@@ -110,6 +113,11 @@ const authLink = setContext(async (_, { headers }) => {
 
 const client = new ApolloClient({
   link: authLink.concat(errorLink).concat(httpLink),
+  cache: new InMemoryCache(),
+});
+
+const unauthenticatedClient = new ApolloClient({
+  link: errorLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
