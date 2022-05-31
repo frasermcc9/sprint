@@ -17,7 +17,8 @@
     "paths": {
       "@sprint/assets": ["libs/assets/src/index.ts"],
       "@sprint/common": ["libs/common/src/index.ts"],
-      "@sprint/components": ["libs/components/src/index.ts"]
+      "@sprint/components": ["libs/components/src/index.ts"],
+      "@sprint/gql": ["libs/gql/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
