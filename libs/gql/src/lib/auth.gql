@@ -19,3 +19,7 @@ mutation Refresh($token: String!) {
 query GetAuthUrl {
   getAuthLink
 }
+
+query TestAuth {
+  testAuth
+}

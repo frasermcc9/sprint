@@ -4,8 +4,9 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { Strategy } from "passport-custom";
 import { HttpService } from "nestjs-http-promise";
 import { Request } from "express";
-import { stringify } from "qs";
 import { FitbitUser } from "./fitbit.types";
+import { InjectModel } from "@nestjs/mongoose";
+import { User, UserCollection } from "../db/schema/user.schema";
 
 interface JWT {
   aud: string;
@@ -19,7 +20,10 @@ interface JWT {
 
 @Injectable()
 export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
-  constructor(private readonly httpService: HttpService) {
+  constructor(
+    private readonly httpService: HttpService,
+    @InjectModel(User.name) private readonly userModel: UserCollection,
+  ) {
     super();
   }
 
@@ -52,6 +56,11 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
 
       // move encodedId to id for easier access
       castedUser.id = castedUser.encodedId;
+
+      await this.userModel.createOrUpdate({
+        id: castedUser.id,
+        name: castedUser.fullName,
+      });
 
       return castedUser;
     } catch (e) {

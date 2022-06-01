@@ -8,9 +8,13 @@ import { join } from "path";
 import { FitbitGuard } from "./middleware/fitbit.guard";
 import { FitbitStrategy } from "./middleware/fitbit.strategy";
 import { HttpModule } from "nestjs-http-promise";
+import { DbModule } from "./db/db.module";
+import { MongooseModule } from "@nestjs/mongoose";
+import { User, UserSchema } from "./db/schema/user.schema";
 
 @Module({
   imports: [
+    MongooseModule.forRoot("mongodb://localhost/sprint"),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       typePaths: ["./**/*.graphql"],
       driver: ApolloDriver,
@@ -20,6 +24,8 @@ import { HttpModule } from "nestjs-http-promise";
     }),
     AuthModule,
     HttpModule,
+    DbModule,
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [AppController],
   providers: [AppService, FitbitGuard, FitbitStrategy],

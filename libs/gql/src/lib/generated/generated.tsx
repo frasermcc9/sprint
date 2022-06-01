@@ -66,6 +66,11 @@ export type GetAuthUrlQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAuthUrlQuery = { __typename?: 'Query', getAuthLink: string };
 
+export type TestAuthQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TestAuthQuery = { __typename?: 'Query', testAuth?: string | null };
+
 
 export const LoginDocument = gql`
     mutation Login($code: String!) {
@@ -171,3 +176,35 @@ export function useGetAuthUrlLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetAuthUrlQueryHookResult = ReturnType<typeof useGetAuthUrlQuery>;
 export type GetAuthUrlLazyQueryHookResult = ReturnType<typeof useGetAuthUrlLazyQuery>;
 export type GetAuthUrlQueryResult = Apollo.QueryResult<GetAuthUrlQuery, GetAuthUrlQueryVariables>;
+export const TestAuthDocument = gql`
+    query TestAuth {
+  testAuth
+}
+    `;
+
+/**
+ * __useTestAuthQuery__
+ *
+ * To run a query within a React component, call `useTestAuthQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTestAuthQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTestAuthQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTestAuthQuery(baseOptions?: Apollo.QueryHookOptions<TestAuthQuery, TestAuthQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TestAuthQuery, TestAuthQueryVariables>(TestAuthDocument, options);
+      }
+export function useTestAuthLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TestAuthQuery, TestAuthQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TestAuthQuery, TestAuthQueryVariables>(TestAuthDocument, options);
+        }
+export type TestAuthQueryHookResult = ReturnType<typeof useTestAuthQuery>;
+export type TestAuthLazyQueryHookResult = ReturnType<typeof useTestAuthLazyQuery>;
+export type TestAuthQueryResult = Apollo.QueryResult<TestAuthQuery, TestAuthQueryVariables>;
