@@ -3,10 +3,10 @@ import {
   SignInButton,
   useSignInButtonController,
 } from "@sprint/components";
-import { useTestAuthLazyQuery } from "@sprint/gql";
+import { useCurrentUserLazyQuery } from "@sprint/gql";
 
 export default function Index() {
-  const [execute] = useTestAuthLazyQuery();
+  const [execute] = useCurrentUserLazyQuery();
 
   return (
     <Layout.Page>
@@ -27,7 +27,10 @@ export default function Index() {
             </div>
             <div className="ml-3 inline-flex rounded-md shadow">
               <button
-                onClick={() => execute()}
+                onClick={async () => {
+                  const { data } = await execute();
+                  console.log(data);
+                }}
                 className="inline-flex items-center justify-center rounded-md border border-transparent bg-white px-5 py-3 text-base font-medium text-indigo-600 hover:bg-indigo-50"
               >
                 Learn more

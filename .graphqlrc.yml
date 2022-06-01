@@ -1,2 +1,2 @@
 schema:
-  - "apps/backend/src/app/auth/auth.graphql"
+  - "apps/backend/src/app/**/*.graphql"
