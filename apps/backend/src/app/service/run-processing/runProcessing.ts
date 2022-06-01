@@ -1,7 +1,7 @@
 import { toUnicode } from "punycode";
 
 /**
- * Mock Data
+ * Example Running params:
  */
 const currentHiitParams = {
   // base recommendations for untrained individual, see High-Intensity Interval Training, Solutionsto the Programming Puzzle
@@ -16,10 +16,6 @@ const currentHiitParams = {
   sets: 3, // total sets per session
   restPeriod: 120, // break between sets, (research says >3/4min/2min)
 };
-const currentUser = {
-  name: "John Doe",
-};
-const rpeFeedback = 18;
 
 const calculateNewParams = (currentParams, rpeFeedback) => {
   if (rpeFeedback === 10) {
@@ -52,7 +48,8 @@ const calculateNewParams = (currentParams, rpeFeedback) => {
   return newParams;
 };
 
-//TODO
-const calculateHrrs = (run, baseline) => {
-  return null;
+const calculateVO2max = (run, hrMax) => {
+  const hrAverage =
+    run.heartrate.reduce((a, b) => a + b) / run.heartrate.length;
+  return 15 * (hrAverage / hrMax);
 };
