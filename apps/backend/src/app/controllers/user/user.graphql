@@ -1,0 +1,19 @@
+type Mutation {
+  updateExperienceLevel: ExperienceLevel
+}
+
+type Query {
+  currentUser: User
+}
+
+type User {
+  id: String!
+  firstName: String!
+  lastName: String!
+}
+
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}

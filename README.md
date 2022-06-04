@@ -11,7 +11,6 @@ This project was generated using [Nx](https://nx.dev).
 1. Install dependencies with `npm i`
 2. Run the app with `npm run dev`
 
-
 ## Android
 
 1. npm run build
