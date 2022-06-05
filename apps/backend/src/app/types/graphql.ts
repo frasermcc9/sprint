@@ -13,6 +13,12 @@ export enum ExperienceLevel {
     ADVANCED = "ADVANCED"
 }
 
+export enum AccountStage {
+    INITIAL = "INITIAL",
+    EXPERIENCE_LEVEL_SELECTED = "EXPERIENCE_LEVEL_SELECTED",
+    INITIAL_RUN = "INITIAL_RUN"
+}
+
 export interface Auth {
     access_token?: Nullable<string>;
     expires_in?: Nullable<number>;
@@ -32,12 +38,15 @@ export interface IMutation {
     login(code: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     refresh(token: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     updateExperienceLevel(): Nullable<ExperienceLevel> | Promise<Nullable<ExperienceLevel>>;
+    completeOnboarding(experience: ExperienceLevel, firstName: string, lastName: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export interface User {
     id: string;
     firstName: string;
     lastName: string;
+    experience?: Nullable<ExperienceLevel>;
+    stage: AccountStage;
 }
 
 type Nullable<T> = T | null;

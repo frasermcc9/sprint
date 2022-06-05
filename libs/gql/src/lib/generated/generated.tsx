@@ -15,6 +15,12 @@ export type Scalars = {
   Float: number;
 };
 
+export enum AccountStage {
+  ExperienceLevelSelected = 'EXPERIENCE_LEVEL_SELECTED',
+  Initial = 'INITIAL',
+  InitialRun = 'INITIAL_RUN'
+}
+
 export type Auth = {
   __typename?: 'Auth';
   access_token?: Maybe<Scalars['String']>;
@@ -33,9 +39,17 @@ export enum ExperienceLevel {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  completeOnboarding?: Maybe<User>;
   login?: Maybe<Auth>;
   refresh?: Maybe<Auth>;
   updateExperienceLevel?: Maybe<ExperienceLevel>;
+};
+
+
+export type MutationCompleteOnboardingArgs = {
+  experience: ExperienceLevel;
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
 };
 
 
@@ -57,9 +71,11 @@ export type Query = {
 
 export type User = {
   __typename?: 'User';
+  experience?: Maybe<ExperienceLevel>;
   firstName: Scalars['String'];
   id: Scalars['String'];
   lastName: Scalars['String'];
+  stage: AccountStage;
 };
 
 export type LoginMutationVariables = Exact<{
@@ -89,7 +105,16 @@ export type TestAuthQuery = { __typename?: 'Query', testAuth?: string | null };
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage } | null };
+
+export type CompleteOnboardingMutationVariables = Exact<{
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  experience: ExperienceLevel;
+}>;
+
+
+export type CompleteOnboardingMutation = { __typename?: 'Mutation', completeOnboarding?: { __typename?: 'User', id: string } | null };
 
 
 export const LoginDocument = gql`
@@ -234,6 +259,8 @@ export const CurrentUserDocument = gql`
     id
     firstName
     lastName
+    experience
+    stage
   }
 }
     `;
@@ -264,3 +291,42 @@ export function useCurrentUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
 export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
+export const CompleteOnboardingDocument = gql`
+    mutation CompleteOnboarding($firstName: String!, $lastName: String!, $experience: ExperienceLevel!) {
+  completeOnboarding(
+    experience: $experience
+    firstName: $firstName
+    lastName: $lastName
+  ) {
+    id
+  }
+}
+    `;
+export type CompleteOnboardingMutationFn = Apollo.MutationFunction<CompleteOnboardingMutation, CompleteOnboardingMutationVariables>;
+
+/**
+ * __useCompleteOnboardingMutation__
+ *
+ * To run a mutation, you first call `useCompleteOnboardingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCompleteOnboardingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [completeOnboardingMutation, { data, loading, error }] = useCompleteOnboardingMutation({
+ *   variables: {
+ *      firstName: // value for 'firstName'
+ *      lastName: // value for 'lastName'
+ *      experience: // value for 'experience'
+ *   },
+ * });
+ */
+export function useCompleteOnboardingMutation(baseOptions?: Apollo.MutationHookOptions<CompleteOnboardingMutation, CompleteOnboardingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CompleteOnboardingMutation, CompleteOnboardingMutationVariables>(CompleteOnboardingDocument, options);
+      }
+export type CompleteOnboardingMutationHookResult = ReturnType<typeof useCompleteOnboardingMutation>;
+export type CompleteOnboardingMutationResult = Apollo.MutationResult<CompleteOnboardingMutation>;
+export type CompleteOnboardingMutationOptions = Apollo.BaseMutationOptions<CompleteOnboardingMutation, CompleteOnboardingMutationVariables>;
