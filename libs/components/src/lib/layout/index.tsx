@@ -1,5 +1,6 @@
 import React from "react";
 import cx from "classnames";
+import classNames from "classnames";
 
 // const Header: React.FC = () => {
 //   const { push } = useRouter();
@@ -22,13 +23,19 @@ import cx from "classnames";
 // };
 interface PageProps {
   children?: React.ReactNode;
+  className?: string;
 }
 
-const Page: React.FC<PageProps> = ({ children }) => {
+const Page: React.FC<PageProps> = ({ children, className }) => {
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="flex min-h-screen w-full flex-col bg-gray-50">
       {/* <Header /> */}
-      <div className="w-full max-w-6xl flex-grow self-center px-10">
+      <div
+        className={classNames(
+          "flex w-full max-w-6xl flex-grow flex-col self-center px-10",
+          className,
+        )}
+      >
         {children}
       </div>
     </div>

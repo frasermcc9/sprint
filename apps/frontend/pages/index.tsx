@@ -2,11 +2,13 @@ import {
   Layout,
   SignInButton,
   useSignInButtonController,
+  useStandardRedirect,
 } from "@sprint/components";
 import { useCurrentUserLazyQuery } from "@sprint/gql";
 
 export default function Index() {
   const [execute] = useCurrentUserLazyQuery();
+  useStandardRedirect();
 
   return (
     <Layout.Page>
@@ -27,10 +29,7 @@ export default function Index() {
             </div>
             <div className="ml-3 inline-flex rounded-md shadow">
               <button
-                onClick={async () => {
-                  const { data } = await execute();
-                  console.log(data);
-                }}
+                onClick={async () => {}}
                 className="inline-flex items-center justify-center rounded-md border border-transparent bg-white px-5 py-3 text-base font-medium text-indigo-600 hover:bg-indigo-50"
               >
                 Learn more

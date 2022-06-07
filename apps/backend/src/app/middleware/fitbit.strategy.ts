@@ -7,6 +7,7 @@ import { Request } from "express";
 import { FitbitUser } from "./fitbit.types";
 import { InjectModel } from "@nestjs/mongoose";
 import { User, UserCollection } from "../db/schema/user.schema";
+import { AccountStage } from "../types/graphql";
 
 interface JWT {
   aud: string;
@@ -30,9 +31,11 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
   async validate(request: Request): Promise<any> {
     const bearer = request?.headers?.authorization?.split(" ")[1];
 
-    if (typeof bearer !== "string") {
+    if (!bearer) {
       throw new UnauthorizedException("No authorization header");
     }
+
+    console.log("Bearer: ", bearer);
 
     const jwt: JWT = decodeJwt(bearer);
 
@@ -57,9 +60,11 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
       // move encodedId to id for easier access
       castedUser.id = castedUser.encodedId;
 
-      await this.userModel.createOrUpdate({
+      await this.userModel.createIfNotExists({
         id: castedUser.id,
-        name: castedUser.fullName,
+        firstName: castedUser.firstName,
+        lastName: castedUser.lastName,
+        stage: AccountStage.INITIAL,
       });
 
       return castedUser;

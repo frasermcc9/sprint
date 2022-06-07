@@ -19,6 +19,8 @@ import Head from "next/head";
 import React, { useState } from "react";
 import { HomeFilledIcon, HomeOutlineIcon } from "@sprint/assets";
 import "./styles.css";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 const tabs: Tab[] = [
   {
@@ -72,7 +74,11 @@ const authLink = setContext(async (_, { headers }) => {
 
   const expiryTime = localStorage.getItem(LocalStorageKeys.AUTH_EXPIRY);
 
-  console.log(expiryTime);
+  if (!access_token) {
+    return {
+      headers,
+    };
+  }
 
   if (expiryTime && Date.now() > +expiryTime) {
     const {
@@ -125,18 +131,19 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <ApolloProvider client={client}>
+      <ToastContainer position="bottom-left" />
       <Head>
         <title>Welcome to frontend!</title>
       </Head>
       <main className="app min-h-screen">
         <Component {...pageProps} />
       </main>
-      <Navigation
+      {/* <Navigation
         useController={useNavigationController}
         tabs={tabs}
         activeTab={activeTab}
         changeTab={setActiveTab}
-      />
+      /> */}
     </ApolloProvider>
   );
 };

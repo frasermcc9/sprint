@@ -3,5 +3,21 @@ query CurrentUser {
     id
     firstName
     lastName
+    experience
+    stage
+  }
+}
+
+mutation CompleteOnboarding(
+  $firstName: String!
+  $lastName: String!
+  $experience: ExperienceLevel!
+) {
+  completeOnboarding(
+    experience: $experience
+    firstName: $firstName
+    lastName: $lastName
+  ) {
+    id
   }
 }
