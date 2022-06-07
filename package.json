@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "nx run-many --parallel --target=serve --all --max-parallel=100",
+    "dev": "run-p serve start:*",
+    "serve": "nx run-many --parallel --target=serve --all --max-parallel=100",
     "build": "nx run-many --parallel --target=build --all --max-parallel=100",
-    "start": "nx serve",
     "test": "nx test",
-    "start:db": "rimraf ./data/db && mkdirp ./data/db && mongod --dbpath ./data/db"
+    "start:db": "rimraf ./data/db && mkdirp ./data/db && mongod --dbpath ./data/db",
+    "start:watchers": "chokidar \"libs/gql/**/*.gql\" -c \"npm run generate:gql\"",
+    "generate:gql": "nx run gql:generate"
   },
   "private": true,
   "devDependencies": {
@@ -53,6 +55,7 @@
     "@types/react": "18.0.0",
     "@types/react-dom": "18.0.0",
     "@types/react-native": "0.64.3",
+    "@types/twemoji-parser": "^13.1.1",
     "@typescript-eslint/eslint-plugin": "~5.18.0",
     "@typescript-eslint/parser": "~5.18.0",
     "babel-jest": "27.2.3",
@@ -87,11 +90,13 @@
   "dependencies": {
     "@apollo/react-hooks": "^4.0.0",
     "@capacitor/core": "^3.2.5",
+    "@heroicons/react": "^1.0.6",
     "@nestjs/apollo": "^10.0.13",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/graphql": "^10.0.13",
     "@nestjs/mapped-types": "*",
+    "@nestjs/mongoose": "^9.1.0",
     "@nestjs/passport": "^8.2.1",
     "@nestjs/platform-express": "^8.0.0",
     "@nrwl/next": "14.0.3",
@@ -100,11 +105,14 @@
     "apollo-boost": "^0.4.9",
     "apollo-server-express": "^3.8.1",
     "autoprefixer": "^10.4.5",
+    "chokidar-cli": "^3.0.0",
     "classnames": "^2.3.1",
     "core-js": "^3.6.5",
     "graphql": "^16.5.0",
     "graphql-tools": "^8.2.11",
     "jwt-decode": "^3.1.2",
+    "mongodb": "^4.6.0",
+    "mongoose": "^6.3.5",
     "nestjs-http-promise": "^1.2.3",
     "next": "12.1.5",
     "passport": "^0.5.3",
@@ -114,11 +122,14 @@
     "qs": "^6.10.3",
     "react": "18.0.0",
     "react-dom": "18.0.0",
+    "react-toastify": "^9.0.3",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.7",
     "rxjs": "^7.0.0",
+    "swiper": "^8.2.2",
     "tailwindcss": "^3.0.24",
     "ts-morph": "^15.0.0",
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "twemoji-parser": "^14.0.0"
   }
 }

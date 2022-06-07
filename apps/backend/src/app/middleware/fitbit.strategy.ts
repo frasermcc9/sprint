@@ -4,8 +4,10 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { Strategy } from "passport-custom";
 import { HttpService } from "nestjs-http-promise";
 import { Request } from "express";
-import { stringify } from "qs";
 import { FitbitUser } from "./fitbit.types";
+import { InjectModel } from "@nestjs/mongoose";
+import { User, UserCollection } from "../db/schema/user.schema";
+import { AccountStage } from "../types/graphql";
 
 interface JWT {
   aud: string;
@@ -19,16 +21,21 @@ interface JWT {
 
 @Injectable()
 export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
-  constructor(private readonly httpService: HttpService) {
+  constructor(
+    private readonly httpService: HttpService,
+    @InjectModel(User.name) private readonly userModel: UserCollection,
+  ) {
     super();
   }
 
   async validate(request: Request): Promise<any> {
     const bearer = request?.headers?.authorization?.split(" ")[1];
 
-    if (typeof bearer !== "string") {
+    if (!bearer) {
       throw new UnauthorizedException("No authorization header");
     }
+
+    console.log("Bearer: ", bearer);
 
     const jwt: JWT = decodeJwt(bearer);
 
@@ -52,6 +59,13 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
 
       // move encodedId to id for easier access
       castedUser.id = castedUser.encodedId;
+
+      await this.userModel.createIfNotExists({
+        id: castedUser.id,
+        firstName: castedUser.firstName,
+        lastName: castedUser.lastName,
+        stage: AccountStage.INITIAL,
+      });
 
       return castedUser;
     } catch (e) {

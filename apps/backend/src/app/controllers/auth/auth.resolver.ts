@@ -1,8 +1,8 @@
 import { UseGuards } from "@nestjs/common";
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
-import { FitbitGuard } from "../middleware/fitbit.guard";
-import { FitbitUser } from "../middleware/fitbit.types";
-import { User } from "../middleware/user.decorator";
+import { FitbitGuard } from "../../middleware/fitbit.guard";
+import { FitbitUser } from "../../middleware/fitbit.types";
+import { User } from "../../middleware/user.decorator";
 import { AuthService } from "./auth.service";
 
 @Resolver("Auth")

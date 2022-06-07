@@ -7,6 +7,18 @@
 
 /* tslint:disable */
 /* eslint-disable */
+export enum ExperienceLevel {
+    BEGINNER = "BEGINNER",
+    INTERMEDIATE = "INTERMEDIATE",
+    ADVANCED = "ADVANCED"
+}
+
+export enum AccountStage {
+    INITIAL = "INITIAL",
+    EXPERIENCE_LEVEL_SELECTED = "EXPERIENCE_LEVEL_SELECTED",
+    INITIAL_RUN = "INITIAL_RUN"
+}
+
 export interface Auth {
     access_token?: Nullable<string>;
     expires_in?: Nullable<number>;
@@ -19,11 +31,22 @@ export interface Auth {
 export interface IQuery {
     getAuthLink(): string | Promise<string>;
     testAuth(): Nullable<string> | Promise<Nullable<string>>;
+    currentUser(): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export interface IMutation {
     login(code: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     refresh(token: string): Nullable<Auth> | Promise<Nullable<Auth>>;
+    updateExperienceLevel(): Nullable<ExperienceLevel> | Promise<Nullable<ExperienceLevel>>;
+    completeOnboarding(experience: ExperienceLevel, firstName: string, lastName: string): Nullable<User> | Promise<Nullable<User>>;
+}
+
+export interface User {
+    id: string;
+    firstName: string;
+    lastName: string;
+    experience?: Nullable<ExperienceLevel>;
+    stage: AccountStage;
 }
 
 type Nullable<T> = T | null;
