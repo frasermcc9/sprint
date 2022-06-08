@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { RunResolver } from "./run.resolver";
 import { RunService } from "./run.service";
 
-describe("UserResolver", () => {
+describe("RunResolver", () => {
   let resolver: RunResolver;
 
   beforeEach(async () => {
