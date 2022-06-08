@@ -1,0 +1,10 @@
+type Run {
+  userId: String
+  date: String
+  duration: Int
+  distance: Int
+  heartRate: [Int]
+  speed: [Int]
+  vo2max: Int
+  intensityFeedback: Int
+}

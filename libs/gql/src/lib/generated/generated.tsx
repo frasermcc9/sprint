@@ -69,6 +69,18 @@ export type Query = {
   testAuth?: Maybe<Scalars['String']>;
 };
 
+export type Run = {
+  __typename?: 'Run';
+  date?: Maybe<Scalars['String']>;
+  distance?: Maybe<Scalars['Int']>;
+  duration?: Maybe<Scalars['Int']>;
+  heartRate?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  intensityFeedback?: Maybe<Scalars['Int']>;
+  speed?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  userId?: Maybe<Scalars['String']>;
+  vo2max?: Maybe<Scalars['Int']>;
+};
+
 export type User = {
   __typename?: 'User';
   experience?: Maybe<ExperienceLevel>;
