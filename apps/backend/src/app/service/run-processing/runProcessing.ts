@@ -1,4 +1,4 @@
-import { toUnicode } from "punycode";
+import { Run } from "../../db/schema/run.schema";
 
 /**
  * Example Running params:
@@ -17,7 +17,16 @@ const currentHiitParams = {
   restPeriod: 120, // break between sets, (research says >3/4min/2min)
 };
 
-const calculateNewParams = (currentParams, rpeFeedback) => {
+const calculateNewParams = (
+  currentParams: {
+    highIntensity: number;
+    lowIntensity: number;
+    repetitions: number;
+    sets: number;
+    restPeriod: number;
+  },
+  rpeFeedback: number,
+) => {
   if (rpeFeedback === 10) {
     return currentParams;
   }
@@ -48,8 +57,8 @@ const calculateNewParams = (currentParams, rpeFeedback) => {
   return newParams;
 };
 
-const calculateVO2max = (run, hrMax) => {
+const calculateVO2max = (run: Run, hrMax: number) => {
   const hrAverage =
-    run.heartrate.reduce((a, b) => a + b) / run.heartrate.length;
+    run.heartRate.reduce((a, b) => a + b) / run.heartRate.length;
   return 15 * (hrAverage / hrMax);
 };
