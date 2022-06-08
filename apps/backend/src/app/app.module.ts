@@ -12,6 +12,7 @@ import { DbModule } from "./db/db.module";
 import { MongooseModule } from "@nestjs/mongoose";
 import { User, UserSchema } from "./db/schema/user.schema";
 import { UserModule } from "./controllers/user/user.module";
+import { RunModule } from "./controllers/run/run.module";
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UserModule } from "./controllers/user/user.module";
     DbModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     UserModule,
+    RunModule,
   ],
   controllers: [AppController],
   providers: [AppService, FitbitGuard, FitbitStrategy],
