@@ -23,7 +23,7 @@ export class User {
   @Prop({ required: false, type: Array })
   runs?: Array<Run>;
 
-  @Prop({ required: true, type: Number })
+  @Prop({ required: true, type: String })
   dob: string;
 }
 
