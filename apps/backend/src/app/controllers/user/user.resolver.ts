@@ -1,5 +1,6 @@
 import { UseGuards } from "@nestjs/common";
-import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
+import { Resolver, Query, Mutation, Args, ResolveField } from "@nestjs/graphql";
+import { calculateMaxHr } from "@sprint/common";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
 import { User } from "../../middleware/user.decorator";
@@ -16,7 +17,7 @@ export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Query()
-  async currentUser(@User() user: FitbitUser): Promise<GQLUser> {
+  async currentUser(@User() user: FitbitUser): Promise<Partial<GQLUser>> {
     const dbUser = await this.userService.getUser(user.id);
 
     return {
@@ -42,5 +43,17 @@ export class UserResolver {
     dbUser.stage = AccountStage.EXPERIENCE_LEVEL_SELECTED;
 
     return await dbUser.save();
+  }
+
+  @ResolveField()
+  async maxHr(@User() user: FitbitUser): Promise<number> {
+    const dbUser = await this.userService.getUser(user.id);
+    return calculateMaxHr(dbUser.dob);
+  }
+
+  @ResolveField()
+  async runs(@User() user: FitbitUser) {
+    const dbUser = await this.userService.getUser(user.id);
+    return dbUser.runs ?? [];
   }
 }

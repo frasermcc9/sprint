@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Model } from "mongoose";
 import { AccountStage, ExperienceLevel } from "../../types/graphql";
+import { Run } from "./run.schema";
 
 @Schema()
 export class User {
@@ -18,6 +19,12 @@ export class User {
 
   @Prop({ required: true, type: String })
   stage: AccountStage;
+
+  @Prop({ required: false, type: Array })
+  runs?: Array<Run>;
+
+  @Prop({ required: true, type: String })
+  dob: string;
 }
 
 interface Methods {

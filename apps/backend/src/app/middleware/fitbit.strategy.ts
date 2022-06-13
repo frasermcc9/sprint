@@ -65,10 +65,12 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
         firstName: castedUser.firstName,
         lastName: castedUser.lastName,
         stage: AccountStage.INITIAL,
+        dob: castedUser.dateOfBirth,
       });
 
       return castedUser;
     } catch (e) {
+      console.error(e);
       throw new UnauthorizedException("Token is invalid");
     }
   }

@@ -69,12 +69,26 @@ export type Query = {
   testAuth?: Maybe<Scalars['String']>;
 };
 
+export type Run = {
+  __typename?: 'Run';
+  date?: Maybe<Scalars['String']>;
+  distance?: Maybe<Scalars['Int']>;
+  duration?: Maybe<Scalars['Int']>;
+  heartRate?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  intensityFeedback?: Maybe<Scalars['Int']>;
+  speed?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  userId?: Maybe<Scalars['String']>;
+  vo2max?: Maybe<Scalars['Int']>;
+};
+
 export type User = {
   __typename?: 'User';
   experience?: Maybe<ExperienceLevel>;
   firstName: Scalars['String'];
   id: Scalars['String'];
   lastName: Scalars['String'];
+  maxHr: Scalars['Int'];
+  runs?: Maybe<Array<Maybe<Run>>>;
   stage: AccountStage;
 };
 
@@ -105,7 +119,7 @@ export type TestAuthQuery = { __typename?: 'Query', testAuth?: string | null };
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number } | null };
 
 export type CompleteOnboardingMutationVariables = Exact<{
   firstName: Scalars['String'];
@@ -261,6 +275,7 @@ export const CurrentUserDocument = gql`
     lastName
     experience
     stage
+    maxHr
   }
 }
     `;

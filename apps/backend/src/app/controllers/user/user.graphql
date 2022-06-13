@@ -17,6 +17,8 @@ type User {
   lastName: String!
   experience: ExperienceLevel
   stage: AccountStage!
+  runs: [Run]
+  maxHr: Int!
 }
 
 enum ExperienceLevel {
