@@ -41,12 +41,25 @@ export interface IMutation {
     completeOnboarding(experience: ExperienceLevel, firstName: string, lastName: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
+export interface Run {
+    userId?: Nullable<string>;
+    date?: Nullable<string>;
+    duration?: Nullable<number>;
+    distance?: Nullable<number>;
+    heartRate?: Nullable<Nullable<number>[]>;
+    speed?: Nullable<Nullable<number>[]>;
+    vo2max?: Nullable<number>;
+    intensityFeedback?: Nullable<number>;
+}
+
 export interface User {
     id: string;
     firstName: string;
     lastName: string;
     experience?: Nullable<ExperienceLevel>;
     stage: AccountStage;
+    runs?: Nullable<Nullable<Run>[]>;
+    maxHr: number;
 }
 
 type Nullable<T> = T | null;

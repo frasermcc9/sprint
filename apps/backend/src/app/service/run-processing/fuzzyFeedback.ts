@@ -1,4 +1,4 @@
-import fuzzy from "./fuzzyHelper";
+import { Fuzzy } from "./fuzzyHelpers";
 import { explanations } from "./HIITreasoning";
 import { differenceInDays } from "date-fns";
 import { last, partition, sumBy, maxBy } from "lodash";
@@ -37,58 +37,60 @@ const inferences = {
     "You seem to not be exerting yourself much. Maybe try a little challenge! Remember that HIIT is most effective when you run at 80%+ of your maximum HR.",
 };
 // fuzzy model membership (.trapezoid does not exisit)
-// const fuzzyModel = fuzzy()
-//   .trapezoid("performance", PERF_DECREASE, 0, 10, 50, 85)
-//   .trapezoid("performance", PERF_STEADY, 80, 90, 110, 120)
-//   .trapezoid("performance", PERF_INCREASE, 110, 120, 140)
-//   .trapezoid("performance", PERF_LARGE_INCREASE, 130, 150, 190, 200)
+const fuzzyModel = new Fuzzy()
+  .trapezoid("performance", PERF_DECREASE, 0, 10, 50, 85)
+  .trapezoid("performance", PERF_STEADY, 80, 90, 110, 120)
+  .trapezoid("performance", PERF_INCREASE, 110, 120, 130, 140)
+  .trapezoid("performance", PERF_LARGE_INCREASE, 130, 150, 190, 200)
 
-//   .trapezoid("intensity", INTENSITY_LOW, 0, 10, 40, 60)
-//   .trapezoid("intensity", INTENSITY_OK, 50, 60, 70, 90)
-//   .trapezoid("intensity", INTENSITY_HIGH, 80, 95, 100, 120)
+  .trapezoid("intensity", INTENSITY_LOW, 0, 10, 40, 60)
+  .trapezoid("intensity", INTENSITY_OK, 50, 60, 70, 90)
+  .trapezoid("intensity", INTENSITY_HIGH, 80, 95, 100, 120)
 
-//   // % drift
-//   .trapezoid("cardiacDrift", DRIFT_LOW, 0, 5, 20, 25)
-//   .trapezoid("cardiacDrift", DRIFT_OK, 20, 25, 30, 35)
-//   .trapezoid("cardiacDrift", DRIFT_HIGH, 25, 30, 90, 100)
+  // % drift
+  .trapezoid("cardiacDrift", DRIFT_LOW, 0, 5, 20, 25)
+  .trapezoid("cardiacDrift", DRIFT_OK, 20, 25, 30, 35)
+  .trapezoid("cardiacDrift", DRIFT_HIGH, 25, 30, 90, 100)
 
-//   .trapezoid("rpe", RPE_EASY, 6, 7, 12, 13)
-//   .trapezoid("rpe", RPE_OK, 12, 13, 14, 15)
-//   .trapezoid("rpe", RPE_HARD, 14, 15, 19, 20);
+  .trapezoid("rpe", RPE_EASY, 6, 7, 12, 13)
+  .trapezoid("rpe", RPE_OK, 12, 13, 14, 15)
+  .trapezoid("rpe", RPE_HARD, 14, 15, 19, 20);
 
 // // fuzzy model rules
-// fuzzyModel
-//   .if(PERF_DECREASE)
-//   .or(PERF_STEADY)
-//   .and(DRIFT_HIGH)
-//   .and(RPE_HARD)
-//   .then("overExertion")
+fuzzyModel
+  .if(PERF_DECREASE)
+  .or(PERF_STEADY)
+  .and(DRIFT_HIGH)
+  .and(RPE_HARD)
+  .then("overExertion")
 
-//   .if(PERF_STEADY)
-//   .or(PERF_INCREASE)
-//   .or(PERF_LARGE_INCREASE)
-//   .and(INTENSITY_OK)
-//   .then("goodPerformance")
+  .if(PERF_STEADY)
+  .or(PERF_INCREASE)
+  .or(PERF_LARGE_INCREASE)
+  .and(INTENSITY_OK)
+  .then("goodPerformance")
 
-//   .if(RPE_EASY)
-//   .or(RPE_OK)
-//   .and(INTENSITY_LOW)
-//   .then("underExertion")
+  .if(RPE_EASY)
+  .or(RPE_OK)
+  .and(INTENSITY_LOW)
+  .then("underExertion")
 
-//   .if(PERF_DECREASE)
-//   .and(INTENSITY_OK)
-//   .and(RPE_OK)
-//   .then("okPerformance");
+  .if(PERF_DECREASE)
+  .and(INTENSITY_OK)
+  .and(RPE_OK)
+  .then("okPerformance");
 
 // calculate percentage changes and feedback
-const percentDifference = (original, current) => {
-  return ((current - original) / original) * 100;
-};
+// Never used
+// const percentDifference = (original, current) => {
+//   return ((current - original) / original) * 100;
+// };
 
 // calculate the average of metrics for a user for a set of runs
 // (user baseline)
-const calculateAverages = (user, runs: [Run]) => {
-  const highHR = 0.8 * user.baseline.maxHR;
+const calculateAverages = (user: User, runs: [Run]) => {
+  // const highHR = 0.8 * user.maxHR;
+  const highHR = 190;
   // cardiac drift is difference between max change in speed vs. max change in hr
   const result = {
     intensity: 0,
@@ -137,30 +139,30 @@ const calculateAverages = (user, runs: [Run]) => {
 
 // calculate the change in metrics for a user between two sets of runs
 // (Not used in previous implementation?)
-const calculateChange = (user: User, firstRuns: [Run], secondRuns: [Run]) => {
-  const firstAverages = calculateAverages(user, firstRuns);
-  const secondAverages = calculateAverages(user, secondRuns);
-  const diff = {
-    changeInIntensity: percentDifference(
-      firstAverages.intensity,
-      secondAverages.intensity,
-    ),
-    changeInPerformance: percentDifference(
-      firstAverages.performance,
-      secondAverages.performance,
-    ),
-    changeInCardiacDrift: percentDifference(
-      firstAverages.cardiacDrift,
-      secondAverages.cardiacDrift,
-    ),
-  };
-  return diff;
-};
+// const calculateChange = (user: User, firstRuns: [Run], secondRuns: [Run]) => {
+//   const firstAverages = calculateAverages(user, firstRuns);
+//   const secondAverages = calculateAverages(user, secondRuns);
+//   const diff = {
+//     changeInIntensity: percentDifference(
+//       firstAverages.intensity,
+//       secondAverages.intensity,
+//     ),
+//     changeInPerformance: percentDifference(
+//       firstAverages.performance,
+//       secondAverages.performance,
+//     ),
+//     changeInCardiacDrift: percentDifference(
+//       firstAverages.cardiacDrift,
+//       secondAverages.cardiacDrift,
+//     ),
+//   };
+//   return diff;
+// };
 
 /**
  * Generates long-term feedback for a user using their runs (both single run and over time)
  */
-const generateFeedback = (user: User, runs: [Run]) => {
+const generateFeedback = (user: User, runs: Run[]) => {
   const feedback = {
     feedbackSummary:
       "Once you've completed more than 1 week of runs, we will start comparing your progress over the past few weeks.",
@@ -179,7 +181,7 @@ const generateFeedback = (user: User, runs: [Run]) => {
   // add lastRunFeedback
   const lastRunStats = calculateAverages(user, [lastRun]);
 
-  const intensity = (val) => {
+  const intensity = (val: number) => {
     if (val < 0.7)
       return "lower than optimal. Try to keep your exertion higher and constant throughout your sprinting! You can also try a more challenging warm-up to get to the correct heart-zone more easily. If you found the run to be difficult, the next one will be easier.";
     if (val < 0.85)
@@ -187,7 +189,7 @@ const generateFeedback = (user: User, runs: [Run]) => {
     return "very optimal. Well done!";
   };
 
-  const cardiac = (val) => {
+  const cardiac = (val: number) => {
     if (val < 0.3) return "low. Excellent!";
     if (val < 0.5)
       return "moderate. This means at the same pace, your body had to work harder. Remember to take adequate rest (48 hours between runs) and stay hydrated. Keep training at a good exertion level and this will improve!";
@@ -202,7 +204,7 @@ const generateFeedback = (user: User, runs: [Run]) => {
   const numberOfDays = differenceInDays(lastRun.date, runs[0].date);
   if (numberOfDays < 7) return feedback;
 
-  const firstWeek = [];
+  const firstWeek: Run[] = [];
   let i = 1;
   let dayDiff = 0;
 
@@ -212,30 +214,7 @@ const generateFeedback = (user: User, runs: [Run]) => {
     i++;
   }
 
-  const weeks = partition(
-    runs,
-    (run) => differenceInDays(lastRun.date, run.date) < 7,
-  );
-  const currentWeek = weeks[0];
-  const previousWeeks = weeks[1];
-
-  // (Not used in previous implementation?)
-  // const changeWithFirstWeek = calculateChange(user, firstWeek, currentWeek);
-  // const changeWithPrevious = calculateChange(user, previousWeeks, currentWeek);
-
-  // LONG TERM FEEDBACK HERE NOTE: What is feebbackCalc??
-  //   let allZeroes = true
-  //   const feedbackRule = maxBy(Object.keys(feedbackCalc), k => {
-  //     if (feedbackCalc[k] > 0) allZeroes = false
-  //     return feedbackCalc[k]
-  //   // })
-
-  //   if (!allZeroes) {
-  //     feedback.lastRunFeedback = feedbackCalc[feedbackRule]
-  //   } else {
-  //     // default feedback, no rules applied
-  //   }
-  // return feedback;
+  return feedback;
 };
 
 /**

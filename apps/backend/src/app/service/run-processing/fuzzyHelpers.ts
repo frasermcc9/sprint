@@ -1,4 +1,4 @@
-import mapValues = require("lodash/mapValues");
+import { mapValues } from "lodash";
 
 const and = (x: number, y: number) => Math.min(x, y);
 const or = (x: number, y: number) => Math.max(x, y);
@@ -9,21 +9,24 @@ const operators = {
   or,
   not,
 };
-const fuzzy = () => {
-  const memberships = {};
-  const nameToCategory = {};
-  const rules = {};
 
-  let fuzzyReturn = {};
+export class Fuzzy {
+  private memberships = {};
+  private nameToCategory = {};
+  private rules = {};
 
-  const trapezoid = (
+  trapezoid(
     category: string | number,
     name: string | number,
     x1: number,
     x2: number,
     x3: number,
     x4: number,
-  ) => {
+  ) {
+    const { memberships, nameToCategory } = {
+      memberships: this.memberships,
+      nameToCategory: this.nameToCategory,
+    };
     const membershipFunction = (value) => {
       if (value <= x1 || value >= x4) return 0;
       if (value < x2) {
@@ -37,11 +40,14 @@ const fuzzy = () => {
     if (!memberships[category]) memberships[category] = {};
     memberships[category][name] = membershipFunction;
     nameToCategory[name] = category;
-    return fuzzyReturn;
-  };
+    return this;
+  }
 
   // for adding new rules
-  const ifRule = (name) => {
+  if(name) {
+    const { rules } = {
+      rules: this.rules,
+    };
     const exp = [name];
 
     const rule = {
@@ -59,13 +65,17 @@ const fuzzy = () => {
       },
       then: (name) => {
         rules[name] = exp;
-        return fuzzyReturn;
+        return this;
       },
     };
     return rule;
-  };
+  }
 
-  const resolveRule = (ruleFunction, obj) => {
+  resolveRule(ruleFunction, obj) {
+    const { memberships, nameToCategory } = {
+      memberships: this.memberships,
+      nameToCategory: this.nameToCategory,
+    };
     ruleFunction = ruleFunction.map((e) => {
       if (!operators[e]) {
         const category = nameToCategory[e];
@@ -97,18 +107,11 @@ const fuzzy = () => {
       }
     });
     return finalResult;
-  };
+  }
 
-  const defuzzify = (obj) => {
-    return mapValues(rules, (ruleFunction) => resolveRule(ruleFunction, obj));
+  defuzzify = (obj) => {
+    return mapValues(this.rules, (ruleFunction) =>
+      this.resolveRule(ruleFunction, obj),
+    );
   };
-
-  fuzzyReturn = {
-    trapezoid,
-    if: ifRule,
-    defuzzify,
-  };
-  return fuzzyReturn;
-};
-
-export default fuzzy;
+}
