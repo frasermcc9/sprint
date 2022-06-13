@@ -2,6 +2,7 @@ import {
   ArrowCircleLeftIcon,
   ArrowCircleRightIcon,
 } from "@heroicons/react/solid";
+import { calculateAge, toYYYYMMDD } from "@sprint/common";
 import {
   ExperienceLevel,
   useCompleteOnboardingMutation,
@@ -75,14 +76,10 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
     [Mountain, Shoes, Tree],
   );
 
-  console.log(dob);
-
-  console.log(dob.toISOString().split("T")[0]);
-
   return (
     <div className="mb-8 flex h-full flex-grow">
       <Swiper
-        spaceBetween={50}
+        spaceBetween={100}
         slidesPerView={1}
         className=""
         pagination={true}
@@ -140,7 +137,7 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
                 </label>
                 <TextInput
                   id="dob"
-                  value={dob.toISOString().split("T")[0]}
+                  value={toYYYYMMDD(dob)}
                   onChange={(e) => setDob(e.target.valueAsDate ?? new Date())}
                   type="date"
                 />
@@ -199,13 +196,21 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
         <SwiperSlide>
           <SlideContent title="Wrapping Up">
             <div className="font-palanquin w-full items-center gap-y-4 p-1 px-8 font-normal">
-              <div className="mx-auto max-w-xs pb-8 text-center">
+              <div
+                className="mx-auto max-w-sm px-10 pb-8 text-justify"
+                style={{ textAlignLast: "center" }}
+              >
                 {"So just to confirm, your name is "}
                 <span className="text-indigo-600">
                   {firstName} {lastName}
                 </span>
-                {" and you are "}
+                {", you are "}
                 <span className="text-indigo-600">
+                  {calculateAge(toYYYYMMDD(dob))}
+                </span>
+
+                {", and you are "}
+                <span className="text-center text-indigo-600">
                   {buttons[experience].text.toLowerCase()}!
                 </span>
               </div>
@@ -218,6 +223,7 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
                         experience,
                         firstName,
                         lastName,
+                        dob: toYYYYMMDD(dob),
                       },
                     })
                   }
@@ -249,7 +255,7 @@ export const useOnboardingSlidesController = () => {
     firstName: currentUser?.firstName ?? "",
     lastName: currentUser?.lastName ?? "",
     experience: currentUser?.experience ?? ExperienceLevel.Beginner,
-    dob: new Date("2000-04-06"),
+    dob: currentUser?.dob ? new Date(currentUser.dob) : new Date(),
   });
 
   const setFirstName = useCallback((firstName: string) => {
@@ -263,16 +269,15 @@ export const useOnboardingSlidesController = () => {
   }, []);
   const setDob = useCallback((dob: Date) => {
     setDetails((d) => ({ ...d, dob: dob }));
-    console.log(dob);
   }, []);
 
   useEffect(() => {
     if (data?.currentUser) {
       setFirstName(data.currentUser.firstName);
       setLastName(data.currentUser.lastName);
-      // setDob(data.currentUser?.dob);
+      setDob(new Date(data.currentUser.dob));
     }
-  }, [data, setFirstName, setLastName]);
+  }, [data, setDob, setFirstName, setLastName]);
 
   return {
     ...details,

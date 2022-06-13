@@ -4,6 +4,7 @@ type Mutation {
     experience: ExperienceLevel!
     firstName: String!
     lastName: String!
+    dob: String!
   ): User
 }
 
@@ -19,6 +20,7 @@ type User {
   stage: AccountStage!
   runs: [Run]
   maxHr: Int!
+  dob: String!
 }
 
 enum ExperienceLevel {

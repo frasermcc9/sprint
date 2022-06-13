@@ -32,7 +32,7 @@ const Page: React.FC<PageProps> = ({ children, className }) => {
       {/* <Header /> */}
       <div
         className={classNames(
-          "flex w-full max-w-6xl flex-grow flex-col self-center px-10",
+          "flex w-full max-w-6xl flex-grow flex-col self-center",
           className,
         )}
       >

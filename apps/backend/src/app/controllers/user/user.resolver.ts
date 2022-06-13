@@ -26,6 +26,7 @@ export class UserResolver {
       lastName: dbUser.lastName,
       experience: dbUser.experience,
       stage: dbUser.stage,
+      dob: dbUser.dob,
     };
   }
 
@@ -35,12 +36,15 @@ export class UserResolver {
     @Args("experience") experience: ExperienceLevel,
     @Args("firstName") firstName: string,
     @Args("lastName") lastName: string,
+    @Args("dob") dob: string,
   ) {
     const dbUser = await this.userService.getUser(user.id);
+
     dbUser.experience = experience;
     dbUser.firstName = firstName;
     dbUser.lastName = lastName;
     dbUser.stage = AccountStage.EXPERIENCE_LEVEL_SELECTED;
+    dbUser.dob = dob;
 
     return await dbUser.save();
   }

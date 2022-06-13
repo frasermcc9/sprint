@@ -6,6 +6,7 @@ query CurrentUser {
     experience
     stage
     maxHr
+    dob
   }
 }
 
@@ -13,11 +14,13 @@ mutation CompleteOnboarding(
   $firstName: String!
   $lastName: String!
   $experience: ExperienceLevel!
+  $dob: String!
 ) {
   completeOnboarding(
     experience: $experience
     firstName: $firstName
     lastName: $lastName
+    dob: $dob
   ) {
     id
   }
