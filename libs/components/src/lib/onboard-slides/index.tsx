@@ -8,8 +8,8 @@ import {
   useCurrentUserQuery,
 } from "@sprint/gql";
 import classNames from "classnames";
-import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { Pagination } from "swiper";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import ISwiper, { Pagination } from "swiper";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -25,12 +25,21 @@ export interface OnboardingSlidesProps {
 export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
   useController,
 }) => {
-  const { firstName, lastName, setFirstName, setLastName, completeOnboarding } =
-    useController();
-  const [swiper, setSwiper] = useState<any>(null);
+  const {
+    firstName,
+    lastName,
+    setFirstName,
+    setLastName,
+    completeOnboarding,
+    experience,
+    setExperience,
+    dob,
+    setDob,
+  } = useController();
+  const [swiper, setSwiper] = useState<ISwiper | null>(null);
 
-  const slideNext = useCallback(() => swiper.slideNext(), [swiper]);
-  const slidePrev = useCallback(() => swiper.slidePrev(), [swiper]);
+  const slideNext = useCallback(() => swiper?.slideNext(), [swiper]);
+  const slidePrev = useCallback(() => swiper?.slidePrev(), [swiper]);
 
   const Tree = useEmoji("🌲", "1.5rem");
   const Shoes = useEmoji("👟", "1.5rem");
@@ -44,27 +53,31 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
     ],
     [],
   );
-  const [activeButton, setActiveButton] = useState(0);
+
   const buttons = useMemo(
-    () => [
-      {
+    () => ({
+      [ExperienceLevel.Beginner]: {
         text: "A little new to this",
         emoji: <Tree />,
         color: "bg-emerald-500",
       },
-      {
+      [ExperienceLevel.Intermediate]: {
         text: "An adept exerciser",
         emoji: <Shoes />,
         color: "bg-amber-500",
       },
-      {
+      [ExperienceLevel.Advanced]: {
         text: "A full on fitness freak",
         emoji: <Mountain />,
         color: "bg-red-500",
       },
-    ],
+    }),
     [Mountain, Shoes, Tree],
   );
+
+  console.log(dob);
+
+  console.log(dob.toISOString().split("T")[0]);
 
   return (
     <div className="mb-8 flex h-full flex-grow">
@@ -90,7 +103,7 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
                 <TextInput
                   id="first-name"
                   value={firstName}
-                  onChange={setFirstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
               </div>
               <div>
@@ -103,7 +116,7 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
                 <TextInput
                   id="last-name"
                   value={lastName}
-                  onChange={setLastName}
+                  onChange={(e) => setLastName(e.target.value)}
                 />
               </div>
               <SlideButton
@@ -116,17 +129,52 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
           </SlideContent>
         </SwiperSlide>
         <SwiperSlide>
+          <SlideContent title="Is this your date of birth?">
+            <div className="flex flex-col gap-y-4 p-1 px-8">
+              <div>
+                <label
+                  className="ml-0.5 text-sm font-semibold underline"
+                  htmlFor="dob"
+                >
+                  Date of Birth
+                </label>
+                <TextInput
+                  id="dob"
+                  value={dob.toISOString().split("T")[0]}
+                  onChange={(e) => setDob(e.target.valueAsDate ?? new Date())}
+                  type="date"
+                />
+              </div>
+              <div className="mt-4 flex w-full justify-between">
+                <SlideButton
+                  text="Previous"
+                  onClick={slidePrev}
+                  icon={<ArrowCircleLeftIcon className="w-8" />}
+                  iconStart
+                />
+                <SlideButton
+                  text="Next"
+                  onClick={slideNext}
+                  icon={<ArrowCircleRightIcon className="w-8" />}
+                />
+              </div>
+            </div>
+          </SlideContent>
+        </SwiperSlide>
+        <SwiperSlide>
           <SlideContent title="Pick which best describes you">
             <div className="font-palanquin flex flex-col items-center gap-y-4 p-1 px-8">
-              {buttons.map(({ emoji, text, color }, i) => (
+              {Object.values(buttons).map(({ emoji, text, color }, i) => (
                 <button
                   key={text}
                   className={classNames(
                     "text-bold flex w-full items-center gap-x-4 rounded px-4 py-4 font-medium text-white transition-colors",
                     color,
-                    { "bg-gray-400 saturate-0": i !== activeButton },
+                    {
+                      "bg-gray-400 saturate-0": experienceMap[i] !== experience,
+                    },
                   )}
-                  onClick={() => setActiveButton(i)}
+                  onClick={() => setExperience(experienceMap[i])}
                 >
                   {emoji}
                   {text}
@@ -158,7 +206,7 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
                 </span>
                 {" and you are "}
                 <span className="text-indigo-600">
-                  {buttons[activeButton].text.toLowerCase()}!
+                  {buttons[experience].text.toLowerCase()}!
                 </span>
               </div>
               <div className="flex flex-col gap-y-4">
@@ -167,7 +215,7 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
                   onClick={async () =>
                     await completeOnboarding({
                       variables: {
-                        experience: experienceMap[activeButton],
+                        experience,
                         firstName,
                         lastName,
                       },
@@ -195,23 +243,43 @@ export const useOnboardingSlidesController = () => {
   const { data } = useCurrentUserQuery();
   const [completeOnboarding] = useCompleteOnboardingMutation();
 
-  const [firstName, setFirstName] = useState(
-    data?.currentUser?.firstName || "",
-  );
-  const [lastName, setLastName] = useState(data?.currentUser?.lastName || "");
+  const currentUser = data?.currentUser;
+
+  const [details, setDetails] = useState({
+    firstName: currentUser?.firstName ?? "",
+    lastName: currentUser?.lastName ?? "",
+    experience: currentUser?.experience ?? ExperienceLevel.Beginner,
+    dob: new Date("2000-04-06"),
+  });
+
+  const setFirstName = useCallback((firstName: string) => {
+    setDetails((d) => ({ ...d, firstName }));
+  }, []);
+  const setLastName = useCallback((lastName: string) => {
+    setDetails((d) => ({ ...d, lastName }));
+  }, []);
+  const setExperience = useCallback((experience: ExperienceLevel) => {
+    setDetails((d) => ({ ...d, experience }));
+  }, []);
+  const setDob = useCallback((dob: Date) => {
+    setDetails((d) => ({ ...d, dob: dob }));
+    console.log(dob);
+  }, []);
 
   useEffect(() => {
     if (data?.currentUser) {
       setFirstName(data.currentUser.firstName);
       setLastName(data.currentUser.lastName);
+      // setDob(data.currentUser?.dob);
     }
-  }, [data]);
+  }, [data, setFirstName, setLastName]);
 
   return {
-    firstName,
+    ...details,
     setFirstName,
-    lastName,
     setLastName,
+    setExperience,
+    setDob,
     completeOnboarding,
   };
 };
@@ -219,10 +287,14 @@ export const useOnboardingSlidesController = () => {
 export const useMockOnboardingSlidesController: typeof useOnboardingSlidesController =
   () => {
     return {
+      experience: ExperienceLevel.Beginner,
       firstName: "Fraser",
       lastName: "McCallum",
+      dob: new Date("06/04/2000"),
+      setExperience: () => null,
       setFirstName: () => null,
       setLastName: () => null,
+      setDob: () => null,
       completeOnboarding: (): any => null,
     };
   };

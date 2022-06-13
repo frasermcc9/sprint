@@ -1,12 +1,12 @@
-import { useCallback } from "@storybook/addons";
 import classNames from "classnames";
-import React, { useState } from "react";
+import React from "react";
 
 export interface TextInputProps {
   className?: string;
   value?: string;
-  onChange?: (value: string) => void;
+  onChange?: (value: React.ChangeEvent<HTMLInputElement>) => void;
   id?: string;
+  type?: React.HTMLInputTypeAttribute;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -14,12 +14,13 @@ export const TextInput: React.FC<TextInputProps> = ({
   className,
   onChange,
   id,
+  type = "text",
 }) => {
   return (
     <input
-      type="text"
+      type={type}
       id={id}
-      onChange={(e) => onChange?.(e.target.value)}
+      onChange={onChange}
       value={value}
       className={classNames(
         "w-full rounded border py-2 px-3 text-gray-700 focus:outline-none focus:ring-2",

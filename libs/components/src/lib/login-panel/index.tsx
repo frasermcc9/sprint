@@ -2,11 +2,9 @@ import cx from "classnames";
 import { Glass } from "../..";
 import SignInButton, { useSignInButtonController } from "../sign-in-button";
 
-export interface LoginPanelProps {}
+export type LoginPanelProps = {};
 
-export const LoginPanel: React.FC<LoginPanelProps> = ({}) => {
-  const color = "bg-emerald-600 hover:bg-emerald-500 transition-colors";
-
+export const LoginPanel: React.FC<LoginPanelProps> = () => {
   return (
     <Glass className="z-10 mx-4 flex w-full max-w-md flex-col items-center gap-y-10 p-4 text-gray-50">
       <div className="flex flex-col items-center">
