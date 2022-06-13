@@ -77,7 +77,7 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
   );
 
   return (
-    <div className="mb-8 flex h-full flex-grow">
+    <div className="mx-auto mb-8 flex h-full max-w-md flex-grow">
       <Swiper
         spaceBetween={100}
         slidesPerView={1}
@@ -197,7 +197,7 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
           <SlideContent title="Wrapping Up">
             <div className="font-palanquin w-full items-center gap-y-4 p-1 px-8 font-normal">
               <div
-                className="mx-auto max-w-sm px-10 pb-8 text-justify"
+                className="mx-auto max-w-xs px-10 pb-8 text-justify"
                 style={{ textAlignLast: "center" }}
               >
                 {"So just to confirm, your name is "}
