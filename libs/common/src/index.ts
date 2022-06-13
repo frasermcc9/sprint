@@ -1,2 +1,3 @@
 export * from "./lib/types";
 export * from "./lib/local-storage-keys";
+export * from "./lib/max-hr";

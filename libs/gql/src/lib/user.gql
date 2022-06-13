@@ -5,6 +5,7 @@ query CurrentUser {
     lastName
     experience
     stage
+    maxHr
   }
 }
 

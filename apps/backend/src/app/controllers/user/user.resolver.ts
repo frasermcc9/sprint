@@ -1,5 +1,6 @@
 import { UseGuards } from "@nestjs/common";
 import { Resolver, Query, Mutation, Args, ResolveField } from "@nestjs/graphql";
+import { calculateMaxHr } from "@sprint/common";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
 import { User } from "../../middleware/user.decorator";
@@ -47,9 +48,7 @@ export class UserResolver {
   @ResolveField()
   async maxHr(@User() user: FitbitUser): Promise<number> {
     const dbUser = await this.userService.getUser(user.id);
-    const dob = new Date(dbUser.dob);
-    const age = new Date().getFullYear() - dob.getFullYear();
-    return 211 - 0.64 * age;
+    return calculateMaxHr(dbUser.dob);
   }
 
   @ResolveField()

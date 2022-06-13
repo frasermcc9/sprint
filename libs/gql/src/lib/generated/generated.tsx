@@ -87,6 +87,8 @@ export type User = {
   firstName: Scalars['String'];
   id: Scalars['String'];
   lastName: Scalars['String'];
+  maxHr: Scalars['Int'];
+  runs?: Maybe<Array<Maybe<Run>>>;
   stage: AccountStage;
 };
 
@@ -117,7 +119,7 @@ export type TestAuthQuery = { __typename?: 'Query', testAuth?: string | null };
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number } | null };
 
 export type CompleteOnboardingMutationVariables = Exact<{
   firstName: Scalars['String'];
@@ -273,6 +275,7 @@ export const CurrentUserDocument = gql`
     lastName
     experience
     stage
+    maxHr
   }
 }
     `;

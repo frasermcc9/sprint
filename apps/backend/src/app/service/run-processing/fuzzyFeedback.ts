@@ -4,6 +4,7 @@ import { differenceInDays } from "date-fns";
 import { last, partition, sumBy, maxBy } from "lodash";
 import { Run } from "../../db/schema/run.schema";
 import { User } from "../../db/schema/user.schema";
+import { calculateMaxHr } from "@sprint/common";
 
 // >>> all membership functions take in a percentage change (i.e 10 is 10% increase). Should be clamped to -100 .. 100
 // normalized to 0 .. 200
@@ -89,8 +90,8 @@ fuzzyModel
 // calculate the average of metrics for a user for a set of runs
 // (user baseline)
 const calculateAverages = (user: User, runs: [Run]) => {
-  // const highHR = 0.8 * user.maxHR;
-  const highHR = 190;
+  const highHR = 0.8 * calculateMaxHr(user.dob);
+
   // cardiac drift is difference between max change in speed vs. max change in hr
   const result = {
     intensity: 0,

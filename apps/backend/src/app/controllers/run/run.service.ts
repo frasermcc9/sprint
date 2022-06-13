@@ -9,6 +9,6 @@ export class RunService {
   ) {}
 
   getRun(userId: string) {
-    return this.runModel.findOne({ userId: userId });
+    return this.runModel.findOne({ userId });
   }
 }

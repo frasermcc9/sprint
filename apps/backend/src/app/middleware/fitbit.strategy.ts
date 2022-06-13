@@ -70,6 +70,7 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
 
       return castedUser;
     } catch (e) {
+      console.error(e);
       throw new UnauthorizedException("Token is invalid");
     }
   }
