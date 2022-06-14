@@ -47,6 +47,7 @@ export type Mutation = {
 
 
 export type MutationCompleteOnboardingArgs = {
+  dob: Scalars['String'];
   experience: ExperienceLevel;
   firstName: Scalars['String'];
   lastName: Scalars['String'];
@@ -83,6 +84,7 @@ export type Run = {
 
 export type User = {
   __typename?: 'User';
+  dob: Scalars['String'];
   experience?: Maybe<ExperienceLevel>;
   firstName: Scalars['String'];
   id: Scalars['String'];
@@ -119,12 +121,13 @@ export type TestAuthQuery = { __typename?: 'Query', testAuth?: string | null };
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string } | null };
 
 export type CompleteOnboardingMutationVariables = Exact<{
   firstName: Scalars['String'];
   lastName: Scalars['String'];
   experience: ExperienceLevel;
+  dob: Scalars['String'];
 }>;
 
 
@@ -276,6 +279,7 @@ export const CurrentUserDocument = gql`
     experience
     stage
     maxHr
+    dob
   }
 }
     `;
@@ -307,11 +311,12 @@ export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
 export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
 export const CompleteOnboardingDocument = gql`
-    mutation CompleteOnboarding($firstName: String!, $lastName: String!, $experience: ExperienceLevel!) {
+    mutation CompleteOnboarding($firstName: String!, $lastName: String!, $experience: ExperienceLevel!, $dob: String!) {
   completeOnboarding(
     experience: $experience
     firstName: $firstName
     lastName: $lastName
+    dob: $dob
   ) {
     id
   }
@@ -335,6 +340,7 @@ export type CompleteOnboardingMutationFn = Apollo.MutationFunction<CompleteOnboa
  *      firstName: // value for 'firstName'
  *      lastName: // value for 'lastName'
  *      experience: // value for 'experience'
+ *      dob: // value for 'dob'
  *   },
  * });
  */

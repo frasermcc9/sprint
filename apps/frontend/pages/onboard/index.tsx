@@ -2,9 +2,12 @@ import {
   Layout,
   OnboardingSlides,
   useOnboardingSlidesController,
+  useStandardRedirect,
 } from "@sprint/components";
 
 const Index: React.FC = () => {
+  useStandardRedirect();
+
   return (
     <Layout.Page className="px-0">
       <div className="mx-auto max-w-7xl py-12 px-4 text-center sm:px-6 lg:flex lg:items-center lg:justify-between lg:py-16 lg:px-8">

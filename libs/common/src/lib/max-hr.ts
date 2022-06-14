@@ -1,4 +1,6 @@
+import { calculateAge } from "./dates";
+
 export const calculateMaxHr = (dob: string) => {
-  const age = new Date().getFullYear() - new Date(dob).getFullYear();
+  const age = calculateAge(dob);
   return Math.round(211 - 0.64 * age);
 };

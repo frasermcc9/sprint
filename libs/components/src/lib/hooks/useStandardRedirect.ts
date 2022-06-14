@@ -8,11 +8,17 @@ const EXPERIENCE_REDIRECT = "/onboard";
 const INITIAL_RUN_REDIRECT = "/initial";
 
 export const useStandardRedirect = () => {
-  const { push } = useRouter();
+  const router = useRouter();
   const { data, loading, error } = useCurrentUserQuery();
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
+    const pushIfDifferent = (route: string) => {
+      if (router.pathname !== route) {
+        router.push(route);
+      }
+    };
+
     if (loading) {
       return;
     }
@@ -23,7 +29,7 @@ export const useStandardRedirect = () => {
           (f) => f.extensions["code"] === "UNAUTHENTICATED",
         )
       ) {
-        push(AUTH_REDIRECT);
+        pushIfDifferent(AUTH_REDIRECT);
       } else {
         toast.error("We couldn't connect to the server. Sorry about that :(");
       }
@@ -31,24 +37,24 @@ export const useStandardRedirect = () => {
     }
 
     if (!data?.currentUser) {
-      push(AUTH_REDIRECT);
+      pushIfDifferent(AUTH_REDIRECT);
       return;
     }
 
     const { stage } = data.currentUser;
 
     if (stage === AccountStage.Initial) {
-      push(EXPERIENCE_REDIRECT);
+      pushIfDifferent(EXPERIENCE_REDIRECT);
       return;
     }
 
     if (stage === AccountStage.ExperienceLevelSelected) {
-      push(INITIAL_RUN_REDIRECT);
+      pushIfDifferent(INITIAL_RUN_REDIRECT);
       return;
     }
 
     setAuthenticated(true);
-  }, [data, loading, error, push]);
+  }, [data?.currentUser, error, loading, router]);
 
   return { loading, loggedIn: authenticated };
 };
