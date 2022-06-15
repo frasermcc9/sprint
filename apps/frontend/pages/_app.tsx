@@ -143,7 +143,7 @@ const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
       <Head>
         <title>Welcome to frontend!</title>
       </Head>
-      <main className="app min-h-screen">
+      <main className="app flex h-full flex-col">
         <Component {...pageProps} />
       </main>
       {showNavigation && (

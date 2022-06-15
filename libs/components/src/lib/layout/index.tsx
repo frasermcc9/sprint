@@ -22,7 +22,7 @@ const Page: FCC<PageProps> = ({ children, className, animation = {} }) => {
       animate="enter"
       exit="exit"
       transition={{ type: "easeOut", duration: 0.2 }}
-      className="flex min-h-screen w-full flex-col bg-gray-50"
+      className="flex h-full w-full flex-col bg-gray-50"
     >
       <div
         className={classNames(
