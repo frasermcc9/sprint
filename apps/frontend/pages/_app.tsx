@@ -137,6 +137,13 @@ const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
     [pathname],
   );
 
+  useEffect(() => {
+    console.log(
+      "%cSPRINT",
+      "color: rgb(79 70 229); font-size: 4em; -webkit-text-stroke-width: 1.5px; -webkit-text-stroke-color: black;",
+    );
+  }, []);
+
   return (
     <ApolloProvider client={client}>
       <ToastContainer position="bottom-left" />
