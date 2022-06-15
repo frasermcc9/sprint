@@ -1,6 +1,10 @@
-import { CircularProgress, Layout, useColorRule } from "@sprint/components";
+import {
+  CircularProgress,
+  Layout,
+  useColorRule,
+  useInterval,
+} from "@sprint/components";
 import classNames from "classnames";
-import { useInterval } from "libs/components/src/lib/hooks/useInterval";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 
@@ -51,7 +55,7 @@ export const Prepare: React.FC = () => {
                 return (
                   <ul
                     key={index}
-                    className={classNames("transition-opacity", {
+                    className={classNames("transition-opacity duration-500", {
                       "opacity-0": !isVisible,
                       "opacity-100": isVisible,
                     })}
