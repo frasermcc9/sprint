@@ -6,7 +6,16 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-import { HomeFilledIcon, HomeOutlineIcon } from "@sprint/assets";
+import {
+  CrownFilledIcon,
+  CrownOutlineIcon,
+  HomeFilledIcon,
+  HomeOutlineIcon,
+  ProfileFilledIcon,
+  ProfileOutlineIcon,
+  TrophyFilledIcon,
+  TrophyOutlineIcon,
+} from "@sprint/assets";
 import { LocalStorageKeys, readableTime } from "@sprint/common";
 import {
   Navigation,
@@ -30,26 +39,26 @@ import "./styles.css";
 const tabs: Tab[] = [
   {
     label: "Home",
-    displayActive: <HomeFilledIcon className="h-12 w-12" />,
-    displayInactive: <HomeOutlineIcon className="h-12 w-12" />,
+    displayActive: HomeFilledIcon,
+    displayInactive: HomeOutlineIcon,
     link: "/home",
   },
   {
     label: "Goals",
-    displayActive: <span className="font-bold">Goals</span>,
-    displayInactive: <>Goals</>,
+    displayActive: TrophyFilledIcon,
+    displayInactive: TrophyOutlineIcon,
     link: "/goals",
   },
   {
     label: "Profile",
-    displayActive: <span className="font-bold">Profile</span>,
-    displayInactive: <>Profile</>,
+    displayActive: ProfileFilledIcon,
+    displayInactive: ProfileOutlineIcon,
     link: "/profile",
   },
   {
     label: "Social",
-    displayActive: <span className="font-bold">Social</span>,
-    displayInactive: <>Social</>,
+    displayActive: CrownFilledIcon,
+    displayInactive: CrownOutlineIcon,
     link: "/social",
   },
 ];
@@ -138,7 +147,7 @@ const unauthenticatedClient = new ApolloClient({
 });
 
 const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(2);
 
   const showNavigation = useMemo(
     () =>
