@@ -1,3 +1,5 @@
+import { PropsWithChildren } from "react";
+
 /**
  * Takes an object and makes any functions on that object return unknown.
  */
@@ -14,3 +16,5 @@ export type FunctionsReturnUnknown<T> = {
 export type MockController<
   T extends (...args: unknown[]) => Record<string, unknown>,
 > = (...args: Parameters<T>) => FunctionsReturnUnknown<ReturnType<T>>;
+
+export type FCC<P = unknown> = React.FC<PropsWithChildren<P>>;

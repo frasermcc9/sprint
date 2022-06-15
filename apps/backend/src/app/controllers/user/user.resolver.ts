@@ -27,6 +27,7 @@ export class UserResolver {
       experience: dbUser.experience,
       stage: dbUser.stage,
       dob: dbUser.dob,
+      defaultRunDuration: dbUser.defaultRunDuration,
     };
   }
 
@@ -47,6 +48,18 @@ export class UserResolver {
     dbUser.dob = dob;
 
     return await dbUser.save();
+  }
+
+  @Mutation()
+  async updateDefaultRunDuration(
+    @User() user: FitbitUser,
+    @Args("duration") duration: number,
+  ) {
+    const dbUser = await this.userService.getUser(user.id);
+    dbUser.defaultRunDuration = duration;
+    await dbUser.save();
+
+    return duration;
   }
 
   @ResolveField()

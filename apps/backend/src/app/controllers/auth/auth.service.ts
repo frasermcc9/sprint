@@ -65,7 +65,7 @@ export class AuthService {
 
       return data;
     } catch (e) {
-      console.log(e.toJSON());
+      console.error(e.toJSON());
     }
   }
 
@@ -99,7 +99,7 @@ export class AuthService {
 
       return data;
     } catch (e) {
-      console.log(e.toJSON());
+      console.error(e.toJSON());
     }
   }
 }

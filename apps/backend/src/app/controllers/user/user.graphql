@@ -6,6 +6,7 @@ type Mutation {
     lastName: String!
     dob: String!
   ): User
+  updateDefaultRunDuration(duration: Int!): Int!
 }
 
 type Query {
@@ -21,6 +22,7 @@ type User {
   runs: [Run]
   maxHr: Int!
   dob: String!
+  defaultRunDuration: Int!
 }
 
 enum ExperienceLevel {

@@ -35,8 +35,6 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
       throw new UnauthorizedException("No authorization header");
     }
 
-    console.log("Bearer: ", bearer);
-
     const jwt: JWT = decodeJwt(bearer);
 
     if (typeof jwt?.sub !== "string") {

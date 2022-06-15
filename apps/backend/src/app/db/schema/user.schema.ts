@@ -25,6 +25,9 @@ export class User {
 
   @Prop({ required: true, type: String })
   dob: string;
+
+  @Prop({ required: true, type: Number, default: 13 })
+  defaultRunDuration?: number;
 }
 
 interface Methods {
