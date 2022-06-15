@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid";
 import {
+  CurrentUserDocument,
+  CurrentUserQuery,
   useCurrentUserQuery,
   useUpdateDefaultRunDurationMutation,
 } from "@sprint/gql";
@@ -70,25 +72,42 @@ export const useStartRunController = () => {
   const [updateRunDuration] = useUpdateDefaultRunDurationMutation();
   const { push } = useRouter();
 
-  const [runDuration, setRunDuration] = useState(13);
+  const runDuration = data?.currentUser?.defaultRunDuration ?? 0;
 
   const startRun = useCallback(() => {
     push("/run/prepare?duration=" + runDuration);
   }, [push]);
 
-  useEffect(() => {
-    if (!loading && data) {
-      setRunDuration(data.currentUser?.defaultRunDuration ?? 13);
-    }
-  }, [data, loading]);
-
   const setRunDurationWrapper = useCallback(
-    (updater: (previous: number) => number) => {
+    async (updater: (previous: number) => number) => {
       const duration = updater(runDuration);
-      updateRunDuration({ variables: { duration } });
-      setRunDuration(updater);
+
+      await updateRunDuration({
+        variables: { duration },
+        optimisticResponse: { updateDefaultRunDuration: duration },
+        update: (cache, { data: updated }) => {
+          const old = cache.readQuery<CurrentUserQuery>({
+            query: CurrentUserDocument,
+          });
+
+          if (!updated || !old || !old.currentUser) {
+            return;
+          }
+
+          cache.writeQuery<CurrentUserQuery>({
+            query: CurrentUserDocument,
+            data: {
+              ...old,
+              currentUser: {
+                ...old.currentUser,
+                defaultRunDuration: updated.updateDefaultRunDuration,
+              },
+            },
+          });
+        },
+      });
     },
-    [],
+    [runDuration, updateRunDuration],
   );
 
   return { runDuration, setRunDuration: setRunDurationWrapper, startRun };
@@ -97,7 +116,7 @@ export const useStartRunController = () => {
 export const useMockStartRunController: typeof useStartRunController = () => {
   return {
     runDuration: 13,
-    setRunDuration: () => null,
+    setRunDuration: () => new Promise((r) => r()),
     startRun: () => null,
   };
 };
