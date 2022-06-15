@@ -7,8 +7,13 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { HomeFilledIcon, HomeOutlineIcon } from "@sprint/assets";
-import { LocalStorageKeys } from "@sprint/common";
-import { Navigation, Tab, useNavigationController } from "@sprint/components";
+import { LocalStorageKeys, readableTime } from "@sprint/common";
+import {
+  Navigation,
+  Tab,
+  useExternalLog,
+  useNavigationController,
+} from "@sprint/components";
 import {
   LoginMutation,
   RefreshDocument,
@@ -17,7 +22,7 @@ import {
 } from "@sprint/gql";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles.css";
@@ -79,8 +84,14 @@ const authLink = setContext(async (_, { headers }) => {
       headers,
     };
   }
+  useExternalLog(
+    "ApolloAuthentication",
+    "FitBit token expiry in " + readableTime(+expiryTime - Date.now() / 1000),
+  );
 
-  if (expiryTime && Date.now() > +expiryTime) {
+  if (expiryTime && Date.now() / 1000 > +expiryTime) {
+    useExternalLog("ApolloAuthentication", "Refreshing token");
+
     const {
       data: { refresh },
     } = await unauthenticatedClient.mutate<
@@ -136,6 +147,13 @@ const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
       ),
     [pathname],
   );
+
+  useEffect(() => {
+    console.log(
+      "%cSPRINT",
+      "color: rgb(79 70 229); font-size: 4em; -webkit-text-stroke-width: 1.5px; -webkit-text-stroke-color: black;",
+    );
+  }, []);
 
   return (
     <ApolloProvider client={client}>

@@ -30,7 +30,7 @@ export const useGetTokenPageController = () => {
         });
 
         if (login) {
-          const expiryTime = Date.now() + login.expires_in - 1000;
+          const expiryTime = Date.now() / 1000 + login.expires_in - 1000;
 
           localStorage.setItem(
             LocalStorageKeys.AUTH_DETAILS,

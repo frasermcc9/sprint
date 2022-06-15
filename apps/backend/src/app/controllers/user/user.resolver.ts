@@ -1,6 +1,6 @@
 import { UseGuards } from "@nestjs/common";
 import { Resolver, Query, Mutation, Args, ResolveField } from "@nestjs/graphql";
-import { calculateMaxHr } from "@sprint/common";
+import { calculateMaxHr, Feature } from "@sprint/common";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
 import { User } from "../../middleware/user.decorator";
@@ -28,6 +28,7 @@ export class UserResolver {
       stage: dbUser.stage,
       dob: dbUser.dob,
       defaultRunDuration: dbUser.defaultRunDuration,
+      features: dbUser.featuresSeen,
     };
   }
 
@@ -60,6 +61,22 @@ export class UserResolver {
     await dbUser.save();
 
     return duration;
+  }
+
+  @Mutation()
+  async markFeatureSeen(
+    @User() user: FitbitUser,
+    @Args("feature") feature: Feature,
+  ) {
+    const dbUser = await this.userService.getUser(user.id);
+    dbUser.featuresSeen = dbUser.featuresSeen ?? [];
+    if (!dbUser.featuresSeen.includes(feature)) {
+      dbUser.featuresSeen.push(feature);
+      dbUser.markModified("featuresSeen");
+      await dbUser.save();
+    }
+
+    return dbUser.featuresSeen;
   }
 
   @ResolveField()

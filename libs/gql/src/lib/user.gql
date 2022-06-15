@@ -11,8 +11,19 @@ query CurrentUser {
   }
 }
 
+query FeaturesSeen {
+  currentUser {
+    id
+    features
+  }
+}
+
 mutation UpdateDefaultRunDuration($duration: Int!) {
   updateDefaultRunDuration(duration: $duration)
+}
+
+mutation MarkFeatureSeen($feature: String!) {
+  markFeatureSeen(feature: $feature)
 }
 
 mutation CompleteOnboarding(
