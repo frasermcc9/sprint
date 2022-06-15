@@ -37,7 +37,7 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
     super();
   }
 
-  async validate(request: Request): Promise<any> {
+  async validate(request: Request): Promise<FitbitUser> {
     const bearer = request?.headers?.authorization?.split(" ")[1];
 
     if (!bearer) {
