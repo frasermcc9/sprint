@@ -21,6 +21,13 @@ export enum AccountStage {
   InitialRun = 'INITIAL_RUN'
 }
 
+export type AnalyticsEvent = {
+  __typename?: 'AnalyticsEvent';
+  event: Scalars['String'];
+  payload?: Maybe<Scalars['String']>;
+  user: Scalars['ID'];
+};
+
 export type Auth = {
   __typename?: 'Auth';
   access_token?: Maybe<Scalars['String']>;
@@ -40,6 +47,7 @@ export enum ExperienceLevel {
 export type Mutation = {
   __typename?: 'Mutation';
   completeOnboarding?: Maybe<User>;
+  createEvent?: Maybe<AnalyticsEvent>;
   login?: Maybe<Auth>;
   markFeatureSeen: Array<Maybe<Scalars['String']>>;
   refresh?: Maybe<Auth>;
@@ -53,6 +61,12 @@ export type MutationCompleteOnboardingArgs = {
   experience: ExperienceLevel;
   firstName: Scalars['String'];
   lastName: Scalars['String'];
+};
+
+
+export type MutationCreateEventArgs = {
+  event: Scalars['String'];
+  payload?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -131,6 +145,14 @@ export type TestAuthQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type TestAuthQuery = { __typename?: 'Query', testAuth?: string | null };
+
+export type AnalyticsObservationMutationVariables = Exact<{
+  event: Scalars['String'];
+  payload?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type AnalyticsObservationMutation = { __typename?: 'Mutation', createEvent?: { __typename?: 'AnalyticsEvent', user: string, event: string, payload?: string | null } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -303,6 +325,42 @@ export function useTestAuthLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<T
 export type TestAuthQueryHookResult = ReturnType<typeof useTestAuthQuery>;
 export type TestAuthLazyQueryHookResult = ReturnType<typeof useTestAuthLazyQuery>;
 export type TestAuthQueryResult = Apollo.QueryResult<TestAuthQuery, TestAuthQueryVariables>;
+export const AnalyticsObservationDocument = gql`
+    mutation AnalyticsObservation($event: String!, $payload: String) {
+  createEvent(event: $event, payload: $payload) {
+    user
+    event
+    payload
+  }
+}
+    `;
+export type AnalyticsObservationMutationFn = Apollo.MutationFunction<AnalyticsObservationMutation, AnalyticsObservationMutationVariables>;
+
+/**
+ * __useAnalyticsObservationMutation__
+ *
+ * To run a mutation, you first call `useAnalyticsObservationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAnalyticsObservationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [analyticsObservationMutation, { data, loading, error }] = useAnalyticsObservationMutation({
+ *   variables: {
+ *      event: // value for 'event'
+ *      payload: // value for 'payload'
+ *   },
+ * });
+ */
+export function useAnalyticsObservationMutation(baseOptions?: Apollo.MutationHookOptions<AnalyticsObservationMutation, AnalyticsObservationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AnalyticsObservationMutation, AnalyticsObservationMutationVariables>(AnalyticsObservationDocument, options);
+      }
+export type AnalyticsObservationMutationHookResult = ReturnType<typeof useAnalyticsObservationMutation>;
+export type AnalyticsObservationMutationResult = Apollo.MutationResult<AnalyticsObservationMutation>;
+export type AnalyticsObservationMutationOptions = Apollo.BaseMutationOptions<AnalyticsObservationMutation, AnalyticsObservationMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
