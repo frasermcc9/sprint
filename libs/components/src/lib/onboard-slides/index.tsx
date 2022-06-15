@@ -4,11 +4,15 @@ import {
 } from "@heroicons/react/solid";
 import { calculateAge, toYYYYMMDD } from "@sprint/common";
 import {
+  AccountStage,
+  CurrentUserDocument,
+  CurrentUserQuery,
   ExperienceLevel,
   useCompleteOnboardingMutation,
   useCurrentUserQuery,
 } from "@sprint/gql";
 import classNames from "classnames";
+import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ISwiper, { Pagination } from "swiper";
 import "swiper/css";
@@ -36,7 +40,11 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
     setExperience,
     dob,
     setDob,
+    userId,
   } = useController();
+
+  const { push } = useRouter();
+
   const [swiper, setSwiper] = useState<ISwiper | null>(null);
 
   const slideNext = useCallback(() => swiper?.slideNext(), [swiper]);
@@ -216,17 +224,46 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
               </div>
               <div className="flex flex-col gap-y-4">
                 <SlideButton
-                  text="Yes! Lets go!"
-                  onClick={async () =>
+                  text="Yes! Let's go!"
+                  onClick={async () => {
+                    const formattedDob = toYYYYMMDD(dob);
                     await completeOnboarding({
                       variables: {
                         experience,
                         firstName,
                         lastName,
-                        dob: toYYYYMMDD(dob),
+                        dob: formattedDob,
                       },
-                    })
-                  }
+                      optimisticResponse: {
+                        completeOnboarding: {
+                          dob: formattedDob,
+                          firstName,
+                          lastName,
+                          id: userId ?? "",
+                          stage: AccountStage.ExperienceLevelSelected,
+                        },
+                      },
+                      update: (cache, { data }) => {
+                        const cached = cache.readQuery<CurrentUserQuery>({
+                          query: CurrentUserDocument,
+                        });
+
+                        if (cached?.currentUser && data) {
+                          cache.writeQuery<CurrentUserQuery>({
+                            query: CurrentUserDocument,
+                            data: {
+                              ...cached,
+                              currentUser: {
+                                ...cached.currentUser,
+                                ...data.completeOnboarding,
+                              },
+                            },
+                          });
+                        }
+                      },
+                    });
+                    push("/home");
+                  }}
                   className="h-12 w-full justify-center"
                 />
                 <SlideButton
@@ -286,6 +323,7 @@ export const useOnboardingSlidesController = () => {
     setExperience,
     setDob,
     completeOnboarding,
+    userId: data?.currentUser?.id,
   };
 };
 
@@ -301,6 +339,7 @@ export const useMockOnboardingSlidesController: typeof useOnboardingSlidesContro
       setLastName: () => null,
       setDob: () => null,
       completeOnboarding: (): any => null,
+      userId: "1",
     };
   };
 

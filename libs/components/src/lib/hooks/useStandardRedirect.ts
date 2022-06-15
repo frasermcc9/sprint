@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 const AUTH_REDIRECT = "/auth";
 const EXPERIENCE_REDIRECT = "/onboard";
-const INITIAL_RUN_REDIRECT = "/initial";
+const INITIAL_RUN_REDIRECT = "/home";
 
 export const useStandardRedirect = () => {
   const router = useRouter();

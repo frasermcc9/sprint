@@ -7,7 +7,12 @@ query CurrentUser {
     stage
     maxHr
     dob
+    defaultRunDuration
   }
+}
+
+mutation UpdateDefaultRunDuration($duration: Int!) {
+  updateDefaultRunDuration(duration: $duration)
 }
 
 mutation CompleteOnboarding(
@@ -23,5 +28,10 @@ mutation CompleteOnboarding(
     dob: $dob
   ) {
     id
+    firstName
+    lastName
+    experience
+    stage
+    dob
   }
 }

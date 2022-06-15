@@ -42,6 +42,7 @@ export type Mutation = {
   completeOnboarding?: Maybe<User>;
   login?: Maybe<Auth>;
   refresh?: Maybe<Auth>;
+  updateDefaultRunDuration: Scalars['Int'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
 };
 
@@ -61,6 +62,11 @@ export type MutationLoginArgs = {
 
 export type MutationRefreshArgs = {
   token: Scalars['String'];
+};
+
+
+export type MutationUpdateDefaultRunDurationArgs = {
+  duration: Scalars['Int'];
 };
 
 export type Query = {
@@ -84,6 +90,7 @@ export type Run = {
 
 export type User = {
   __typename?: 'User';
+  defaultRunDuration: Scalars['Int'];
   dob: Scalars['String'];
   experience?: Maybe<ExperienceLevel>;
   firstName: Scalars['String'];
@@ -121,7 +128,14 @@ export type TestAuthQuery = { __typename?: 'Query', testAuth?: string | null };
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number } | null };
+
+export type UpdateDefaultRunDurationMutationVariables = Exact<{
+  duration: Scalars['Int'];
+}>;
+
+
+export type UpdateDefaultRunDurationMutation = { __typename?: 'Mutation', updateDefaultRunDuration: number };
 
 export type CompleteOnboardingMutationVariables = Exact<{
   firstName: Scalars['String'];
@@ -131,7 +145,7 @@ export type CompleteOnboardingMutationVariables = Exact<{
 }>;
 
 
-export type CompleteOnboardingMutation = { __typename?: 'Mutation', completeOnboarding?: { __typename?: 'User', id: string } | null };
+export type CompleteOnboardingMutation = { __typename?: 'Mutation', completeOnboarding?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, dob: string } | null };
 
 
 export const LoginDocument = gql`
@@ -280,6 +294,7 @@ export const CurrentUserDocument = gql`
     stage
     maxHr
     dob
+    defaultRunDuration
   }
 }
     `;
@@ -310,6 +325,37 @@ export function useCurrentUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
 export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
+export const UpdateDefaultRunDurationDocument = gql`
+    mutation UpdateDefaultRunDuration($duration: Int!) {
+  updateDefaultRunDuration(duration: $duration)
+}
+    `;
+export type UpdateDefaultRunDurationMutationFn = Apollo.MutationFunction<UpdateDefaultRunDurationMutation, UpdateDefaultRunDurationMutationVariables>;
+
+/**
+ * __useUpdateDefaultRunDurationMutation__
+ *
+ * To run a mutation, you first call `useUpdateDefaultRunDurationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateDefaultRunDurationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateDefaultRunDurationMutation, { data, loading, error }] = useUpdateDefaultRunDurationMutation({
+ *   variables: {
+ *      duration: // value for 'duration'
+ *   },
+ * });
+ */
+export function useUpdateDefaultRunDurationMutation(baseOptions?: Apollo.MutationHookOptions<UpdateDefaultRunDurationMutation, UpdateDefaultRunDurationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateDefaultRunDurationMutation, UpdateDefaultRunDurationMutationVariables>(UpdateDefaultRunDurationDocument, options);
+      }
+export type UpdateDefaultRunDurationMutationHookResult = ReturnType<typeof useUpdateDefaultRunDurationMutation>;
+export type UpdateDefaultRunDurationMutationResult = Apollo.MutationResult<UpdateDefaultRunDurationMutation>;
+export type UpdateDefaultRunDurationMutationOptions = Apollo.BaseMutationOptions<UpdateDefaultRunDurationMutation, UpdateDefaultRunDurationMutationVariables>;
 export const CompleteOnboardingDocument = gql`
     mutation CompleteOnboarding($firstName: String!, $lastName: String!, $experience: ExperienceLevel!, $dob: String!) {
   completeOnboarding(
@@ -319,6 +365,11 @@ export const CompleteOnboardingDocument = gql`
     dob: $dob
   ) {
     id
+    firstName
+    lastName
+    experience
+    stage
+    dob
   }
 }
     `;
