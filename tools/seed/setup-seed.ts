@@ -1,6 +1,6 @@
 import * as prompts from "prompts";
 import { green, red } from "colors";
-import { mkdir, rmdir } from "fs/promises";
+import { mkdir, rm } from "fs/promises";
 import { execSync } from "child_process";
 
 const PROMPT_MESSAGE =
@@ -18,7 +18,7 @@ const PROMPT_MESSAGE =
     return;
   }
 
-  await rmdir(__dirname + "/dump");
+  await rm(__dirname + "/dump", { force: true, recursive: true });
   await mkdir("./dump");
 
   execSync(`mongodump -d sprint -o ${__dirname}/dump`);

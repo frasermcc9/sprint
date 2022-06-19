@@ -21,4 +21,8 @@ module.exports = {
 
     return config;
   },
+
+  typescript: {
+    reactDocgen: false,
+  },
 };
