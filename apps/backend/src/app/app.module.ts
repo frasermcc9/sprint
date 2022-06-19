@@ -17,7 +17,7 @@ import { ScienceModule } from "./controllers/science/science.module";
 
 @Module({
   imports: [
-    MongooseModule.forRoot("mongodb://localhost/sprint"),
+    MongooseModule.forRoot(process.env.DATABASE_URL),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       typePaths: ["./**/*.graphql"],
       driver: ApolloDriver,
