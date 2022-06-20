@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Feature } from "@sprint/common";
 import { Document, Model } from "mongoose";
 import { AccountStage, ExperienceLevel } from "../../types/graphql";
 import { Run } from "./run.schema";
@@ -25,6 +26,12 @@ export class User {
 
   @Prop({ required: true, type: String })
   dob: string;
+
+  @Prop({ required: true, type: Number, default: 13 })
+  defaultRunDuration?: number;
+
+  @Prop({ required: true, type: Array, default: [] })
+  featuresSeen?: Array<Feature>;
 }
 
 interface Methods {

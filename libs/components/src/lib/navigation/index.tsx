@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { useRouter } from "next/router";
 import { MockController } from "@sprint/common";
+import Link from "next/link";
 
 export interface Tab {
   displayInactive: React.ReactNode;
@@ -25,10 +26,11 @@ export const Navigation: React.FC<NavigationProps> = ({
   const { navTo } = useController();
 
   return (
-    <div className="fixed bottom-0 h-16 w-full border-t-2 border-slate-300 shadow-lg">
+    <div className="fixed bottom-0 h-16 w-full border-t-2 border-slate-300 bg-gray-50 shadow-lg">
       <div className="mt-1 flex items-center justify-around">
         {tabs.map((tab, index) => (
           <div key={index} className="flex w-1/4 items-center justify-center">
+            {/* <Link prefetch href={tab.link}></Link> */}
             <button
               onClick={() => {
                 changeTab(index);

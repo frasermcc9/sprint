@@ -1,0 +1,9 @@
+type AnalyticsEvent {
+  user: ID!
+  event: String!
+  payload: String
+}
+
+type Mutation {
+  createEvent(event: String!, payload: String): AnalyticsEvent
+}

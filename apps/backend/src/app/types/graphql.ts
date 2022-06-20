@@ -37,8 +37,11 @@ export interface IQuery {
 export interface IMutation {
     login(code: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     refresh(token: string): Nullable<Auth> | Promise<Nullable<Auth>>;
+    createEvent(event: string, payload?: Nullable<string>): Nullable<AnalyticsEvent> | Promise<Nullable<AnalyticsEvent>>;
     updateExperienceLevel(): Nullable<ExperienceLevel> | Promise<Nullable<ExperienceLevel>>;
     completeOnboarding(experience: ExperienceLevel, firstName: string, lastName: string, dob: string): Nullable<User> | Promise<Nullable<User>>;
+    updateDefaultRunDuration(duration: number): number | Promise<number>;
+    markFeatureSeen(feature: string): Nullable<string>[] | Promise<Nullable<string>[]>;
 }
 
 export interface Run {
@@ -52,6 +55,12 @@ export interface Run {
     intensityFeedback?: Nullable<number>;
 }
 
+export interface AnalyticsEvent {
+    user: string;
+    event: string;
+    payload?: Nullable<string>;
+}
+
 export interface User {
     id: string;
     firstName: string;
@@ -61,6 +70,8 @@ export interface User {
     runs?: Nullable<Nullable<Run>[]>;
     maxHr: number;
     dob: string;
+    defaultRunDuration: number;
+    features: Nullable<string>[];
 }
 
 type Nullable<T> = T | null;

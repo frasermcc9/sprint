@@ -6,8 +6,14 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-import { LocalStorageKeys } from "@sprint/common";
-import { Navigation, Tab, useNavigationController } from "@sprint/components";
+import { HomeFilledIcon, HomeOutlineIcon } from "@sprint/assets";
+import { LocalStorageKeys, readableTime } from "@sprint/common";
+import {
+  Navigation,
+  Tab,
+  useExternalLog,
+  useNavigationController,
+} from "@sprint/components";
 import {
   LoginMutation,
   RefreshDocument,
@@ -16,18 +22,17 @@ import {
 } from "@sprint/gql";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import React, { useState } from "react";
-import { HomeFilledIcon, HomeOutlineIcon } from "@sprint/assets";
-import "./styles.css";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useEffect, useMemo, useState } from "react";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./styles.css";
 
 const tabs: Tab[] = [
   {
     label: "Home",
     displayActive: <HomeFilledIcon className="h-12 w-12" />,
     displayInactive: <HomeOutlineIcon className="h-12 w-12" />,
-    link: "/",
+    link: "/home",
   },
   {
     label: "Goals",
@@ -61,7 +66,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
         locations,
       );
     });
-  if (networkError) console.log(`[Network error]: ${networkError}`);
+  if (networkError) console.error(`[Network error]: ${networkError}`);
 });
 
 const authLink = setContext(async (_, { headers }) => {
@@ -79,8 +84,14 @@ const authLink = setContext(async (_, { headers }) => {
       headers,
     };
   }
+  useExternalLog(
+    "ApolloAuthentication",
+    "FitBit token expiry in " + readableTime(+expiryTime - Date.now() / 1000),
+  );
 
-  if (expiryTime && Date.now() > +expiryTime) {
+  if (expiryTime && Date.now() / 1000 > +expiryTime) {
+    useExternalLog("ApolloAuthentication", "Refreshing token");
+
     const {
       data: { refresh },
     } = await unauthenticatedClient.mutate<
@@ -126,8 +137,23 @@ const unauthenticatedClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const App = ({ Component, pageProps }: AppProps) => {
+const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
   const [activeTab, setActiveTab] = useState(0);
+
+  const showNavigation = useMemo(
+    () =>
+      !["/auth", "/", "/get_token", "/onboard", "/run/prepare"].includes(
+        pathname,
+      ),
+    [pathname],
+  );
+
+  useEffect(() => {
+    console.log(
+      "%cSPRINT",
+      "color: rgb(79 70 229); font-size: 4em; -webkit-text-stroke-width: 1.5px; -webkit-text-stroke-color: black;",
+    );
+  }, []);
 
   return (
     <ApolloProvider client={client}>
@@ -135,15 +161,17 @@ const App = ({ Component, pageProps }: AppProps) => {
       <Head>
         <title>Welcome to frontend!</title>
       </Head>
-      <main className="app min-h-screen">
+      <main className="app flex h-full flex-col">
         <Component {...pageProps} />
       </main>
-      {/* <Navigation
-        useController={useNavigationController}
-        tabs={tabs}
-        activeTab={activeTab}
-        changeTab={setActiveTab}
-      /> */}
+      {showNavigation && (
+        <Navigation
+          useController={useNavigationController}
+          tabs={tabs}
+          activeTab={activeTab}
+          changeTab={setActiveTab}
+        />
+      )}
     </ApolloProvider>
   );
 };

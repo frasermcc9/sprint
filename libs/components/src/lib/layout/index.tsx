@@ -1,35 +1,29 @@
 import React from "react";
-import cx from "classnames";
+import { FCC } from "@sprint/common";
 import classNames from "classnames";
+import { motion, Variants } from "framer-motion";
 
-// const Header: React.FC = () => {
-//   const { push } = useRouter();
-
-//   return (
-//     <div className="z-10 bg-neutral-800 p-4 shadow-lg">
-//       <div className="mx-6 flex items-center justify-between sm:mx-10">
-//         <button
-//           className="h-auto w-auto bg-transparent sm:ml-0 "
-//           onClick={() => push("/exchange")}
-//         >
-//           <AppLogo />
-//         </button>
-//         <div className="ml-auto">
-//           <UserDropdown />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-interface PageProps {
-  children?: React.ReactNode;
-  className?: string;
+interface MotionParameters extends Variants {
+  hidden: { opacity: number; x: number; y: number };
+  enter: { opacity: number; x: number; y: number };
+  exit: { opacity: number; x: number; y: number };
 }
 
-const Page: React.FC<PageProps> = ({ children, className }) => {
+interface PageProps {
+  className?: string;
+  animation?: MotionParameters;
+}
+
+const Page: FCC<PageProps> = ({ children, className, animation = {} }) => {
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gray-50">
-      {/* <Header /> */}
+    <motion.main
+      variants={animation}
+      initial="hidden"
+      animate="enter"
+      exit="exit"
+      transition={{ type: "easeOut", duration: 0.2 }}
+      className="flex h-full w-full flex-col bg-gray-50"
+    >
       <div
         className={classNames(
           "flex w-full max-w-6xl flex-grow flex-col self-center",
@@ -38,12 +32,26 @@ const Page: React.FC<PageProps> = ({ children, className }) => {
       >
         {children}
       </div>
+    </motion.main>
+  );
+};
+
+const Margin: FCC = ({ children }) => {
+  return <div className="mx-4 flex flex-grow flex-col">{children}</div>;
+};
+
+const Header: FCC = ({ children }) => {
+  return (
+    <div className="mb-4 flex flex-col items-center justify-center">
+      {children}
     </div>
   );
 };
 
 const Layout = {
   Page,
+  Margin,
+  Header,
 } as const;
 
 export { Layout };

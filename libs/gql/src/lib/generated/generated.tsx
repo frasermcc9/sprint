@@ -21,6 +21,13 @@ export enum AccountStage {
   InitialRun = 'INITIAL_RUN'
 }
 
+export type AnalyticsEvent = {
+  __typename?: 'AnalyticsEvent';
+  event: Scalars['String'];
+  payload?: Maybe<Scalars['String']>;
+  user: Scalars['ID'];
+};
+
 export type Auth = {
   __typename?: 'Auth';
   access_token?: Maybe<Scalars['String']>;
@@ -40,8 +47,11 @@ export enum ExperienceLevel {
 export type Mutation = {
   __typename?: 'Mutation';
   completeOnboarding?: Maybe<User>;
+  createEvent?: Maybe<AnalyticsEvent>;
   login?: Maybe<Auth>;
+  markFeatureSeen: Array<Maybe<Scalars['String']>>;
   refresh?: Maybe<Auth>;
+  updateDefaultRunDuration: Scalars['Int'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
 };
 
@@ -54,13 +64,29 @@ export type MutationCompleteOnboardingArgs = {
 };
 
 
+export type MutationCreateEventArgs = {
+  event: Scalars['String'];
+  payload?: InputMaybe<Scalars['String']>;
+};
+
+
 export type MutationLoginArgs = {
   code: Scalars['String'];
 };
 
 
+export type MutationMarkFeatureSeenArgs = {
+  feature: Scalars['String'];
+};
+
+
 export type MutationRefreshArgs = {
   token: Scalars['String'];
+};
+
+
+export type MutationUpdateDefaultRunDurationArgs = {
+  duration: Scalars['Int'];
 };
 
 export type Query = {
@@ -84,8 +110,10 @@ export type Run = {
 
 export type User = {
   __typename?: 'User';
+  defaultRunDuration: Scalars['Int'];
   dob: Scalars['String'];
   experience?: Maybe<ExperienceLevel>;
+  features: Array<Maybe<Scalars['String']>>;
   firstName: Scalars['String'];
   id: Scalars['String'];
   lastName: Scalars['String'];
@@ -118,10 +146,37 @@ export type TestAuthQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type TestAuthQuery = { __typename?: 'Query', testAuth?: string | null };
 
+export type AnalyticsObservationMutationVariables = Exact<{
+  event: Scalars['String'];
+  payload?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type AnalyticsObservationMutation = { __typename?: 'Mutation', createEvent?: { __typename?: 'AnalyticsEvent', user: string, event: string, payload?: string | null } | null };
+
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number } | null };
+
+export type FeaturesSeenQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FeaturesSeenQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, features: Array<string | null> } | null };
+
+export type UpdateDefaultRunDurationMutationVariables = Exact<{
+  duration: Scalars['Int'];
+}>;
+
+
+export type UpdateDefaultRunDurationMutation = { __typename?: 'Mutation', updateDefaultRunDuration: number };
+
+export type MarkFeatureSeenMutationVariables = Exact<{
+  feature: Scalars['String'];
+}>;
+
+
+export type MarkFeatureSeenMutation = { __typename?: 'Mutation', markFeatureSeen: Array<string | null> };
 
 export type CompleteOnboardingMutationVariables = Exact<{
   firstName: Scalars['String'];
@@ -131,7 +186,7 @@ export type CompleteOnboardingMutationVariables = Exact<{
 }>;
 
 
-export type CompleteOnboardingMutation = { __typename?: 'Mutation', completeOnboarding?: { __typename?: 'User', id: string } | null };
+export type CompleteOnboardingMutation = { __typename?: 'Mutation', completeOnboarding?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, dob: string } | null };
 
 
 export const LoginDocument = gql`
@@ -270,6 +325,42 @@ export function useTestAuthLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<T
 export type TestAuthQueryHookResult = ReturnType<typeof useTestAuthQuery>;
 export type TestAuthLazyQueryHookResult = ReturnType<typeof useTestAuthLazyQuery>;
 export type TestAuthQueryResult = Apollo.QueryResult<TestAuthQuery, TestAuthQueryVariables>;
+export const AnalyticsObservationDocument = gql`
+    mutation AnalyticsObservation($event: String!, $payload: String) {
+  createEvent(event: $event, payload: $payload) {
+    user
+    event
+    payload
+  }
+}
+    `;
+export type AnalyticsObservationMutationFn = Apollo.MutationFunction<AnalyticsObservationMutation, AnalyticsObservationMutationVariables>;
+
+/**
+ * __useAnalyticsObservationMutation__
+ *
+ * To run a mutation, you first call `useAnalyticsObservationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAnalyticsObservationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [analyticsObservationMutation, { data, loading, error }] = useAnalyticsObservationMutation({
+ *   variables: {
+ *      event: // value for 'event'
+ *      payload: // value for 'payload'
+ *   },
+ * });
+ */
+export function useAnalyticsObservationMutation(baseOptions?: Apollo.MutationHookOptions<AnalyticsObservationMutation, AnalyticsObservationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AnalyticsObservationMutation, AnalyticsObservationMutationVariables>(AnalyticsObservationDocument, options);
+      }
+export type AnalyticsObservationMutationHookResult = ReturnType<typeof useAnalyticsObservationMutation>;
+export type AnalyticsObservationMutationResult = Apollo.MutationResult<AnalyticsObservationMutation>;
+export type AnalyticsObservationMutationOptions = Apollo.BaseMutationOptions<AnalyticsObservationMutation, AnalyticsObservationMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {
@@ -280,6 +371,7 @@ export const CurrentUserDocument = gql`
     stage
     maxHr
     dob
+    defaultRunDuration
   }
 }
     `;
@@ -310,6 +402,103 @@ export function useCurrentUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
 export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
+export const FeaturesSeenDocument = gql`
+    query FeaturesSeen {
+  currentUser {
+    id
+    features
+  }
+}
+    `;
+
+/**
+ * __useFeaturesSeenQuery__
+ *
+ * To run a query within a React component, call `useFeaturesSeenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFeaturesSeenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFeaturesSeenQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useFeaturesSeenQuery(baseOptions?: Apollo.QueryHookOptions<FeaturesSeenQuery, FeaturesSeenQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FeaturesSeenQuery, FeaturesSeenQueryVariables>(FeaturesSeenDocument, options);
+      }
+export function useFeaturesSeenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FeaturesSeenQuery, FeaturesSeenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FeaturesSeenQuery, FeaturesSeenQueryVariables>(FeaturesSeenDocument, options);
+        }
+export type FeaturesSeenQueryHookResult = ReturnType<typeof useFeaturesSeenQuery>;
+export type FeaturesSeenLazyQueryHookResult = ReturnType<typeof useFeaturesSeenLazyQuery>;
+export type FeaturesSeenQueryResult = Apollo.QueryResult<FeaturesSeenQuery, FeaturesSeenQueryVariables>;
+export const UpdateDefaultRunDurationDocument = gql`
+    mutation UpdateDefaultRunDuration($duration: Int!) {
+  updateDefaultRunDuration(duration: $duration)
+}
+    `;
+export type UpdateDefaultRunDurationMutationFn = Apollo.MutationFunction<UpdateDefaultRunDurationMutation, UpdateDefaultRunDurationMutationVariables>;
+
+/**
+ * __useUpdateDefaultRunDurationMutation__
+ *
+ * To run a mutation, you first call `useUpdateDefaultRunDurationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateDefaultRunDurationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateDefaultRunDurationMutation, { data, loading, error }] = useUpdateDefaultRunDurationMutation({
+ *   variables: {
+ *      duration: // value for 'duration'
+ *   },
+ * });
+ */
+export function useUpdateDefaultRunDurationMutation(baseOptions?: Apollo.MutationHookOptions<UpdateDefaultRunDurationMutation, UpdateDefaultRunDurationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateDefaultRunDurationMutation, UpdateDefaultRunDurationMutationVariables>(UpdateDefaultRunDurationDocument, options);
+      }
+export type UpdateDefaultRunDurationMutationHookResult = ReturnType<typeof useUpdateDefaultRunDurationMutation>;
+export type UpdateDefaultRunDurationMutationResult = Apollo.MutationResult<UpdateDefaultRunDurationMutation>;
+export type UpdateDefaultRunDurationMutationOptions = Apollo.BaseMutationOptions<UpdateDefaultRunDurationMutation, UpdateDefaultRunDurationMutationVariables>;
+export const MarkFeatureSeenDocument = gql`
+    mutation MarkFeatureSeen($feature: String!) {
+  markFeatureSeen(feature: $feature)
+}
+    `;
+export type MarkFeatureSeenMutationFn = Apollo.MutationFunction<MarkFeatureSeenMutation, MarkFeatureSeenMutationVariables>;
+
+/**
+ * __useMarkFeatureSeenMutation__
+ *
+ * To run a mutation, you first call `useMarkFeatureSeenMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMarkFeatureSeenMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [markFeatureSeenMutation, { data, loading, error }] = useMarkFeatureSeenMutation({
+ *   variables: {
+ *      feature: // value for 'feature'
+ *   },
+ * });
+ */
+export function useMarkFeatureSeenMutation(baseOptions?: Apollo.MutationHookOptions<MarkFeatureSeenMutation, MarkFeatureSeenMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<MarkFeatureSeenMutation, MarkFeatureSeenMutationVariables>(MarkFeatureSeenDocument, options);
+      }
+export type MarkFeatureSeenMutationHookResult = ReturnType<typeof useMarkFeatureSeenMutation>;
+export type MarkFeatureSeenMutationResult = Apollo.MutationResult<MarkFeatureSeenMutation>;
+export type MarkFeatureSeenMutationOptions = Apollo.BaseMutationOptions<MarkFeatureSeenMutation, MarkFeatureSeenMutationVariables>;
 export const CompleteOnboardingDocument = gql`
     mutation CompleteOnboarding($firstName: String!, $lastName: String!, $experience: ExperienceLevel!, $dob: String!) {
   completeOnboarding(
@@ -319,6 +508,11 @@ export const CompleteOnboardingDocument = gql`
     dob: $dob
   ) {
     id
+    firstName
+    lastName
+    experience
+    stage
+    dob
   }
 }
     `;

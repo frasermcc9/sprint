@@ -1,0 +1,7 @@
+mutation AnalyticsObservation($event: String!, $payload: String) {
+  createEvent(event: $event, payload: $payload) {
+    user
+    event
+    payload
+  }
+}
