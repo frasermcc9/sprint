@@ -14,39 +14,30 @@ export const formatDuration = (
   },
   duration: number,
 ) => {
-  const timeAtHigh =
-    currentParams.highIntensity *
-    currentParams.repetitions *
-    currentParams.sets;
-  const timeAtLow =
-    currentParams.lowIntensity * currentParams.repetitions * currentParams.sets;
-  const timeAtRest = currentParams.restPeriod * (currentParams.sets - 1);
-
-  const currentDuration = timeAtHigh + timeAtLow + timeAtRest;
-
-  if (duration == currentDuration) {
-    return currentParams;
-  }
-
   const newParams = currentParams;
 
-  if (duration == 10) {
-    newParams.highIntensity = Math.max(
-      (10 / 13) * currentParams.highIntensity,
-      15,
-    );
-
-    // Calculate new params based on time at high intensity is 30% of full time.
-
-    // BUG: this is not correct:
-    // const timeAtMax =
-    //   newParams.highIntensity * currentParams.repetitions * currentParams.sets;
-    // const remainingTime = (timeAtMax / 3) * 7;
-    // newParams.lowIntensity = remainingTime / 4;
-    // newParams.restPeriod = Math.min(
-    //   remainingTime - newParams.lowIntensity,
-    //   120,
-    // );
+  // Note all durations are approximate, more time will be needed for warmup and cooldown.
+  switch (duration) {
+    case 8:
+      newParams.sets = currentParams.sets - 1;
+      break;
+    case 13:
+      return currentParams;
+    case 18:
+      newParams.sets = currentParams.sets + 1;
+      break;
+    case 23:
+      // roughly 23 minutes
+      newParams.highIntensity = currentParams.highIntensity + 2;
+      newParams.lowIntensity = currentParams.lowIntensity + 2;
+      newParams.sets = currentParams.sets + 1;
+      newParams.repetitions = currentParams.repetitions + 1;
+      break;
+    case 28:
+      newParams.sets = currentParams.sets + 2;
+      newParams.repetitions = currentParams.repetitions + 1;
+      break;
   }
+
   return newParams;
 };
