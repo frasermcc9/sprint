@@ -17,6 +17,12 @@ const currentHiitParams = {
   restPeriod: 120, // break between sets, (research says >3/4min/2min)
 };
 
+/**
+ *
+ * @param currentParams will always be 13 minutes
+ * @param rpeFeedback will be the RPE feedback from the user (6-20)
+ * @returns newParams  will always be 13 minutes
+ */
 const calculateNewParams = (
   currentParams: {
     highIntensity: number;
@@ -47,13 +53,17 @@ const calculateNewParams = (
     );
   }
 
-  // calculate new low intensity and rest period based on new high intensity
+  // calculate new low intensity based on new high intensity
   const timeAtMax =
     newParams.highIntensity * currentParams.repetitions * currentParams.sets;
-  const rest = timeAtMax / 0.3 - timeAtMax;
-  newParams.lowIntensity = rest / 4;
-  newParams.restPeriod = Math.min(rest - newParams.lowIntensity, 120);
+  let remainingTime = 780 - timeAtMax;
 
+  //set value of restPeriod to 2 minutes
+  newParams.restPeriod = 120;
+  remainingTime -= 120 * (currentParams.sets - 1);
+
+  newParams.lowIntensity =
+    remainingTime / currentParams.repetitions / currentParams.sets;
   return newParams;
 };
 
