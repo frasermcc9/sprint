@@ -1,11 +1,12 @@
-import { toYYYYMMDD } from "@sprint/common";
+import { LocalStorageKeys, toYYYYMMDD } from "@sprint/common";
 import { Avatar, Layout, TextInput, useLoadingState } from "@sprint/components";
 import { useCurrentUserQuery, useUpdateProfileMutation } from "@sprint/gql";
 import { useRouter } from "next/router";
 import React, { useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
+import { useApolloClient } from "@apollo/react-hooks";
 
-export const Prepare: React.FC = () => {
+export const Settings: React.FC = () => {
   const { push } = useRouter();
   const { data, loading, error } = useCurrentUserQuery();
 
@@ -77,6 +78,15 @@ export const Prepare: React.FC = () => {
     push,
     data?.currentUser,
   ]);
+
+  const { cache } = useApolloClient();
+
+  const logout = useCallback(async () => {
+    localStorage.removeItem(LocalStorageKeys.AUTH_DETAILS);
+    localStorage.removeItem(LocalStorageKeys.AUTH_EXPIRY);
+    push("/");
+    await cache.reset();
+  }, [cache, push]);
 
   if (error) {
     toast.error(error.message);
@@ -164,9 +174,19 @@ export const Prepare: React.FC = () => {
             </div>
           </div>
         </section>
+        <hr className="mt-4 mb-2 border-t border-gray-300" />
+        <section className="font-palanquin flex h-full flex-grow flex-col">
+          <h1 className="mb-4 text-2xl font-semibold text-gray-800">General</h1>
+          <button
+            className="rounded-xl bg-indigo-600 py-2 text-xl font-bold text-white"
+            onClick={logout}
+          >
+            Log Out
+          </button>
+        </section>
       </Layout.Margin>
     </Layout.Page>
   );
 };
 
-export default Prepare;
+export default Settings;
