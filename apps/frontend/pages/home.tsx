@@ -1,8 +1,8 @@
 import {
   Layout,
-  StandardHeader,
+  HomeHeader,
   StartRun,
-  useStandardHeaderController,
+  useHomeHeaderController,
   useStandardRedirect,
   useStartRunController,
 } from "@sprint/components";
@@ -16,7 +16,7 @@ export default function Index() {
   return (
     <Layout.Page>
       <Layout.Header>
-        <StandardHeader useController={useStandardHeaderController} />
+        <HomeHeader useController={useHomeHeaderController} />
       </Layout.Header>
       <Layout.Margin>
         <StartRun useController={useStartRunController} />

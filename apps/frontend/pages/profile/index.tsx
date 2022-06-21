@@ -25,7 +25,7 @@ export default function Index() {
   return (
     <Layout.Page>
       <Layout.Header>
-        <div className="font-palanquin flex w-full items-center border-b-2 border-gray-300 py-2 text-gray-700">
+        <div className="font-palanquin mb-4 flex w-full items-center border-b-2 border-gray-300 py-2 text-gray-700">
           <div className="invisible mx-4 w-8" />
           <div className="w-full text-center text-xl font-bold">Profile</div>
           <CogIcon

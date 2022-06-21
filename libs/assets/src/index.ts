@@ -13,6 +13,9 @@ import TrophyOutlineIcon from "./icons/trophy.svg";
 import CrownFilledIcon from "./icons/crown-filled.svg";
 import CrownOutlineIcon from "./icons/crown.svg";
 
+import FireOff from "./icons/fire-off.svg";
+import FireOn from "./icons/fire-on.svg";
+
 export {
   FitbitFullWhite,
   FitbitSmallWhite,
@@ -24,4 +27,6 @@ export {
   TrophyOutlineIcon,
   CrownFilledIcon,
   CrownOutlineIcon,
+  FireOff,
+  FireOn,
 };
