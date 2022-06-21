@@ -10,7 +10,7 @@
     "start:db": "rimraf ./data/db && mkdirp ./data/db && mongod --dbpath ./data/db",
     "start:watchers": "chokidar \"libs/gql/**/*.gql\" -c \"npm run generate:gql\"",
     "generate:gql": "nx run gql:generate",
-    "seed": "npx ts-node ./tools/seed/seed.ts",
+    "seed": "mongorestore -d=sprint ./tools/seed/dump/sprint",
     "seed:update": "npx ts-node ./tools/seed/setup-seed.ts"
   },
   "private": true,
