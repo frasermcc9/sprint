@@ -42,6 +42,7 @@ export interface IMutation {
     completeOnboarding(experience: ExperienceLevel, firstName: string, lastName: string, dob: string): Nullable<User> | Promise<Nullable<User>>;
     updateDefaultRunDuration(duration: number): number | Promise<number>;
     markFeatureSeen(feature: string): Nullable<string>[] | Promise<Nullable<string>[]>;
+    updateProfile(firstName: string, lastName: string, dob: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export interface Run {
@@ -72,6 +73,8 @@ export interface User {
     dob: string;
     defaultRunDuration: number;
     features: Nullable<string>[];
+    avatarUrl: string;
+    createdAtUTS: number;
 }
 
 type Nullable<T> = T | null;

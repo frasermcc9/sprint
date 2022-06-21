@@ -87,12 +87,14 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
         });
       }
 
-      await this.userModel.createIfNotExists({
+      await this.userModel.createIfNotExistsAndMerge({
         id: castedUser.id,
         firstName: castedUser.firstName,
         lastName: castedUser.lastName,
         stage: AccountStage.INITIAL,
         dob: castedUser.dateOfBirth,
+        avatarUrl: castedUser.avatar,
+        createdAtUTS: Date.now(),
       });
 
       return castedUser;

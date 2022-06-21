@@ -147,7 +147,9 @@ const unauthenticatedClient = new ApolloClient({
 });
 
 const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
-  const [activeTab, setActiveTab] = useState(2);
+  const [activeTab, setActiveTab] = useState(
+    tabs.findIndex((t) => t.link === pathname),
+  );
 
   const showNavigation = useMemo(
     () =>

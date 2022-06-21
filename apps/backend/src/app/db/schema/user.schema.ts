@@ -32,6 +32,12 @@ export class User {
 
   @Prop({ required: true, type: Array, default: [] })
   featuresSeen?: Array<Feature>;
+
+  @Prop({ required: true, type: String, default: "" })
+  avatarUrl?: string;
+
+  @Prop({ required: true, type: Number, default: Date.now() })
+  createdAtUTS?: number;
 }
 
 interface Methods {
@@ -44,6 +50,10 @@ interface Methods {
 interface Statics {
   createOrUpdate(this: UserCollection, user: User): Promise<UserDocument>;
   createIfNotExists(this: UserCollection, user: User): Promise<UserDocument>;
+  createIfNotExistsAndMerge(
+    this: UserCollection,
+    user: User,
+  ): Promise<UserDocument>;
 }
 
 export type UserDocument = User & Document & Methods;
@@ -86,6 +96,22 @@ const statics: Statics = {
     const dbUser = await this.findOne({ id: user.id });
     if (dbUser) {
       return dbUser;
+    }
+    return await (await this.create(user)).save();
+  },
+  async createIfNotExistsAndMerge(
+    this: UserCollection,
+    user: User,
+  ): Promise<UserDocument> {
+    const dbUser = await this.findOne({ id: user.id });
+
+    if (dbUser) {
+      for (const key in user) {
+        if (!dbUser[key]) {
+          dbUser[key] = user[key];
+        }
+      }
+      return await dbUser.save();
     }
     return await (await this.create(user)).save();
   },
