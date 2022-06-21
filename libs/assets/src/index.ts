@@ -1,7 +1,27 @@
 import FitbitFullWhite from "./icons/fitbit-full-white.png";
 import FitbitSmallWhite from "./icons/fitbit-small-white.png";
 
-import { ReactComponent as HomeFilledIcon } from "./icons/home-filled.svg";
-import { ReactComponent as HomeOutlineIcon } from "./icons/home.svg";
+import HomeFilledIcon from "./icons/home-alt-filled.svg";
+import HomeOutlineIcon from "./icons/home-alt.svg";
 
-export { FitbitFullWhite, FitbitSmallWhite, HomeFilledIcon, HomeOutlineIcon };
+import ProfileFilledIcon from "./icons/profile-filled.svg";
+import ProfileOutlineIcon from "./icons/profile.svg";
+
+import TrophyFilledIcon from "./icons/trophy-filled.svg";
+import TrophyOutlineIcon from "./icons/trophy.svg";
+
+import CrownFilledIcon from "./icons/crown-filled.svg";
+import CrownOutlineIcon from "./icons/crown.svg";
+
+export {
+  FitbitFullWhite,
+  FitbitSmallWhite,
+  HomeFilledIcon,
+  HomeOutlineIcon,
+  ProfileFilledIcon,
+  ProfileOutlineIcon,
+  TrophyFilledIcon,
+  TrophyOutlineIcon,
+  CrownFilledIcon,
+  CrownOutlineIcon,
+};

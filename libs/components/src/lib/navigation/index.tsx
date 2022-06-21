@@ -1,11 +1,11 @@
 import React, { useCallback } from "react";
 import { useRouter } from "next/router";
 import { MockController } from "@sprint/common";
-import Link from "next/link";
+import Image from "next/image";
 
 export interface Tab {
-  displayInactive: React.ReactNode;
-  displayActive: React.ReactNode;
+  displayInactive: any;
+  displayActive: any;
   label: string;
   link: string;
 }
@@ -25,12 +25,13 @@ export const Navigation: React.FC<NavigationProps> = ({
 }) => {
   const { navTo } = useController();
 
+  const size = "40px";
+
   return (
-    <div className="fixed bottom-0 h-16 w-full border-t-2 border-slate-300 bg-gray-50 shadow-lg">
+    <div className="fixed bottom-0 w-full border-t-2 border-slate-300 bg-gray-50 shadow-lg">
       <div className="mt-1 flex items-center justify-around">
         {tabs.map((tab, index) => (
           <div key={index} className="flex w-1/4 items-center justify-center">
-            {/* <Link prefetch href={tab.link}></Link> */}
             <button
               onClick={() => {
                 changeTab(index);
@@ -38,7 +39,21 @@ export const Navigation: React.FC<NavigationProps> = ({
               }}
               className="h-auto w-auto bg-transparent sm:ml-0"
             >
-              {activeTab === index ? tab.displayActive : tab.displayInactive}
+              {activeTab === index ? (
+                <Image
+                  width={size}
+                  height={size}
+                  src={tab.displayActive}
+                  alt=""
+                />
+              ) : (
+                <Image
+                  width={size}
+                  height={size}
+                  src={tab.displayInactive}
+                  alt=""
+                />
+              )}
             </button>
           </div>
         ))}

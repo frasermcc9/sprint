@@ -5,3 +5,4 @@ export * from "./useEmoji";
 export * from "./useFeatureSeen";
 export * from "./useLog";
 export * from "./useScience";
+export * from "./useLoadingState";
