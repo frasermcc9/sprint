@@ -151,6 +151,10 @@ const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
     tabs.findIndex((t) => t.link === pathname),
   );
 
+  useEffect(() => {
+    setActiveTab(tabs.findIndex((t) => t.link === pathname));
+  }, [pathname]);
+
   const showNavigation = useMemo(
     () =>
       !["/auth", "/", "/get_token", "/onboard", "/run/prepare"].includes(
