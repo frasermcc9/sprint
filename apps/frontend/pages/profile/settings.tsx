@@ -75,7 +75,7 @@ export const Prepare: React.FC = () => {
     firstName,
     lastName,
     push,
-    data.currentUser,
+    data?.currentUser,
   ]);
 
   if (error) {
@@ -83,7 +83,7 @@ export const Prepare: React.FC = () => {
     return null;
   }
 
-  if (loading || !data.currentUser) {
+  if (loading || !data?.currentUser) {
     return <div>Loading...</div>;
   }
 
