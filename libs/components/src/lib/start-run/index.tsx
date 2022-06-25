@@ -43,13 +43,13 @@ export const StartRun: React.FC<StartRunProps> = ({ useController }) => {
             <div className="pointer-events-auto flex flex-col items-center">
               <ChevronUpIcon
                 className="h-10 w-10 cursor-pointer rounded-lg p-1 hover:bg-gray-50 hover:bg-opacity-20"
-                onClick={() => setRunDuration((e) => Math.min(e + 3, 28))}
+                onClick={() => setRunDuration((e) => Math.min(e + 5, 28))}
               />
               <span className="text-2xl font-bold">{runDuration}</span>
               <span className="text-md font-normal">Minutes</span>
               <ChevronDownIcon
                 className="h-10 w-10 cursor-pointer rounded-lg p-1 hover:bg-gray-50 hover:bg-opacity-20"
-                onClick={() => setRunDuration((e) => Math.max(e - 3, 10))}
+                onClick={() => setRunDuration((e) => Math.max(e - 5, 8))}
               />
             </div>
           </div>
