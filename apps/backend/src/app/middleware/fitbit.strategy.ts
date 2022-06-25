@@ -95,6 +95,8 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
         dob: castedUser.dateOfBirth,
         avatarUrl: castedUser.avatar,
         createdAtUTS: Date.now(),
+        utcOffset: (castedUser.offsetFromUTCMillis ?? 0) / 1000 / 60 / 60,
+        xp: 0,
       });
 
       return castedUser;

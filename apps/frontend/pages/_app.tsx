@@ -32,7 +32,7 @@ import {
 import { AppProps } from "next/app";
 import Head from "next/head";
 import React, { useEffect, useMemo, useState } from "react";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles.css";
 
@@ -68,14 +68,21 @@ const httpLink = createHttpLink({
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors)
+  if (graphQLErrors) {
+    toast.error(
+      "Error: An error occurred while communicating with the server. Please try again later.",
+    );
     graphQLErrors.forEach(({ message, locations, path }) => {
       console.error(
         `[GraphQL error]: Message: ${message}\nPath: ${path}\n`,
         locations,
       );
     });
-  if (networkError) console.error(`[Network error]: ${networkError}`);
+  }
+  if (networkError) {
+    toast.error("Error: A network error has occurred. Please try again later.");
+    console.error(`[Network error]: ${networkError}`);
+  }
 });
 
 const authLink = setContext(async (_, { headers }) => {
@@ -86,7 +93,9 @@ const authLink = setContext(async (_, { headers }) => {
     ? JSON.parse(authDetailsStr)
     : {};
 
-  const expiryTime = localStorage.getItem(LocalStorageKeys.AUTH_EXPIRY);
+  const expireUnixSeconds =
+    +localStorage.getItem(LocalStorageKeys.AUTH_EXPIRY) / 1000;
+  const nowUnixSeconds = Date.now() / 1000;
 
   if (!access_token) {
     return {
@@ -95,14 +104,16 @@ const authLink = setContext(async (_, { headers }) => {
   }
   useExternalLog(
     "ApolloAuthentication",
-    "FitBit token expiry in " + readableTime(+expiryTime - Date.now() / 1000),
+    "FitBit token expiry in " +
+      readableTime(+expireUnixSeconds - nowUnixSeconds),
   );
 
-  if (expiryTime && Date.now() / 1000 > +expiryTime) {
+  if (expireUnixSeconds && nowUnixSeconds > expireUnixSeconds) {
     useExternalLog("ApolloAuthentication", "Refreshing token");
 
     const {
       data: { refresh },
+      errors,
     } = await unauthenticatedClient.mutate<
       RefreshMutation,
       RefreshMutationVariables
@@ -113,7 +124,8 @@ const authLink = setContext(async (_, { headers }) => {
       },
     });
 
-    const expiryTime = Date.now() + refresh.expires_in - 1000;
+    // refresh expires_in is in seconds
+    const expiryTime = Date.now() + refresh.expires_in * 1000 - 1000;
     localStorage.setItem(
       LocalStorageKeys.AUTH_DETAILS,
       JSON.stringify(refresh),
@@ -150,6 +162,10 @@ const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
   const [activeTab, setActiveTab] = useState(
     tabs.findIndex((t) => t.link === pathname),
   );
+
+  useEffect(() => {
+    setActiveTab(tabs.findIndex((t) => t.link === pathname));
+  }, [pathname]);
 
   const showNavigation = useMemo(
     () =>

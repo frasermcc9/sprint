@@ -23,3 +23,15 @@ const formatMonthYYYY = new Intl.DateTimeFormat("en-US", {
 export const toMonthYYYY = (date: Date) => {
   return formatMonthYYYY.format(date);
 };
+
+export const modFloor = (num: number, mod: number) => ((num % mod) + mod) % mod;
+
+export const daysForLocale = (
+  localeName = "es-MX",
+  weekday: "long" | "short" | "narrow" = "long",
+) => {
+  const format = new Intl.DateTimeFormat(localeName, { weekday }).format;
+  return [...Array(7).keys()].map((day) =>
+    format(new Date(Date.UTC(2021, 5, day))),
+  );
+};

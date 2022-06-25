@@ -75,6 +75,8 @@ export interface User {
     features: Nullable<string>[];
     avatarUrl: string;
     createdAtUTS: number;
+    utcOffset: number;
+    xp: number;
 }
 
 type Nullable<T> = T | null;

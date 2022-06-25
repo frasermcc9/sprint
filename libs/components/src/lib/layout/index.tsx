@@ -42,9 +42,7 @@ const Margin: FCC = ({ children }) => {
 
 const Header: FCC = ({ children }) => {
   return (
-    <div className="mb-4 flex flex-col items-center justify-center">
-      {children}
-    </div>
+    <div className="flex flex-col items-center justify-center">{children}</div>
   );
 };
 
