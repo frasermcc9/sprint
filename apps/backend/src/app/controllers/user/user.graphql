@@ -31,6 +31,16 @@ type User {
   createdAtUTS: Float!
   utcOffset: Float!
   xp: Int!
+  friends(limit: Int = 10): [PublicUser]!
+  friendRequests: [PublicUser]!
+}
+
+type PublicUser {
+  id: String!
+  firstName: String!
+  lastName: String!
+  avatarUrl: String!
+  xp: Int!
 }
 
 enum ExperienceLevel {

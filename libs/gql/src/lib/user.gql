@@ -22,6 +22,25 @@ query FeaturesSeen {
   }
 }
 
+query GetFriends($limit: Int) {
+  currentUser {
+    friends(limit: $limit) {
+      id
+      firstName
+      lastName
+      avatarUrl
+      xp
+    }
+    friendRequests {
+      id
+      firstName
+      lastName
+      avatarUrl
+      xp
+    }
+  }
+}
+
 mutation UpdateDefaultRunDuration($duration: Int!) {
   updateDefaultRunDuration(duration: $duration)
 }

@@ -16,6 +16,8 @@ import CrownOutlineIcon from "./icons/crown.svg";
 import FireOff from "./icons/fire-off.svg";
 import FireOn from "./icons/fire-on.svg";
 
+export * from "./emblem";
+
 export {
   FitbitFullWhite,
   FitbitSmallWhite,

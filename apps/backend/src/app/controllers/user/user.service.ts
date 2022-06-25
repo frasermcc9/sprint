@@ -11,4 +11,18 @@ export class UserService {
   getUser(fitbitId: string) {
     return this.userModel.findOne({ id: fitbitId });
   }
+
+  async findFriends(forUser: string, amount: number) {
+    const user = await this.getUser(forUser);
+    const friendIds = user.friends.slice(0, amount);
+
+    return this.userModel.find({ id: { $in: friendIds } });
+  }
+
+  async getFriendRequests(forUser: string) {
+    const user = await this.getUser(forUser);
+    const friendIds = user.pendingFriends;
+
+    return this.userModel.find({ id: { $in: friendIds } });
+  }
 }

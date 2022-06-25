@@ -35,3 +35,5 @@ export const daysForLocale = (
     format(new Date(Date.UTC(2021, 5, day))),
   );
 };
+
+const solution = (N: number, A: number[]) => A.reduce((acc, cur) => cur > N ? [...Array(N)].fill(Math.max(...acc)) : Object.assign([], acc, { [cur - 1]: acc[cur - 1] + 1 }), [...Array(N)].fill(0));

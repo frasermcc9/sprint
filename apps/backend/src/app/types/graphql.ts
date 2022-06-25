@@ -77,6 +77,16 @@ export interface User {
     createdAtUTS: number;
     utcOffset: number;
     xp: number;
+    friends: Nullable<PublicUser>[];
+    friendRequests: Nullable<PublicUser>[];
+}
+
+export interface PublicUser {
+    id: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl: string;
+    xp: number;
 }
 
 type Nullable<T> = T | null;

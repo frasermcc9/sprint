@@ -44,6 +44,12 @@ export class User {
 
   @Prop({ required: true, type: Number, default: 0 })
   xp: number;
+
+  @Prop({ required: true, type: Array, default: [] })
+  friends?: Array<string>;
+
+  @Prop({ required: true, type: Array, default: [] })
+  pendingFriends?: Array<string>;
 }
 
 interface Methods {

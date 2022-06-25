@@ -97,6 +97,15 @@ export type MutationUpdateProfileArgs = {
   lastName: Scalars['String'];
 };
 
+export type PublicUser = {
+  __typename?: 'PublicUser';
+  avatarUrl: Scalars['String'];
+  firstName: Scalars['String'];
+  id: Scalars['String'];
+  lastName: Scalars['String'];
+  xp: Scalars['Int'];
+};
+
 export type Query = {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
@@ -125,6 +134,8 @@ export type User = {
   experience?: Maybe<ExperienceLevel>;
   features: Array<Maybe<Scalars['String']>>;
   firstName: Scalars['String'];
+  friendRequests: Array<Maybe<PublicUser>>;
+  friends: Array<Maybe<PublicUser>>;
   id: Scalars['String'];
   lastName: Scalars['String'];
   maxHr: Scalars['Int'];
@@ -132,6 +143,11 @@ export type User = {
   stage: AccountStage;
   utcOffset: Scalars['Float'];
   xp: Scalars['Int'];
+};
+
+
+export type UserFriendsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
 };
 
 export type LoginMutationVariables = Exact<{
@@ -175,6 +191,13 @@ export type FeaturesSeenQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type FeaturesSeenQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, features: Array<string | null> } | null };
+
+export type GetFriendsQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type GetFriendsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', friends: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } | null>, friendRequests: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } | null> } | null };
 
 export type UpdateDefaultRunDurationMutationVariables = Exact<{
   duration: Scalars['Int'];
@@ -462,6 +485,54 @@ export function useFeaturesSeenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type FeaturesSeenQueryHookResult = ReturnType<typeof useFeaturesSeenQuery>;
 export type FeaturesSeenLazyQueryHookResult = ReturnType<typeof useFeaturesSeenLazyQuery>;
 export type FeaturesSeenQueryResult = Apollo.QueryResult<FeaturesSeenQuery, FeaturesSeenQueryVariables>;
+export const GetFriendsDocument = gql`
+    query GetFriends($limit: Int) {
+  currentUser {
+    friends(limit: $limit) {
+      id
+      firstName
+      lastName
+      avatarUrl
+      xp
+    }
+    friendRequests {
+      id
+      firstName
+      lastName
+      avatarUrl
+      xp
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetFriendsQuery__
+ *
+ * To run a query within a React component, call `useGetFriendsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFriendsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFriendsQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function useGetFriendsQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendsQuery, GetFriendsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFriendsQuery, GetFriendsQueryVariables>(GetFriendsDocument, options);
+      }
+export function useGetFriendsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendsQuery, GetFriendsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFriendsQuery, GetFriendsQueryVariables>(GetFriendsDocument, options);
+        }
+export type GetFriendsQueryHookResult = ReturnType<typeof useGetFriendsQuery>;
+export type GetFriendsLazyQueryHookResult = ReturnType<typeof useGetFriendsLazyQuery>;
+export type GetFriendsQueryResult = Apollo.QueryResult<GetFriendsQuery, GetFriendsQueryVariables>;
 export const UpdateDefaultRunDurationDocument = gql`
     mutation UpdateDefaultRunDuration($duration: Int!) {
   updateDefaultRunDuration(duration: $duration)

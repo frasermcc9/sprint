@@ -7,6 +7,7 @@ export interface TextInputProps {
   onChange?: (value: React.ChangeEvent<HTMLInputElement>) => void;
   id?: string;
   type?: React.HTMLInputTypeAttribute;
+  placeholder?: string;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -15,6 +16,7 @@ export const TextInput: React.FC<TextInputProps> = ({
   onChange,
   id,
   type = "text",
+  placeholder = "",
 }) => {
   return (
     <input
@@ -26,6 +28,7 @@ export const TextInput: React.FC<TextInputProps> = ({
         "w-full rounded border py-2 px-3 text-gray-700 focus:outline-none focus:ring-2",
         className,
       )}
+      placeholder={placeholder}
     />
   );
 };

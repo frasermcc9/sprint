@@ -111,10 +111,10 @@ export const Settings: React.FC = () => {
     >
       <Layout.Header>
         <div className="font-palanquin flex w-full items-center border-b-2 border-gray-300 py-2 text-gray-700">
-          <div className="invisible mx-8 w-8" />
+          <div className="invisible mx-8 w-32" />
           <div className="w-full text-center text-xl font-bold">Settings</div>
           <span
-            className="mx-8 w-8 cursor-pointer text-xl font-bold text-indigo-600"
+            className="mx-8 w-32 cursor-pointer text-xl font-bold text-indigo-600"
             onClick={save}
           >
             {isChanged ? "Save" : "Done"}

@@ -1,5 +1,12 @@
 import { UseGuards } from "@nestjs/common";
-import { Resolver, Query, Mutation, Args, ResolveField } from "@nestjs/graphql";
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from "@nestjs/graphql";
 import { calculateMaxHr, Feature } from "@sprint/common";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
@@ -7,11 +14,13 @@ import { User } from "../../middleware/user.decorator";
 import {
   AccountStage,
   ExperienceLevel,
+  PublicUser,
   User as GQLUser,
 } from "../../types/graphql";
 import { UserService } from "./user.service";
 
 @Resolver("User")
+@Resolver("PublicUser")
 @UseGuards(FitbitGuard)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
@@ -100,14 +109,27 @@ export class UserResolver {
   }
 
   @ResolveField()
-  async maxHr(@User() user: FitbitUser): Promise<number> {
+  async maxHr(@Parent() user: FitbitUser): Promise<number> {
     const dbUser = await this.userService.getUser(user.id);
     return calculateMaxHr(dbUser.dob);
   }
 
   @ResolveField()
-  async runs(@User() user: FitbitUser) {
+  async runs(@Parent() user: FitbitUser) {
     const dbUser = await this.userService.getUser(user.id);
     return dbUser.runs ?? [];
+  }
+
+  @ResolveField()
+  async friends(
+    @Parent() user: FitbitUser,
+    @Args("limit") limit: number,
+  ): Promise<Partial<PublicUser>[]> {
+    return this.userService.findFriends(user.id, limit);
+  }
+
+  @ResolveField()
+  async friendRequests(@Parent() user: FitbitUser) {
+    return this.userService.getFriendRequests(user.id);
   }
 }
