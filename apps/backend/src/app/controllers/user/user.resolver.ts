@@ -31,6 +31,8 @@ export class UserResolver {
       features: dbUser.featuresSeen,
       createdAtUTS: dbUser.createdAtUTS,
       avatarUrl: dbUser.avatarUrl,
+      utcOffset: dbUser.utcOffset,
+      xp: dbUser.xp,
     };
   }
 

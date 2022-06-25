@@ -1,6 +1,6 @@
 import React from "react";
-import { CircularProgressbar } from "react-circular-progressbar";
-import Streaks from "../streaks";
+import { StreakPopover } from "../streaks";
+import { useXpPopupController, XpPopup } from "../xp-meter";
 
 export interface HomeHeaderProps {
   useController: typeof useHomeHeaderController;
@@ -8,23 +8,9 @@ export interface HomeHeaderProps {
 
 export const HomeHeader: React.FC<HomeHeaderProps> = ({ useController }) => {
   return (
-    <div className="my-2 flex h-8 w-full flex-row justify-around">
-      <div className="relative h-8 w-8">
-        <CircularProgressbar
-          value={83}
-          styles={{
-            path: {
-              stroke: "rgb(79 70 229)",
-            },
-          }}
-        />
-        <div className="font-palanquin absolute top-0 left-0 flex h-full w-full items-center justify-center">
-          <span className="pb-0.5 font-bold">23</span>
-        </div>
-      </div>
-      <div>
-        <Streaks streakSize={4} />
-      </div>
+    <div className="relative my-2 flex h-8 w-full flex-row justify-around">
+      <XpPopup useController={useXpPopupController} />
+      <StreakPopover streakSize={4} days={[false, true, false, false, true]} />
     </div>
   );
 };

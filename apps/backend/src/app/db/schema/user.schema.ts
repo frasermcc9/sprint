@@ -38,6 +38,12 @@ export class User {
 
   @Prop({ required: true, type: Number, default: Date.now() })
   createdAtUTS?: number;
+
+  @Prop({ required: false, type: Number })
+  utcOffset?: number;
+
+  @Prop({ required: true, type: Number, default: 0 })
+  xp: number;
 }
 
 interface Methods {
@@ -45,6 +51,7 @@ interface Methods {
     this: UserDocument,
     { first, last }: { first: string; last: string },
   ): Promise<void>;
+  addXp(this: UserDocument, { xp }: { xp: number }): Promise<void>;
 }
 
 interface Statics {
@@ -68,6 +75,10 @@ const methods: Methods = {
   ) {
     this.firstName = first;
     this.lastName = last;
+    await this.save();
+  },
+  async addXp(this: UserDocument, { xp }: { xp: number }) {
+    this.xp += xp;
     await this.save();
   },
 };

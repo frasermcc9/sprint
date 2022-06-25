@@ -29,6 +29,8 @@ type User {
   features: [String]!
   avatarUrl: String!
   createdAtUTS: Float!
+  utcOffset: Float!
+  xp: Int!
 }
 
 enum ExperienceLevel {

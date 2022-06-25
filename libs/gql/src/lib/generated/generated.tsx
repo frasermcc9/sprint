@@ -130,6 +130,8 @@ export type User = {
   maxHr: Scalars['Int'];
   runs?: Maybe<Array<Maybe<Run>>>;
   stage: AccountStage;
+  utcOffset: Scalars['Float'];
+  xp: Scalars['Int'];
 };
 
 export type LoginMutationVariables = Exact<{
@@ -167,7 +169,7 @@ export type AnalyticsObservationMutation = { __typename?: 'Mutation', createEven
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number } | null };
 
 export type FeaturesSeenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -393,6 +395,8 @@ export const CurrentUserDocument = gql`
     defaultRunDuration
     createdAtUTS
     avatarUrl
+    createdAtUTS
+    xp
   }
 }
     `;
