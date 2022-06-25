@@ -6,7 +6,16 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-import { HomeFilledIcon, HomeOutlineIcon } from "@sprint/assets";
+import {
+  CrownFilledIcon,
+  CrownOutlineIcon,
+  HomeFilledIcon,
+  HomeOutlineIcon,
+  ProfileFilledIcon,
+  ProfileOutlineIcon,
+  TrophyFilledIcon,
+  TrophyOutlineIcon,
+} from "@sprint/assets";
 import { LocalStorageKeys, readableTime } from "@sprint/common";
 import {
   Navigation,
@@ -23,33 +32,33 @@ import {
 import { AppProps } from "next/app";
 import Head from "next/head";
 import React, { useEffect, useMemo, useState } from "react";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles.css";
 
 const tabs: Tab[] = [
   {
     label: "Home",
-    displayActive: <HomeFilledIcon className="h-12 w-12" />,
-    displayInactive: <HomeOutlineIcon className="h-12 w-12" />,
+    displayActive: HomeFilledIcon,
+    displayInactive: HomeOutlineIcon,
     link: "/home",
   },
   {
     label: "Goals",
-    displayActive: <span className="font-bold">Goals</span>,
-    displayInactive: <>Goals</>,
+    displayActive: TrophyFilledIcon,
+    displayInactive: TrophyOutlineIcon,
     link: "/goals",
   },
   {
     label: "Profile",
-    displayActive: <span className="font-bold">Profile</span>,
-    displayInactive: <>Profile</>,
+    displayActive: ProfileFilledIcon,
+    displayInactive: ProfileOutlineIcon,
     link: "/profile",
   },
   {
     label: "Social",
-    displayActive: <span className="font-bold">Social</span>,
-    displayInactive: <>Social</>,
+    displayActive: CrownFilledIcon,
+    displayInactive: CrownOutlineIcon,
     link: "/social",
   },
 ];
@@ -59,14 +68,21 @@ const httpLink = createHttpLink({
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors)
+  if (graphQLErrors) {
+    toast.error(
+      "Error: An error occurred while communicating with the server. Please try again later.",
+    );
     graphQLErrors.forEach(({ message, locations, path }) => {
       console.error(
         `[GraphQL error]: Message: ${message}\nPath: ${path}\n`,
         locations,
       );
     });
-  if (networkError) console.error(`[Network error]: ${networkError}`);
+  }
+  if (networkError) {
+    toast.error("Error: A network error has occurred. Please try again later.");
+    console.error(`[Network error]: ${networkError}`);
+  }
 });
 
 const authLink = setContext(async (_, { headers }) => {
@@ -77,7 +93,9 @@ const authLink = setContext(async (_, { headers }) => {
     ? JSON.parse(authDetailsStr)
     : {};
 
-  const expiryTime = localStorage.getItem(LocalStorageKeys.AUTH_EXPIRY);
+  const expireUnixSeconds =
+    +localStorage.getItem(LocalStorageKeys.AUTH_EXPIRY) / 1000;
+  const nowUnixSeconds = Date.now() / 1000;
 
   if (!access_token) {
     return {
@@ -86,14 +104,16 @@ const authLink = setContext(async (_, { headers }) => {
   }
   useExternalLog(
     "ApolloAuthentication",
-    "FitBit token expiry in " + readableTime(+expiryTime - Date.now() / 1000),
+    "FitBit token expiry in " +
+      readableTime(+expireUnixSeconds - nowUnixSeconds),
   );
 
-  if (expiryTime && Date.now() / 1000 > +expiryTime) {
+  if (expireUnixSeconds && nowUnixSeconds > expireUnixSeconds) {
     useExternalLog("ApolloAuthentication", "Refreshing token");
 
     const {
       data: { refresh },
+      errors,
     } = await unauthenticatedClient.mutate<
       RefreshMutation,
       RefreshMutationVariables
@@ -104,7 +124,8 @@ const authLink = setContext(async (_, { headers }) => {
       },
     });
 
-    const expiryTime = Date.now() + refresh.expires_in - 1000;
+    // refresh expires_in is in seconds
+    const expiryTime = Date.now() + refresh.expires_in * 1000 - 1000;
     localStorage.setItem(
       LocalStorageKeys.AUTH_DETAILS,
       JSON.stringify(refresh),
@@ -138,7 +159,13 @@ const unauthenticatedClient = new ApolloClient({
 });
 
 const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(
+    tabs.findIndex((t) => t.link === pathname),
+  );
+
+  useEffect(() => {
+    setActiveTab(tabs.findIndex((t) => t.link === pathname));
+  }, [pathname]);
 
   const showNavigation = useMemo(
     () =>

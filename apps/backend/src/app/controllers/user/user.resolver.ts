@@ -29,6 +29,10 @@ export class UserResolver {
       dob: dbUser.dob,
       defaultRunDuration: dbUser.defaultRunDuration,
       features: dbUser.featuresSeen,
+      createdAtUTS: dbUser.createdAtUTS,
+      avatarUrl: dbUser.avatarUrl,
+      utcOffset: dbUser.utcOffset,
+      xp: dbUser.xp,
     };
   }
 
@@ -46,6 +50,22 @@ export class UserResolver {
     dbUser.firstName = firstName;
     dbUser.lastName = lastName;
     dbUser.stage = AccountStage.EXPERIENCE_LEVEL_SELECTED;
+    dbUser.dob = dob;
+
+    return await dbUser.save();
+  }
+
+  @Mutation()
+  async updateProfile(
+    @User() user: FitbitUser,
+    @Args("firstName") firstName: string,
+    @Args("lastName") lastName: string,
+    @Args("dob") dob: string,
+  ) {
+    const dbUser = await this.userService.getUser(user.id);
+
+    dbUser.firstName = firstName;
+    dbUser.lastName = lastName;
     dbUser.dob = dob;
 
     return await dbUser.save();

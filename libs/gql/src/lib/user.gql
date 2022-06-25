@@ -8,6 +8,10 @@ query CurrentUser {
     maxHr
     dob
     defaultRunDuration
+    createdAtUTS
+    avatarUrl
+    createdAtUTS
+    xp
   }
 }
 
@@ -43,6 +47,14 @@ mutation CompleteOnboarding(
     lastName
     experience
     stage
+    dob
+  }
+}
+
+mutation UpdateProfile($firstName: String!, $lastName: String!, $dob: String!) {
+  updateProfile(dob: $dob, firstName: $firstName, lastName: $lastName) {
+    firstName
+    lastName
     dob
   }
 }

@@ -8,6 +8,7 @@ export * from "./lib/divided-text";
 export * from "./lib/onboard-slides";
 export * from "./lib/text-input";
 export * from "./lib/start-run";
-export * from "./lib/standard-header";
+export * from "./lib/home-header";
 export * from "./lib/circular-progress";
 export * from "./lib/native-modal";
+export * from "./lib/avatar";

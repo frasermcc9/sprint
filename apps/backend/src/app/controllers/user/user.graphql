@@ -9,6 +9,7 @@ type Mutation {
   updateDefaultRunDuration(duration: Int!): Int!
   # Returns features seen
   markFeatureSeen(feature: String!): [String]!
+  updateProfile(firstName: String!, lastName: String!, dob: String!): User
 }
 
 type Query {
@@ -26,6 +27,10 @@ type User {
   dob: String!
   defaultRunDuration: Int!
   features: [String]!
+  avatarUrl: String!
+  createdAtUTS: Float!
+  utcOffset: Float!
+  xp: Int!
 }
 
 enum ExperienceLevel {

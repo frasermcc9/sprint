@@ -23,7 +23,7 @@ export const StartRun: React.FC<StartRunProps> = ({ useController }) => {
       <div className="font-palanquin relative mx-auto h-44 w-full max-w-xl select-none overflow-hidden rounded-lg p-2 shadow-lg">
         <img
           draggable={false}
-          className="back-ease absolute left-0 top-0 z-10 h-full w-full scale-110 transform cursor-pointer object-cover brightness-75 transition-all hover:rotate-2 hover:scale-125"
+          className="back-ease absolute left-0 top-0 z-10 h-full w-full scale-110 transform cursor-pointer overflow-hidden object-cover brightness-75 transition-all hover:rotate-2 hover:scale-125"
           src={
             "https://www.si.com/.image/t_share/MTg5NDMzOTYwNzAxMzcyMDAx/best-running-shoes_lead.png"
           }

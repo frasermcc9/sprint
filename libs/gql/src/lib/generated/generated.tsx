@@ -53,6 +53,7 @@ export type Mutation = {
   refresh?: Maybe<Auth>;
   updateDefaultRunDuration: Scalars['Int'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
+  updateProfile?: Maybe<User>;
 };
 
 
@@ -89,6 +90,13 @@ export type MutationUpdateDefaultRunDurationArgs = {
   duration: Scalars['Int'];
 };
 
+
+export type MutationUpdateProfileArgs = {
+  dob: Scalars['String'];
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
@@ -110,6 +118,8 @@ export type Run = {
 
 export type User = {
   __typename?: 'User';
+  avatarUrl: Scalars['String'];
+  createdAtUTS: Scalars['Float'];
   defaultRunDuration: Scalars['Int'];
   dob: Scalars['String'];
   experience?: Maybe<ExperienceLevel>;
@@ -120,6 +130,8 @@ export type User = {
   maxHr: Scalars['Int'];
   runs?: Maybe<Array<Maybe<Run>>>;
   stage: AccountStage;
+  utcOffset: Scalars['Float'];
+  xp: Scalars['Int'];
 };
 
 export type LoginMutationVariables = Exact<{
@@ -157,7 +169,7 @@ export type AnalyticsObservationMutation = { __typename?: 'Mutation', createEven
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number } | null };
 
 export type FeaturesSeenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -187,6 +199,15 @@ export type CompleteOnboardingMutationVariables = Exact<{
 
 
 export type CompleteOnboardingMutation = { __typename?: 'Mutation', completeOnboarding?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, dob: string } | null };
+
+export type UpdateProfileMutationVariables = Exact<{
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  dob: Scalars['String'];
+}>;
+
+
+export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile?: { __typename?: 'User', firstName: string, lastName: string, dob: string } | null };
 
 
 export const LoginDocument = gql`
@@ -372,6 +393,10 @@ export const CurrentUserDocument = gql`
     maxHr
     dob
     defaultRunDuration
+    createdAtUTS
+    avatarUrl
+    createdAtUTS
+    xp
   }
 }
     `;
@@ -545,3 +570,40 @@ export function useCompleteOnboardingMutation(baseOptions?: Apollo.MutationHookO
 export type CompleteOnboardingMutationHookResult = ReturnType<typeof useCompleteOnboardingMutation>;
 export type CompleteOnboardingMutationResult = Apollo.MutationResult<CompleteOnboardingMutation>;
 export type CompleteOnboardingMutationOptions = Apollo.BaseMutationOptions<CompleteOnboardingMutation, CompleteOnboardingMutationVariables>;
+export const UpdateProfileDocument = gql`
+    mutation UpdateProfile($firstName: String!, $lastName: String!, $dob: String!) {
+  updateProfile(dob: $dob, firstName: $firstName, lastName: $lastName) {
+    firstName
+    lastName
+    dob
+  }
+}
+    `;
+export type UpdateProfileMutationFn = Apollo.MutationFunction<UpdateProfileMutation, UpdateProfileMutationVariables>;
+
+/**
+ * __useUpdateProfileMutation__
+ *
+ * To run a mutation, you first call `useUpdateProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProfileMutation, { data, loading, error }] = useUpdateProfileMutation({
+ *   variables: {
+ *      firstName: // value for 'firstName'
+ *      lastName: // value for 'lastName'
+ *      dob: // value for 'dob'
+ *   },
+ * });
+ */
+export function useUpdateProfileMutation(baseOptions?: Apollo.MutationHookOptions<UpdateProfileMutation, UpdateProfileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateProfileMutation, UpdateProfileMutationVariables>(UpdateProfileDocument, options);
+      }
+export type UpdateProfileMutationHookResult = ReturnType<typeof useUpdateProfileMutation>;
+export type UpdateProfileMutationResult = Apollo.MutationResult<UpdateProfileMutation>;
+export type UpdateProfileMutationOptions = Apollo.BaseMutationOptions<UpdateProfileMutation, UpdateProfileMutationVariables>;
