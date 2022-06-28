@@ -43,6 +43,9 @@ export interface IMutation {
     updateDefaultRunDuration(duration: number): number | Promise<number>;
     markFeatureSeen(feature: string): Nullable<string>[] | Promise<Nullable<string>[]>;
     updateProfile(firstName: string, lastName: string, dob: string): Nullable<User> | Promise<Nullable<User>>;
+    sendFriendRequest(friendId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    acceptFriendRequest(friendId: string): PublicUser | Promise<PublicUser>;
+    rejectFriendRequest(friendId: string): string | Promise<string>;
 }
 
 export interface Run {

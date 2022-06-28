@@ -19,7 +19,7 @@ const PROMPT_MESSAGE =
   }
 
   await rm(__dirname + "/dump", { force: true, recursive: true });
-  await mkdir("./dump");
+  await mkdir(__dirname + "./dump", { recursive: true });
 
   execSync(`mongodump -d sprint -o ${__dirname}/dump`);
 

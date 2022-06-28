@@ -108,6 +108,32 @@ export class UserResolver {
     return dbUser.featuresSeen;
   }
 
+  @Mutation()
+  async sendFriendRequest(
+    @User() user: FitbitUser,
+    @Args("friendId") friendId: string,
+  ) {
+    if (await this.userService.sendFriendRequest(user.id, friendId)) {
+      return true;
+    }
+  }
+
+  @Mutation()
+  async acceptFriendRequest(
+    @User() user: FitbitUser,
+    @Args("friendId") friendId: string,
+  ) {
+    return this.userService.acceptFriendRequest(user.id, friendId);
+  }
+
+  @Mutation()
+  async rejectFriendRequest(
+    @User() user: FitbitUser,
+    @Args("friendId") friendId: string,
+  ) {
+    return this.userService.rejectFriend(user.id, friendId);
+  }
+
   @ResolveField()
   async maxHr(@Parent() user: FitbitUser): Promise<number> {
     const dbUser = await this.userService.getUser(user.id);

@@ -49,6 +49,24 @@ mutation MarkFeatureSeen($feature: String!) {
   markFeatureSeen(feature: $feature)
 }
 
+mutation sendFriendRequest($friendId: ID!) {
+  sendFriendRequest(friendId: $friendId)
+}
+
+mutation acceptFriendRequest($friendId: ID!) {
+  acceptFriendRequest(friendId: $friendId) {
+    id
+    firstName
+    lastName
+    avatarUrl
+    xp
+  }
+}
+
+mutation rejectFriendRequest($friendId: ID!) {
+  rejectFriendRequest(friendId: $friendId)
+}
+
 mutation CompleteOnboarding(
   $firstName: String!
   $lastName: String!

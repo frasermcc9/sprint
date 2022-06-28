@@ -28,7 +28,7 @@ export const FriendsList: React.FC<FriendsListProps> = ({ useController }) => {
           )}
         </IconButton>
       </div>
-      <div className="mx-auto flex flex-col">
+      <div className="mx-auto flex flex-col gap-y-2">
         {loading && <div>Loading...</div>}
         {friends?.map((friend) => (
           <UserCard

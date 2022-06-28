@@ -10,6 +10,10 @@ type Mutation {
   # Returns features seen
   markFeatureSeen(feature: String!): [String]!
   updateProfile(firstName: String!, lastName: String!, dob: String!): User
+  sendFriendRequest(friendId: ID!): Boolean
+  acceptFriendRequest(friendId: ID!): PublicUser!
+  # Returns the rejected user ID
+  rejectFriendRequest(friendId: ID!): ID!
 }
 
 type Query {
