@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef, PropsWithChildren } from "react";
 import { FCC } from "@sprint/common";
 import classNames from "classnames";
 import { motion, Variants } from "framer-motion";
@@ -14,27 +14,30 @@ interface PageProps {
   animation?: MotionParameters;
 }
 
-const Page: FCC<PageProps> = ({ children, className, animation = {} }) => {
-  return (
-    <motion.main
-      variants={animation}
-      initial="hidden"
-      animate="enter"
-      exit="exit"
-      transition={{ type: "easeOut", duration: 0.2 }}
-      className="flex h-full w-full flex-col bg-gray-50"
-    >
-      <div
-        className={classNames(
-          "flex w-full max-w-6xl flex-grow flex-col self-center",
-          className,
-        )}
+const Page = forwardRef<HTMLElement, PropsWithChildren<PageProps>>(
+  ({ children, className, animation = {} }, ref) => {
+    return (
+      <motion.main
+        variants={animation}
+        initial="hidden"
+        animate="enter"
+        exit="exit"
+        transition={{ type: "easeOut", duration: 0.2 }}
+        className="flex h-full w-full flex-col bg-gray-50"
+        ref={ref}
       >
-        {children}
-      </div>
-    </motion.main>
-  );
-};
+        <div
+          className={classNames(
+            "flex w-full max-w-6xl flex-grow flex-col self-center",
+            className,
+          )}
+        >
+          {children}
+        </div>
+      </motion.main>
+    );
+  },
+);
 
 const Margin: FCC = ({ children }) => {
   return <div className="mx-4 flex flex-grow flex-col">{children}</div>;

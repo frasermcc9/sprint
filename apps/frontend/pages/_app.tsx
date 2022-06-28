@@ -64,14 +64,11 @@ const tabs: Tab[] = [
 ];
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:3333/graphql",
+  uri: "http://192.168.1.40:3333/graphql",
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
-    toast.error(
-      "Error: An error occurred while communicating with the server. Please try again later.",
-    );
     graphQLErrors.forEach(({ message, locations, path }) => {
       console.error(
         `[GraphQL error]: Message: ${message}\nPath: ${path}\n`,

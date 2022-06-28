@@ -46,14 +46,22 @@ export enum ExperienceLevel {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  acceptFriendRequest: PublicUser;
   completeOnboarding?: Maybe<User>;
   createEvent?: Maybe<AnalyticsEvent>;
   login?: Maybe<Auth>;
   markFeatureSeen: Array<Maybe<Scalars['String']>>;
   refresh?: Maybe<Auth>;
+  rejectFriendRequest: Scalars['ID'];
+  sendFriendRequest?: Maybe<Scalars['Boolean']>;
   updateDefaultRunDuration: Scalars['Int'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
   updateProfile?: Maybe<User>;
+};
+
+
+export type MutationAcceptFriendRequestArgs = {
+  friendId: Scalars['ID'];
 };
 
 
@@ -86,6 +94,16 @@ export type MutationRefreshArgs = {
 };
 
 
+export type MutationRejectFriendRequestArgs = {
+  friendId: Scalars['ID'];
+};
+
+
+export type MutationSendFriendRequestArgs = {
+  friendId: Scalars['ID'];
+};
+
+
 export type MutationUpdateDefaultRunDurationArgs = {
   duration: Scalars['Int'];
 };
@@ -95,6 +113,15 @@ export type MutationUpdateProfileArgs = {
   dob: Scalars['String'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
+};
+
+export type PublicUser = {
+  __typename?: 'PublicUser';
+  avatarUrl: Scalars['String'];
+  firstName: Scalars['String'];
+  id: Scalars['String'];
+  lastName: Scalars['String'];
+  xp: Scalars['Int'];
 };
 
 export type Query = {
@@ -125,6 +152,8 @@ export type User = {
   experience?: Maybe<ExperienceLevel>;
   features: Array<Maybe<Scalars['String']>>;
   firstName: Scalars['String'];
+  friendRequests: Array<Maybe<PublicUser>>;
+  friends: Array<Maybe<PublicUser>>;
   id: Scalars['String'];
   lastName: Scalars['String'];
   maxHr: Scalars['Int'];
@@ -132,6 +161,11 @@ export type User = {
   stage: AccountStage;
   utcOffset: Scalars['Float'];
   xp: Scalars['Int'];
+};
+
+
+export type UserFriendsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
 };
 
 export type LoginMutationVariables = Exact<{
@@ -176,6 +210,13 @@ export type FeaturesSeenQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type FeaturesSeenQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, features: Array<string | null> } | null };
 
+export type GetFriendsQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type GetFriendsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, friends: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } | null>, friendRequests: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } | null> } | null };
+
 export type UpdateDefaultRunDurationMutationVariables = Exact<{
   duration: Scalars['Int'];
 }>;
@@ -189,6 +230,27 @@ export type MarkFeatureSeenMutationVariables = Exact<{
 
 
 export type MarkFeatureSeenMutation = { __typename?: 'Mutation', markFeatureSeen: Array<string | null> };
+
+export type SendFriendRequestMutationVariables = Exact<{
+  friendId: Scalars['ID'];
+}>;
+
+
+export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest?: boolean | null };
+
+export type AcceptFriendRequestMutationVariables = Exact<{
+  friendId: Scalars['ID'];
+}>;
+
+
+export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest: { __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } };
+
+export type RejectFriendRequestMutationVariables = Exact<{
+  friendId: Scalars['ID'];
+}>;
+
+
+export type RejectFriendRequestMutation = { __typename?: 'Mutation', rejectFriendRequest: string };
 
 export type CompleteOnboardingMutationVariables = Exact<{
   firstName: Scalars['String'];
@@ -462,6 +524,55 @@ export function useFeaturesSeenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type FeaturesSeenQueryHookResult = ReturnType<typeof useFeaturesSeenQuery>;
 export type FeaturesSeenLazyQueryHookResult = ReturnType<typeof useFeaturesSeenLazyQuery>;
 export type FeaturesSeenQueryResult = Apollo.QueryResult<FeaturesSeenQuery, FeaturesSeenQueryVariables>;
+export const GetFriendsDocument = gql`
+    query GetFriends($limit: Int) {
+  currentUser {
+    id
+    friends(limit: $limit) {
+      id
+      firstName
+      lastName
+      avatarUrl
+      xp
+    }
+    friendRequests {
+      id
+      firstName
+      lastName
+      avatarUrl
+      xp
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetFriendsQuery__
+ *
+ * To run a query within a React component, call `useGetFriendsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFriendsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFriendsQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function useGetFriendsQuery(baseOptions?: Apollo.QueryHookOptions<GetFriendsQuery, GetFriendsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFriendsQuery, GetFriendsQueryVariables>(GetFriendsDocument, options);
+      }
+export function useGetFriendsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFriendsQuery, GetFriendsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFriendsQuery, GetFriendsQueryVariables>(GetFriendsDocument, options);
+        }
+export type GetFriendsQueryHookResult = ReturnType<typeof useGetFriendsQuery>;
+export type GetFriendsLazyQueryHookResult = ReturnType<typeof useGetFriendsLazyQuery>;
+export type GetFriendsQueryResult = Apollo.QueryResult<GetFriendsQuery, GetFriendsQueryVariables>;
 export const UpdateDefaultRunDurationDocument = gql`
     mutation UpdateDefaultRunDuration($duration: Int!) {
   updateDefaultRunDuration(duration: $duration)
@@ -524,6 +635,105 @@ export function useMarkFeatureSeenMutation(baseOptions?: Apollo.MutationHookOpti
 export type MarkFeatureSeenMutationHookResult = ReturnType<typeof useMarkFeatureSeenMutation>;
 export type MarkFeatureSeenMutationResult = Apollo.MutationResult<MarkFeatureSeenMutation>;
 export type MarkFeatureSeenMutationOptions = Apollo.BaseMutationOptions<MarkFeatureSeenMutation, MarkFeatureSeenMutationVariables>;
+export const SendFriendRequestDocument = gql`
+    mutation sendFriendRequest($friendId: ID!) {
+  sendFriendRequest(friendId: $friendId)
+}
+    `;
+export type SendFriendRequestMutationFn = Apollo.MutationFunction<SendFriendRequestMutation, SendFriendRequestMutationVariables>;
+
+/**
+ * __useSendFriendRequestMutation__
+ *
+ * To run a mutation, you first call `useSendFriendRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendFriendRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendFriendRequestMutation, { data, loading, error }] = useSendFriendRequestMutation({
+ *   variables: {
+ *      friendId: // value for 'friendId'
+ *   },
+ * });
+ */
+export function useSendFriendRequestMutation(baseOptions?: Apollo.MutationHookOptions<SendFriendRequestMutation, SendFriendRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SendFriendRequestMutation, SendFriendRequestMutationVariables>(SendFriendRequestDocument, options);
+      }
+export type SendFriendRequestMutationHookResult = ReturnType<typeof useSendFriendRequestMutation>;
+export type SendFriendRequestMutationResult = Apollo.MutationResult<SendFriendRequestMutation>;
+export type SendFriendRequestMutationOptions = Apollo.BaseMutationOptions<SendFriendRequestMutation, SendFriendRequestMutationVariables>;
+export const AcceptFriendRequestDocument = gql`
+    mutation acceptFriendRequest($friendId: ID!) {
+  acceptFriendRequest(friendId: $friendId) {
+    id
+    firstName
+    lastName
+    avatarUrl
+    xp
+  }
+}
+    `;
+export type AcceptFriendRequestMutationFn = Apollo.MutationFunction<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>;
+
+/**
+ * __useAcceptFriendRequestMutation__
+ *
+ * To run a mutation, you first call `useAcceptFriendRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAcceptFriendRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [acceptFriendRequestMutation, { data, loading, error }] = useAcceptFriendRequestMutation({
+ *   variables: {
+ *      friendId: // value for 'friendId'
+ *   },
+ * });
+ */
+export function useAcceptFriendRequestMutation(baseOptions?: Apollo.MutationHookOptions<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>(AcceptFriendRequestDocument, options);
+      }
+export type AcceptFriendRequestMutationHookResult = ReturnType<typeof useAcceptFriendRequestMutation>;
+export type AcceptFriendRequestMutationResult = Apollo.MutationResult<AcceptFriendRequestMutation>;
+export type AcceptFriendRequestMutationOptions = Apollo.BaseMutationOptions<AcceptFriendRequestMutation, AcceptFriendRequestMutationVariables>;
+export const RejectFriendRequestDocument = gql`
+    mutation rejectFriendRequest($friendId: ID!) {
+  rejectFriendRequest(friendId: $friendId)
+}
+    `;
+export type RejectFriendRequestMutationFn = Apollo.MutationFunction<RejectFriendRequestMutation, RejectFriendRequestMutationVariables>;
+
+/**
+ * __useRejectFriendRequestMutation__
+ *
+ * To run a mutation, you first call `useRejectFriendRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRejectFriendRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [rejectFriendRequestMutation, { data, loading, error }] = useRejectFriendRequestMutation({
+ *   variables: {
+ *      friendId: // value for 'friendId'
+ *   },
+ * });
+ */
+export function useRejectFriendRequestMutation(baseOptions?: Apollo.MutationHookOptions<RejectFriendRequestMutation, RejectFriendRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RejectFriendRequestMutation, RejectFriendRequestMutationVariables>(RejectFriendRequestDocument, options);
+      }
+export type RejectFriendRequestMutationHookResult = ReturnType<typeof useRejectFriendRequestMutation>;
+export type RejectFriendRequestMutationResult = Apollo.MutationResult<RejectFriendRequestMutation>;
+export type RejectFriendRequestMutationOptions = Apollo.BaseMutationOptions<RejectFriendRequestMutation, RejectFriendRequestMutationVariables>;
 export const CompleteOnboardingDocument = gql`
     mutation CompleteOnboarding($firstName: String!, $lastName: String!, $experience: ExperienceLevel!, $dob: String!) {
   completeOnboarding(

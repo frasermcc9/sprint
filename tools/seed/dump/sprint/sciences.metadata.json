@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"sprint.sciences"}],"uuid":"24330c2e721041c092f42f3f6a6f10ba"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"aab75b218ddd48b3b79894c565a0ee7a","collectionName":"sciences","type":"collection"}

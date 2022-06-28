@@ -44,6 +44,12 @@ export class User {
 
   @Prop({ required: true, type: Number, default: 0 })
   xp: number;
+
+  @Prop({ required: true, type: Array, default: [] })
+  friends?: Array<string>;
+
+  @Prop({ required: true, type: Array, default: [] })
+  pendingFriends?: Array<string>;
 }
 
 interface Methods {
@@ -52,6 +58,18 @@ interface Methods {
     { first, last }: { first: string; last: string },
   ): Promise<void>;
   addXp(this: UserDocument, { xp }: { xp: number }): Promise<void>;
+  sendFriendRequest(
+    this: UserDocument,
+    { requesterId }: { requesterId: string },
+  ): Promise<void>;
+  addFriend(
+    this: UserDocument,
+    { newFriendId }: { newFriendId: string },
+  ): Promise<void>;
+  rejectFriendRequest(
+    this: UserDocument,
+    { reject }: { reject: string },
+  ): Promise<void>;
 }
 
 interface Statics {
@@ -80,6 +98,32 @@ const methods: Methods = {
   async addXp(this: UserDocument, { xp }: { xp: number }) {
     this.xp += xp;
     await this.save();
+  },
+  async sendFriendRequest(
+    this: UserDocument,
+    { requesterId }: { requesterId: string },
+  ) {
+    this.pendingFriends.push(requesterId);
+    this.markModified("pendingFriends");
+    await this.save();
+  },
+  async addFriend(this: UserDocument, { newFriendId }) {
+    this.friends.push(newFriendId);
+    const pending = this.pendingFriends.indexOf(newFriendId);
+    if (pending > -1) {
+      this.pendingFriends.splice(pending, 1);
+      this.markModified("pendingFriends");
+    }
+    this.markModified("friends");
+    await this.save();
+  },
+  async rejectFriendRequest({ reject }) {
+    const pending = this.pendingFriends.indexOf(reject);
+    if (pending > -1) {
+      this.pendingFriends.splice(pending, 1);
+      this.markModified("pendingFriends");
+      await this.save();
+    }
   },
 };
 
