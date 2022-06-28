@@ -24,6 +24,7 @@ query FeaturesSeen {
 
 query GetFriends($limit: Int) {
   currentUser {
+    id
     friends(limit: $limit) {
       id
       firstName

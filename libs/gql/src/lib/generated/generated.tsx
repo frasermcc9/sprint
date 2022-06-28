@@ -215,7 +215,7 @@ export type GetFriendsQueryVariables = Exact<{
 }>;
 
 
-export type GetFriendsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', friends: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } | null>, friendRequests: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } | null> } | null };
+export type GetFriendsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, friends: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } | null>, friendRequests: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } | null> } | null };
 
 export type UpdateDefaultRunDurationMutationVariables = Exact<{
   duration: Scalars['Int'];
@@ -527,6 +527,7 @@ export type FeaturesSeenQueryResult = Apollo.QueryResult<FeaturesSeenQuery, Feat
 export const GetFriendsDocument = gql`
     query GetFriends($limit: Int) {
   currentUser {
+    id
     friends(limit: $limit) {
       id
       firstName
