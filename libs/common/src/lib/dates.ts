@@ -7,6 +7,13 @@ export const calculateAge = (dob: string) => {
 export const readableTime = (seconds: number) =>
   format(seconds * 1000, "hh:mm:ss");
 
+export const readableTimeNoSeconds = (minutes: number) =>
+  readableTime(minutes * 60)
+    .split(":")
+    .slice(0, 2)
+    .join(":")
+    .replace(/^0+/, "");
+
 const formatYYYYMMDD = new Intl.DateTimeFormat("fr-CA", {
   year: "numeric",
   month: "2-digit",
@@ -36,4 +43,11 @@ export const daysForLocale = (
   );
 };
 
-const solution = (N: number, A: number[]) => A.reduce((acc, cur) => cur > N ? [...Array(N)].fill(Math.max(...acc)) : Object.assign([], acc, { [cur - 1]: acc[cur - 1] + 1 }), [...Array(N)].fill(0));
+const solution = (N: number, A: number[]) =>
+  A.reduce(
+    (acc, cur) =>
+      cur > N
+        ? [...Array(N)].fill(Math.max(...acc))
+        : Object.assign([], acc, { [cur - 1]: acc[cur - 1] + 1 }),
+    [...Array(N)].fill(0),
+  );

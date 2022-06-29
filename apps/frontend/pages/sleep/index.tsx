@@ -1,4 +1,5 @@
 import { ChevronUpIcon } from "@heroicons/react/solid";
+import { readableTimeNoSeconds } from "@sprint/common";
 import {
   Layout,
   SleepBreakdown,
@@ -70,11 +71,14 @@ const Index: React.FC = () => {
             className={classNames(
               "font-palanquin w-full overflow-hidden transition-all",
               {
-                "h-24": detailsOpen,
+                "h-32": detailsOpen,
                 "h-0": !detailsOpen,
               },
             )}
           >
+            <h2 className="text-center">
+              You slept for {readableTimeNoSeconds(sleepDuration)}h
+            </h2>
             <SleepBreakdown sleepDuration={sleepDuration} times={times} />
           </div>
         </div>

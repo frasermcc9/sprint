@@ -1,6 +1,6 @@
-import { readableTime } from "@sprint/common";
+import { readableTimeNoSeconds } from "@sprint/common";
 import classNames from "classnames";
-import React, { useCallback } from "react";
+import React from "react";
 
 export type SleepTypeBreakdown = {
   value: string;
@@ -19,16 +19,6 @@ export const SleepBreakdown: React.FC<SleepBreakdownProps> = ({
   times,
   sleepDuration,
 }) => {
-  const formatDuration = useCallback(
-    (duration: number) =>
-      readableTime(duration * 60)
-        .split(":")
-        .slice(0, 2)
-        .join(":")
-        .replace(/^0+/, ""),
-    [],
-  );
-
   return (
     <div className="font-palanquin bg-indigo-900 text-gray-100">
       <div className="mt-2 mb-8 flex h-6 w-full px-8">
@@ -40,7 +30,7 @@ export const SleepBreakdown: React.FC<SleepBreakdownProps> = ({
               })}
             >
               <span className="text-sm">
-                {formatDuration(
+                {readableTimeNoSeconds(
                   (+value.slice(0, value.length - 1) / 100) * sleepDuration,
                 ) + " h"}
               </span>
