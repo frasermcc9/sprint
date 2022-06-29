@@ -37,7 +37,7 @@ type User {
   xp: Int!
   friends(limit: Int = 10): [PublicUser]!
   friendRequests: [PublicUser]!
-  currentRunParams: RunParams
+  currentRunParams: RunParams!
 }
 
 type RunParams {
