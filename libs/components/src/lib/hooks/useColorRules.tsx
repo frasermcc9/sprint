@@ -2,14 +2,14 @@ import classNames from "classnames";
 import { useCallback } from "react";
 
 export interface ColorRuleMatch {
-  test: RegExp[] | RegExp;
   className: string;
+  test: RegExp[] | RegExp;
 }
 
 export const useColorRule = (matchers: ColorRuleMatch[]) => {
   return useCallback(
-    (text: string) => {
-      const words = text.split(" ");
+    (text: string | number) => {
+      const words = text.toString().split(" ");
 
       return (
         <>
@@ -34,5 +34,30 @@ export const useColorRule = (matchers: ColorRuleMatch[]) => {
       );
     },
     [matchers],
+  );
+};
+
+export interface ColorRuleRange {
+  className: string;
+  /** Inclusive of both */
+  range: [number, number];
+}
+
+export const useColorRangeRule = (ranges: ColorRuleRange[]) => {
+  return useCallback(
+    (text: string | number) => {
+      const number = +text;
+
+      const match = ranges.find(
+        (range) => range.range[0] <= number && number <= range.range[1],
+      );
+
+      if (match) {
+        return <span className={match.className}>{text}</span>;
+      }
+
+      return <span>{text}</span>;
+    },
+    [ranges],
   );
 };

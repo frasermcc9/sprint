@@ -49,10 +49,17 @@ const Header: FCC = ({ children }) => {
   );
 };
 
+const PageUpAnimation = {
+  hidden: { opacity: 0, x: 0, y: 200 },
+  enter: { opacity: 1, x: 0, y: 0 },
+  exit: { opacity: 0, x: 0, y: 200 },
+};
+
 const Layout = {
   Page,
   Margin,
   Header,
+  PageUpAnimation,
 } as const;
 
 export { Layout };
