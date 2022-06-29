@@ -8,6 +8,7 @@ import {
   Parent,
 } from "@nestjs/graphql";
 import { calculateMaxHr, Feature } from "@sprint/common";
+import { calculateNewParams } from "../../service/run-processing/runProcessing";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
 import { User } from "../../middleware/user.decorator";
@@ -60,6 +61,32 @@ export class UserResolver {
     dbUser.lastName = lastName;
     dbUser.stage = AccountStage.EXPERIENCE_LEVEL_SELECTED;
     dbUser.dob = dob;
+
+    if (experience === ExperienceLevel.BEGINNER) {
+      dbUser.currentRunParams = {
+        highIntensity: 25,
+        lowIntensity: 35,
+        repetitions: 3,
+        sets: 3,
+        restPeriod: 120,
+      };
+    } else if (experience === ExperienceLevel.INTERMEDIATE) {
+      dbUser.currentRunParams = {
+        highIntensity: 30,
+        lowIntensity: 30,
+        repetitions: 3,
+        sets: 3,
+        restPeriod: 120,
+      };
+    } else if (experience === ExperienceLevel.ADVANCED) {
+      dbUser.currentRunParams = {
+        highIntensity: 35,
+        lowIntensity: 25,
+        repetitions: 3,
+        sets: 3,
+        restPeriod: 120,
+      };
+    }
 
     return await dbUser.save();
   }
@@ -132,6 +159,20 @@ export class UserResolver {
     @Args("friendId") friendId: string,
   ) {
     return this.userService.rejectFriend(user.id, friendId);
+  }
+
+  @Mutation()
+  async updateRunParams(
+    @User() user: FitbitUser,
+    @Args("intensityFeedback") intensityFeedback: number,
+  ) {
+    const dbUser = await this.userService.getUser(user.id);
+    const currentParams = dbUser.currentRunParams;
+    const newParams = calculateNewParams(currentParams, intensityFeedback);
+
+    dbUser.currentRunParams = newParams;
+
+    await dbUser.save();
   }
 
   @ResolveField()

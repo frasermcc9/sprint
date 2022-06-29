@@ -23,7 +23,7 @@ const currentHiitParams = {
  * @param rpeFeedback will be the RPE feedback from the user (6-20)
  * @returns newParams  will always be 13 minutes
  */
-const calculateNewParams = (
+export const calculateNewParams = (
   currentParams: {
     highIntensity: number;
     lowIntensity: number;
