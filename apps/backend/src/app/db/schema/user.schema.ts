@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Feature } from "@sprint/common";
 import { Document, Model } from "mongoose";
-import { calculateNewParams } from "../../service/run-processing/runProcessing";
 import { AccountStage, ExperienceLevel } from "../../types/graphql";
 import { Run } from "./run.schema";
 
@@ -90,22 +89,6 @@ interface Methods {
     this: UserDocument,
     { reject }: { reject: string },
   ): Promise<void>;
-  updateRunParams(
-    this: UserDocument,
-    {
-      currentRunParams,
-      feedbackIntensity,
-    }: {
-      currentRunParams: {
-        highIntensity: number;
-        lowIntensity: number;
-        repetitions: number;
-        sets: number;
-        restPeriod: number;
-      };
-      feedbackIntensity: number;
-    },
-  ): Promise<void>;
 }
 
 interface Statics {
@@ -160,27 +143,6 @@ const methods: Methods = {
       this.markModified("pendingFriends");
       await this.save();
     }
-  },
-  async updateRunParams(
-    this: UserDocument,
-    {
-      currentRunParams,
-      feedbackIntensity,
-    }: {
-      currentRunParams: {
-        highIntensity: number;
-        lowIntensity: number;
-        repetitions: number;
-        sets: number;
-        restPeriod: number;
-      };
-      feedbackIntensity: number;
-    },
-  ) {
-    const newParams = calculateNewParams(currentRunParams, feedbackIntensity);
-    this.currentRunParams = newParams;
-    this.markModified("currentRunParams");
-    await this.save();
   },
 };
 

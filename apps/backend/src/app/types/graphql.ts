@@ -46,6 +46,7 @@ export interface IMutation {
     sendFriendRequest(friendId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
     acceptFriendRequest(friendId: string): PublicUser | Promise<PublicUser>;
     rejectFriendRequest(friendId: string): string | Promise<string>;
+    updateRunParams(intensityFeedBack: number): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export interface Run {
@@ -82,6 +83,15 @@ export interface User {
     xp: number;
     friends: Nullable<PublicUser>[];
     friendRequests: Nullable<PublicUser>[];
+    currentRunParams: RunParams;
+}
+
+export interface RunParams {
+    highIntensity?: Nullable<number>;
+    lowIntensity?: Nullable<number>;
+    repetitions?: Nullable<number>;
+    sets?: Nullable<number>;
+    restPeriod?: Nullable<number>;
 }
 
 export interface PublicUser {

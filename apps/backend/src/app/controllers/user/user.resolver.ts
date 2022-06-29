@@ -43,6 +43,7 @@ export class UserResolver {
       avatarUrl: dbUser.avatarUrl,
       utcOffset: dbUser.utcOffset,
       xp: dbUser.xp,
+      currentRunParams: dbUser.currentRunParams,
     };
   }
 
@@ -176,7 +177,7 @@ export class UserResolver {
 
     dbUser.currentRunParams = newParams;
 
-    await dbUser.save();
+    return await dbUser.save();
   }
 
   @ResolveField()
