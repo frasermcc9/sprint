@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Feature } from "@sprint/common";
 import { Document, Model } from "mongoose";
+import { calculateNewParams } from "../../service/run-processing/runProcessing";
 import { AccountStage, ExperienceLevel } from "../../types/graphql";
 import { Run } from "./run.schema";
 
@@ -50,6 +51,25 @@ export class User {
 
   @Prop({ required: true, type: Array, default: [] })
   pendingFriends?: Array<string>;
+
+  @Prop({
+    required: true,
+    type: Object,
+    default: {
+      highIntensity: 30,
+      lowIntensity: 30,
+      repetitions: 3,
+      sets: 3,
+      restPeriod: 120,
+    },
+  })
+  currentRunParams?: {
+    highIntensity: number;
+    lowIntensity: number;
+    repetitions: number;
+    sets: number;
+    restPeriod: number;
+  };
 }
 
 interface Methods {
@@ -69,6 +89,22 @@ interface Methods {
   rejectFriendRequest(
     this: UserDocument,
     { reject }: { reject: string },
+  ): Promise<void>;
+  updateRunParams(
+    this: UserDocument,
+    {
+      currentRunParams,
+      feedbackIntensity,
+    }: {
+      currentRunParams: {
+        highIntensity: number;
+        lowIntensity: number;
+        repetitions: number;
+        sets: number;
+        restPeriod: number;
+      };
+      feedbackIntensity: number;
+    },
   ): Promise<void>;
 }
 
@@ -124,6 +160,27 @@ const methods: Methods = {
       this.markModified("pendingFriends");
       await this.save();
     }
+  },
+  async updateRunParams(
+    this: UserDocument,
+    {
+      currentRunParams,
+      feedbackIntensity,
+    }: {
+      currentRunParams: {
+        highIntensity: number;
+        lowIntensity: number;
+        repetitions: number;
+        sets: number;
+        restPeriod: number;
+      };
+      feedbackIntensity: number;
+    },
+  ) {
+    const newParams = calculateNewParams(currentRunParams, feedbackIntensity);
+    this.currentRunParams = newParams;
+    this.markModified("currentRunParams");
+    await this.save();
   },
 };
 
