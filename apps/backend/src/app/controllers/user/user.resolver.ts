@@ -62,30 +62,34 @@ export class UserResolver {
     dbUser.stage = AccountStage.EXPERIENCE_LEVEL_SELECTED;
     dbUser.dob = dob;
 
-    if (experience === ExperienceLevel.BEGINNER) {
-      dbUser.currentRunParams = {
-        highIntensity: 25,
-        lowIntensity: 35,
-        repetitions: 3,
-        sets: 3,
-        restPeriod: 120,
-      };
-    } else if (experience === ExperienceLevel.INTERMEDIATE) {
-      dbUser.currentRunParams = {
-        highIntensity: 30,
-        lowIntensity: 30,
-        repetitions: 3,
-        sets: 3,
-        restPeriod: 120,
-      };
-    } else if (experience === ExperienceLevel.ADVANCED) {
-      dbUser.currentRunParams = {
-        highIntensity: 35,
-        lowIntensity: 25,
-        repetitions: 3,
-        sets: 3,
-        restPeriod: 120,
-      };
+    switch (experience) {
+      case ExperienceLevel.BEGINNER:
+        dbUser.currentRunParams = {
+          highIntensity: 25,
+          lowIntensity: 35,
+          repetitions: 3,
+          sets: 3,
+          restPeriod: 120,
+        };
+        break;
+      case ExperienceLevel.INTERMEDIATE:
+        dbUser.currentRunParams = {
+          highIntensity: 30,
+          lowIntensity: 30,
+          repetitions: 3,
+          sets: 3,
+          restPeriod: 120,
+        };
+        break;
+      case ExperienceLevel.ADVANCED:
+        dbUser.currentRunParams = {
+          highIntensity: 35,
+          lowIntensity: 25,
+          repetitions: 3,
+          sets: 3,
+          restPeriod: 120,
+        };
+        break;
     }
 
     return await dbUser.save();
