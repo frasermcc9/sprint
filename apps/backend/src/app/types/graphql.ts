@@ -32,6 +32,7 @@ export interface IQuery {
     getAuthLink(): string | Promise<string>;
     testAuth(): Nullable<string> | Promise<Nullable<string>>;
     currentUser(): Nullable<User> | Promise<Nullable<User>>;
+    prepRun(): Nullable<RunParams> | Promise<Nullable<RunParams>>;
 }
 
 export interface IMutation {

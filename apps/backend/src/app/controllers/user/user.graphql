@@ -19,6 +19,7 @@ type Mutation {
 
 type Query {
   currentUser: User
+  prepRun: RunParams
 }
 
 type User {

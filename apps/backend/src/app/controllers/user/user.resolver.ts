@@ -19,6 +19,7 @@ import {
   User as GQLUser,
 } from "../../types/graphql";
 import { UserService } from "./user.service";
+import { formatDuration } from "../../service/run-processing/run-duration";
 
 @Resolver("User")
 @Resolver("PublicUser")
@@ -45,6 +46,12 @@ export class UserResolver {
       xp: dbUser.xp,
       currentRunParams: dbUser.currentRunParams,
     };
+  }
+
+  @Query()
+  async prepRun(@User() user: FitbitUser, @Args("duration") duration: number) {
+    const dbUser = await this.userService.getUser(user.id);
+    return formatDuration(dbUser.currentRunParams, duration);
   }
 
   @Mutation()
