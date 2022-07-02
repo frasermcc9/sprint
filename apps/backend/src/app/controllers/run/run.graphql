@@ -1,10 +1,18 @@
+type Mutation {
+  createRun(
+    token: String!
+    startDate: String!
+    endDate: String!
+    startTime: String!
+    endTime: String!
+  ): Run
+}
+
 type Run {
   userId: String
   date: String
   duration: Int
-  distance: Int
   heartRate: [Int]
-  speed: [Int]
   vo2max: Int
   intensityFeedback: Int
 }

@@ -37,6 +37,7 @@ export interface IQuery {
 export interface IMutation {
     login(code: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     refresh(token: string): Nullable<Auth> | Promise<Nullable<Auth>>;
+    createRun(token: string, startDate: string, endDate: string, startTime: string, endTime: string): Nullable<Run> | Promise<Nullable<Run>>;
     createEvent(event: string, payload?: Nullable<string>): Nullable<AnalyticsEvent> | Promise<Nullable<AnalyticsEvent>>;
     updateExperienceLevel(): Nullable<ExperienceLevel> | Promise<Nullable<ExperienceLevel>>;
     completeOnboarding(experience: ExperienceLevel, firstName: string, lastName: string, dob: string): Nullable<User> | Promise<Nullable<User>>;
@@ -52,9 +53,7 @@ export interface Run {
     userId?: Nullable<string>;
     date?: Nullable<string>;
     duration?: Nullable<number>;
-    distance?: Nullable<number>;
     heartRate?: Nullable<Nullable<number>[]>;
-    speed?: Nullable<Nullable<number>[]>;
     vo2max?: Nullable<number>;
     intensityFeedback?: Nullable<number>;
 }

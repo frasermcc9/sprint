@@ -1,5 +1,4 @@
-import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
-// import { Run as GQLRun } from "../../types/graphql";
+import { Resolver, Mutation, Args } from "@nestjs/graphql";
 import { RunService } from "./run.service";
 
 @Resolver("Run")
@@ -11,7 +10,33 @@ export class RunResolver {
     @Args("token") token: string,
     @Args("startDate") startDate: string,
     @Args("endDate") endDate: string,
+    @Args("startTime") startTime: string,
+    @Args("endTime") endTime: string,
+    @Args("intensityFB") fb: number,
   ) {
-    return this.runService.createRun(token, startDate, endDate);
+    const intraDayActivity = this.runService.createRun(
+      token,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+    );
+    const hrActivity = Object.values(intraDayActivity);
+
+    const timeStart = new Date(startDate + "T" + startTime);
+    const timeEnd = new Date(endDate + "T" + endTime);
+    const durationMins = (timeEnd.getTime() - timeStart.getTime()) / 1000 / 60;
+
+    const newRun = {
+      userId: "",
+      date: startDate,
+      duration: durationMins,
+      heartRate: hrActivity,
+      vo2max: null,
+      intensityFeedback: fb,
+    };
+
+    return newRun;
+    //TODO: get userID, create run object, add run to user
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Run, RunCollection } from "../../db/schema/run.schema";
 
@@ -18,21 +18,22 @@ export class RunService {
    * @param dateStart date in format YYYY-MM-DD
    * @param dateEnd date in format YYYY-MM-DD
    */
-  async createRun(access_token: string, dateStart: string, dateEnd: string) {
+  async createRun(
+    access_token: string,
+    dateStart: string,
+    dateEnd: string,
+    startTime: string,
+    endTime: string,
+  ) {
     try {
-      fetch(
-        "https://api.fitbit.com/1/user/-/activities/heart/date/" +
-          dateStart +
-          "/" +
-          dateEnd +
-          "/1min.json",
+      const res = await fetch(
+        `https://api.fitbit.com/1/user/-/activities/heart/date/${dateStart}/${dateEnd}/1min/time/${startTime}/${endTime}.json1`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${access_token}` },
         },
-      )
-        .then((res) => res.json())
-        .then((json) => console.log(json));
+      );
+      return res.json;
     } catch (e) {
       console.error(e.toJSON());
     }
