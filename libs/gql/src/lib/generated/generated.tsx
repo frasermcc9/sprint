@@ -143,10 +143,20 @@ export type Run = {
   vo2max?: Maybe<Scalars['Int']>;
 };
 
+export type RunParams = {
+  __typename?: 'RunParams';
+  highIntensity?: Maybe<Scalars['Int']>;
+  lowIntensity?: Maybe<Scalars['Int']>;
+  repetitions?: Maybe<Scalars['Int']>;
+  restPeriod?: Maybe<Scalars['Int']>;
+  sets?: Maybe<Scalars['Int']>;
+};
+
 export type User = {
   __typename?: 'User';
   avatarUrl: Scalars['String'];
   createdAtUTS: Scalars['Float'];
+  currentRunParams?: Maybe<RunParams>;
   defaultRunDuration: Scalars['Int'];
   dob: Scalars['String'];
   experience?: Maybe<ExperienceLevel>;

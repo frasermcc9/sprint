@@ -1,8 +1,8 @@
 /**
  *
  * @param currentParams Current params should always be 13minutes.
- * @param duration
- * @returns
+ * @param duration Duration of the run.
+ * @returns Editted params to fit new duration
  */
 export const formatDuration = (
   currentParams: {

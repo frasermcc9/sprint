@@ -8,6 +8,7 @@ import {
   Parent,
 } from "@nestjs/graphql";
 import { calculateMaxHr, Feature } from "@sprint/common";
+import { calculateNewParams } from "../../service/run-processing/runProcessing";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
 import { User } from "../../middleware/user.decorator";
@@ -18,6 +19,7 @@ import {
   User as GQLUser,
 } from "../../types/graphql";
 import { UserService } from "./user.service";
+import { formatDuration } from "../../service/run-processing/run-duration";
 
 @Resolver("User")
 @Resolver("PublicUser")
@@ -42,7 +44,14 @@ export class UserResolver {
       avatarUrl: dbUser.avatarUrl,
       utcOffset: dbUser.utcOffset,
       xp: dbUser.xp,
+      currentRunParams: dbUser.currentRunParams,
     };
+  }
+
+  @Query()
+  async prepRun(@User() user: FitbitUser, @Args("duration") duration: number) {
+    const dbUser = await this.userService.getUser(user.id);
+    return formatDuration(dbUser.currentRunParams, duration);
   }
 
   @Mutation()
@@ -60,6 +69,36 @@ export class UserResolver {
     dbUser.lastName = lastName;
     dbUser.stage = AccountStage.EXPERIENCE_LEVEL_SELECTED;
     dbUser.dob = dob;
+
+    switch (experience) {
+      case ExperienceLevel.BEGINNER:
+        dbUser.currentRunParams = {
+          highIntensity: 25,
+          lowIntensity: 35,
+          repetitions: 3,
+          sets: 3,
+          restPeriod: 120,
+        };
+        break;
+      case ExperienceLevel.INTERMEDIATE:
+        dbUser.currentRunParams = {
+          highIntensity: 30,
+          lowIntensity: 30,
+          repetitions: 3,
+          sets: 3,
+          restPeriod: 120,
+        };
+        break;
+      case ExperienceLevel.ADVANCED:
+        dbUser.currentRunParams = {
+          highIntensity: 35,
+          lowIntensity: 25,
+          repetitions: 3,
+          sets: 3,
+          restPeriod: 120,
+        };
+        break;
+    }
 
     return await dbUser.save();
   }
@@ -132,6 +171,20 @@ export class UserResolver {
     @Args("friendId") friendId: string,
   ) {
     return this.userService.rejectFriend(user.id, friendId);
+  }
+
+  @Mutation()
+  async updateRunParams(
+    @User() user: FitbitUser,
+    @Args("intensityFeedback") intensityFeedback: number,
+  ) {
+    const dbUser = await this.userService.getUser(user.id);
+    const currentParams = dbUser.currentRunParams;
+    const newParams = calculateNewParams(currentParams, intensityFeedback);
+
+    dbUser.currentRunParams = newParams;
+
+    return await dbUser.save();
   }
 
   @ResolveField()

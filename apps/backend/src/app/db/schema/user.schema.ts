@@ -50,6 +50,25 @@ export class User {
 
   @Prop({ required: true, type: Array, default: [] })
   pendingFriends?: Array<string>;
+
+  @Prop({
+    required: true,
+    type: Object,
+    default: {
+      highIntensity: 30,
+      lowIntensity: 30,
+      repetitions: 3,
+      sets: 3,
+      restPeriod: 120,
+    },
+  })
+  currentRunParams?: {
+    highIntensity: number;
+    lowIntensity: number;
+    repetitions: number;
+    sets: number;
+    restPeriod: number;
+  };
 }
 
 interface Methods {

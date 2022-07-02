@@ -14,10 +14,12 @@ type Mutation {
   acceptFriendRequest(friendId: ID!): PublicUser!
   # Returns the rejected user ID
   rejectFriendRequest(friendId: ID!): ID!
+  updateRunParams(intensityFeedBack: Int!): User
 }
 
 type Query {
   currentUser: User
+  prepRun: RunParams
 }
 
 type User {
@@ -37,6 +39,15 @@ type User {
   xp: Int!
   friends(limit: Int = 10): [PublicUser]!
   friendRequests: [PublicUser]!
+  currentRunParams: RunParams!
+}
+
+type RunParams {
+  highIntensity: Int
+  lowIntensity: Int
+  repetitions: Int
+  sets: Int
+  restPeriod: Int
 }
 
 type PublicUser {
