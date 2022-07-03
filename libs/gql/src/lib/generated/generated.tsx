@@ -57,6 +57,7 @@ export type Mutation = {
   updateDefaultRunDuration: Scalars['Int'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
   updateProfile?: Maybe<User>;
+  updateRunParams?: Maybe<User>;
 };
 
 
@@ -115,6 +116,11 @@ export type MutationUpdateProfileArgs = {
   lastName: Scalars['String'];
 };
 
+
+export type MutationUpdateRunParamsArgs = {
+  intensityFeedBack: Scalars['Int'];
+};
+
 export type PublicUser = {
   __typename?: 'PublicUser';
   avatarUrl: Scalars['String'];
@@ -128,6 +134,7 @@ export type Query = {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
   getAuthLink: Scalars['String'];
+  prepRun?: Maybe<RunParams>;
   testAuth?: Maybe<Scalars['String']>;
 };
 
@@ -152,11 +159,21 @@ export type RunParams = {
   sets?: Maybe<Scalars['Int']>;
 };
 
+export type Sleep = {
+  __typename?: 'Sleep';
+  awake: Scalars['Int'];
+  awakenings: Scalars['Int'];
+  deep: Scalars['Int'];
+  light: Scalars['Int'];
+  rem: Scalars['Int'];
+  score: Scalars['Int'];
+};
+
 export type User = {
   __typename?: 'User';
   avatarUrl: Scalars['String'];
   createdAtUTS: Scalars['Float'];
-  currentRunParams?: Maybe<RunParams>;
+  currentRunParams: RunParams;
   defaultRunDuration: Scalars['Int'];
   dob: Scalars['String'];
   experience?: Maybe<ExperienceLevel>;
@@ -169,6 +186,7 @@ export type User = {
   maxHr: Scalars['Int'];
   runs?: Maybe<Array<Maybe<Run>>>;
   stage: AccountStage;
+  todaysSleep?: Maybe<Sleep>;
   utcOffset: Scalars['Float'];
   xp: Scalars['Int'];
 };
@@ -209,6 +227,11 @@ export type AnalyticsObservationMutationVariables = Exact<{
 
 
 export type AnalyticsObservationMutation = { __typename?: 'Mutation', createEvent?: { __typename?: 'AnalyticsEvent', user: string, event: string, payload?: string | null } | null };
+
+export type GetTodaysSleepQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTodaysSleepQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, todaysSleep?: { __typename?: 'Sleep', awake: number, rem: number, light: number, deep: number, awakenings: number, score: number } | null } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -454,6 +477,48 @@ export function useAnalyticsObservationMutation(baseOptions?: Apollo.MutationHoo
 export type AnalyticsObservationMutationHookResult = ReturnType<typeof useAnalyticsObservationMutation>;
 export type AnalyticsObservationMutationResult = Apollo.MutationResult<AnalyticsObservationMutation>;
 export type AnalyticsObservationMutationOptions = Apollo.BaseMutationOptions<AnalyticsObservationMutation, AnalyticsObservationMutationVariables>;
+export const GetTodaysSleepDocument = gql`
+    query GetTodaysSleep {
+  currentUser {
+    id
+    todaysSleep {
+      awake
+      rem
+      light
+      deep
+      awakenings
+      score
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetTodaysSleepQuery__
+ *
+ * To run a query within a React component, call `useGetTodaysSleepQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTodaysSleepQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTodaysSleepQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetTodaysSleepQuery(baseOptions?: Apollo.QueryHookOptions<GetTodaysSleepQuery, GetTodaysSleepQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTodaysSleepQuery, GetTodaysSleepQueryVariables>(GetTodaysSleepDocument, options);
+      }
+export function useGetTodaysSleepLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTodaysSleepQuery, GetTodaysSleepQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTodaysSleepQuery, GetTodaysSleepQueryVariables>(GetTodaysSleepDocument, options);
+        }
+export type GetTodaysSleepQueryHookResult = ReturnType<typeof useGetTodaysSleepQuery>;
+export type GetTodaysSleepLazyQueryHookResult = ReturnType<typeof useGetTodaysSleepLazyQuery>;
+export type GetTodaysSleepQueryResult = Apollo.QueryResult<GetTodaysSleepQuery, GetTodaysSleepQueryVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {

@@ -1,0 +1,13 @@
+query GetTodaysSleep {
+  currentUser {
+    id
+    todaysSleep {
+      awake
+      rem
+      light
+      deep
+      awakenings
+      score
+    }
+  }
+}

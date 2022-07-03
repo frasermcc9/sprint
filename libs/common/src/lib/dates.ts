@@ -7,12 +7,19 @@ export const calculateAge = (dob: string) => {
 export const readableTime = (seconds: number) =>
   format(seconds * 1000, "hh:mm:ss");
 
-export const readableTimeNoSeconds = (minutes: number) =>
-  readableTime(minutes * 60)
-    .split(":")
-    .slice(0, 2)
-    .join(":")
-    .replace(/^0+/, "");
+export const readableTimeNoSeconds = (
+  minutes: number,
+  { suffix }: { suffix?: boolean } = {},
+) =>
+  minutes > 60
+    ? new Date(minutes * 60 * 1000)
+        .toISOString()
+        .slice(11, 16)
+        .replace(/^0/, "") + (suffix ? "h" : "")
+    : new Date(minutes * 60 * 1000)
+        .toISOString()
+        .slice(14, 16)
+        .replace(/^0/, "") + (suffix ? "m" : "");
 
 const formatYYYYMMDD = new Intl.DateTimeFormat("fr-CA", {
   year: "numeric",
@@ -42,12 +49,3 @@ export const daysForLocale = (
     format(new Date(Date.UTC(2021, 5, day))),
   );
 };
-
-const solution = (N: number, A: number[]) =>
-  A.reduce(
-    (acc, cur) =>
-      cur > N
-        ? [...Array(N)].fill(Math.max(...acc))
-        : Object.assign([], acc, { [cur - 1]: acc[cur - 1] + 1 }),
-    [...Array(N)].fill(0),
-  );
