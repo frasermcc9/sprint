@@ -7,6 +7,8 @@ export class RunResolver {
 
   @Mutation()
   async createRun(
+    @Args("userId") userId: string,
+    @Args("maxHR") maxHR: number,
     @Args("token") token: string,
     @Args("startDate") startDate: string,
     @Args("endDate") endDate: string,
@@ -14,29 +16,17 @@ export class RunResolver {
     @Args("endTime") endTime: string,
     @Args("intensityFB") fb: number,
   ) {
-    const intraDayActivity = this.runService.createRun(
+    return this.runService.createRun(
+      userId,
+      maxHR,
       token,
       startDate,
       endDate,
       startTime,
       endTime,
+      fb,
     );
-    const hrActivity = Object.values(intraDayActivity);
 
-    const timeStart = new Date(startDate + "T" + startTime);
-    const timeEnd = new Date(endDate + "T" + endTime);
-    const durationMins = (timeEnd.getTime() - timeStart.getTime()) / 1000 / 60;
-
-    const newRun = {
-      userId: "",
-      date: startDate,
-      duration: durationMins,
-      heartRate: hrActivity,
-      vo2max: null,
-      intensityFeedback: fb,
-    };
-
-    return newRun;
     //TODO: get userID, create run object, add run to user
   }
 }

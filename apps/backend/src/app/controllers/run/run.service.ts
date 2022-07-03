@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Run, RunCollection } from "../../db/schema/run.schema";
+import { calculateVO2max } from "../../service/run-processing/runProcessing";
 
 @Injectable()
 export class RunService {
@@ -19,11 +20,14 @@ export class RunService {
    * @param dateEnd date in format YYYY-MM-DD
    */
   async createRun(
+    userID: string,
+    maxHR: number,
     access_token: string,
     dateStart: string,
     dateEnd: string,
     startTime: string,
     endTime: string,
+    intensityFB: number,
   ) {
     try {
       const res = await fetch(
@@ -33,7 +37,27 @@ export class RunService {
           headers: { Authorization: `Bearer ${access_token}` },
         },
       );
-      return res.json;
+      const data = await res.json();
+      const hrActivity = Object.values(data);
+
+      const timeStart = new Date(dateStart + "T" + startTime);
+      const timeEnd = new Date(dateEnd + "T" + endTime);
+      const durationMins =
+        (timeEnd.getTime() - timeStart.getTime()) / 1000 / 60;
+
+      const vo2Max = calculateVO2max(data, maxHR);
+
+      const newRun = {
+        userId: userID,
+        date: dateStart,
+        duration: durationMins,
+        heartRate: hrActivity,
+        vo2max: vo2Max,
+        intensityFeedback: intensityFB,
+      };
+
+      this.runModel.create(newRun);
+      return newRun;
     } catch (e) {
       console.error(e.toJSON());
     }
