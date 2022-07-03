@@ -211,4 +211,41 @@ export class UserResolver {
   async friendRequests(@Parent() user: FitbitUser) {
     return this.userService.getFriendRequests(user.id);
   }
+
+  @ResolveField()
+  async todaysSleep(@User() user: FitbitUser): Promise<unknown> {
+    const sleepToday = await this.userService.getSleepData(user.token);
+
+    if (sleepToday.sleep.length === 0) {
+      return null;
+    }
+
+    const mainSleep = sleepToday.sleep.find((s) => s.isMainSleep);
+    if (!mainSleep) {
+      return null;
+    }
+
+    const {
+      levels: {
+        summary: { deep, light, rem, wake },
+      },
+    } = mainSleep;
+
+    const score = this.userService.getSleepScore({
+      awake: wake.minutes,
+      rem: rem.minutes,
+      awakenings: wake.count,
+      deep: deep.minutes,
+      light: light.minutes,
+    });
+
+    return {
+      rem: rem.minutes,
+      light: light.minutes,
+      awake: wake.minutes,
+      deep: deep.minutes,
+      awakenings: wake.count,
+      score,
+    };
+  }
 }

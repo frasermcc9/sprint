@@ -31,6 +31,7 @@ export interface TopBadge {
 
 export type FitbitUser = Partial<{
   id: string;
+  token: string;
   age: number;
   ambassador: boolean;
   autoStrideEnabled: boolean;
