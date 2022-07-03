@@ -31,7 +31,7 @@ import {
 } from "@sprint/gql";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles.css";
@@ -64,7 +64,7 @@ const tabs: Tab[] = [
 ];
 
 const httpLink = createHttpLink({
-  uri: "http://192.168.1.40:3333/graphql",
+  uri: "http://localhost:3333/graphql",
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -110,7 +110,6 @@ const authLink = setContext(async (_, { headers }) => {
 
     const {
       data: { refresh },
-      errors,
     } = await unauthenticatedClient.mutate<
       RefreshMutation,
       RefreshMutationVariables

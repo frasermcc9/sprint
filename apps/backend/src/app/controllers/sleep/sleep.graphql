@@ -1,0 +1,8 @@
+type Sleep {
+  awake: Int!
+  rem: Int!
+  light: Int!
+  deep: Int!
+  awakenings: Int!
+  score: Int!
+}

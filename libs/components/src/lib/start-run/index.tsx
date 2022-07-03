@@ -36,7 +36,7 @@ export const StartRun: React.FC<StartRunProps> = ({ useController }) => {
           <div className="flex h-full items-center justify-around p-1">
             <div className="text-shadow-md flex flex-col gap-y-2">
               <span className="text-xl font-bold">Quick Run</span>
-              <div className="text-sm font-normal">
+              <div className="w-60 text-sm font-normal">
                 Quickly start a new running session
               </div>
             </div>

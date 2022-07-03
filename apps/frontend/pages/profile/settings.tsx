@@ -102,13 +102,7 @@ export const Settings: React.FC = () => {
   } = data;
 
   return (
-    <Layout.Page
-      animation={{
-        hidden: { opacity: 0, x: 0, y: 200 },
-        enter: { opacity: 1, x: 0, y: 0 },
-        exit: { opacity: 0, x: 0, y: 200 },
-      }}
-    >
+    <Layout.Page animation={Layout.PageUpAnimation}>
       <Layout.Header>
         <div className="font-palanquin flex w-full items-center border-b-2 border-gray-300 py-2 text-gray-700">
           <div className="invisible mx-8 w-32" />

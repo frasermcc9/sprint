@@ -2,14 +2,14 @@ import { FCC } from "@sprint/common";
 import classNames from "classnames";
 import React, { ComponentProps } from "react";
 
-interface IconButtonProps {
+export interface IconButtonProps {
   Icon: React.ComponentType<ComponentProps<"svg">>;
   onClick?: () => void;
   className?: string;
   twSize?: string;
 }
 
-const IconButton: FCC<IconButtonProps> = ({
+export const IconButton: FCC<IconButtonProps> = ({
   Icon,
   children,
   onClick,

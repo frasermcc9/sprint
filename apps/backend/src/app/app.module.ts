@@ -14,6 +14,7 @@ import { User, UserSchema } from "./db/schema/user.schema";
 import { UserModule } from "./controllers/user/user.module";
 import { RunModule } from "./controllers/run/run.module";
 import { ScienceModule } from "./controllers/science/science.module";
+import { SleepModule } from "./controllers/sleep/sleep.module";
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ScienceModule } from "./controllers/science/science.module";
     UserModule,
     RunModule,
     ScienceModule,
+    SleepModule,
   ],
   controllers: [AppController],
   providers: [AppService, FitbitGuard, FitbitStrategy],

@@ -67,6 +67,15 @@ export interface AnalyticsEvent {
     payload?: Nullable<string>;
 }
 
+export interface Sleep {
+    awake: number;
+    rem: number;
+    light: number;
+    deep: number;
+    awakenings: number;
+    score: number;
+}
+
 export interface User {
     id: string;
     firstName: string;
@@ -85,6 +94,7 @@ export interface User {
     friends: Nullable<PublicUser>[];
     friendRequests: Nullable<PublicUser>[];
     currentRunParams: RunParams;
+    todaysSleep?: Nullable<Sleep>;
 }
 
 export interface RunParams {

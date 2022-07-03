@@ -79,6 +79,7 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
 
       // move encodedId to id for easier access
       castedUser.id = castedUser.encodedId;
+      castedUser.token = bearer;
 
       if (!isCacheValid) {
         this.userCache.set(userId, {
