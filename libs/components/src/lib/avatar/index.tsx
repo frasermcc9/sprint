@@ -8,13 +8,18 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 export interface AvatarProps {
   avatarUrl: string;
   showEdit?: boolean;
+  userId: string;
 }
 
-export const Avatar: React.FC<AvatarProps> = ({ avatarUrl, showEdit }) => {
+export const Avatar: React.FC<AvatarProps> = ({
+  avatarUrl,
+  showEdit,
+  userId,
+}) => {
   const [profilePicture, setProfilePicture] = useState(avatarUrl);
   const hiddenFileInput = React.useRef(null);
 
-  const imageRef = ref(storage, "image");
+  const imageRef = ref(storage, `user-content/${userId}/profile-image`);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files[0]) {
