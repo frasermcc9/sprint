@@ -15,6 +15,7 @@ type Mutation {
   # Returns the rejected user ID
   rejectFriendRequest(friendId: ID!): ID!
   updateRunParams(intensityFeedBack: Int!): User
+  updateProfilePic(pic: String!): User
 }
 
 type Query {
