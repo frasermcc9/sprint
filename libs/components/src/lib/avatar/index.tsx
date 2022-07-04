@@ -11,25 +11,19 @@ export interface AvatarProps {
 }
 
 export const Avatar: React.FC<AvatarProps> = ({ avatarUrl, showEdit }) => {
-  const [image, setImage] = useState(null);
   const [profilePicture, setProfilePicture] = useState(avatarUrl);
   const hiddenFileInput = React.useRef(null);
 
   const imageRef = ref(storage, "image");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("file Changed");
     if (e.target.files[0]) {
-      setImage(e.target.files[0]);
-
-      console.log(e.target.files[0]);
-
       uploadBytes(imageRef, e.target.files[0])
         .then(() => {
           getDownloadURL(imageRef)
             .then((url) => {
               setProfilePicture(url);
-              console.log("Image Url:" + url);
+              console.log("Profile Image Url:" + url);
             })
             .catch((error) => {
               console.log(error.message, "error getting the image url");

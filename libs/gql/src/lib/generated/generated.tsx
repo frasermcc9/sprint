@@ -57,6 +57,7 @@ export type Mutation = {
   updateDefaultRunDuration: Scalars['Int'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
   updateProfile?: Maybe<User>;
+  updateProfilePic?: Maybe<User>;
   updateRunParams?: Maybe<User>;
 };
 
@@ -114,6 +115,11 @@ export type MutationUpdateProfileArgs = {
   dob: Scalars['String'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
+};
+
+
+export type MutationUpdateProfilePicArgs = {
+  pic: Scalars['String'];
 };
 
 
