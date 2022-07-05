@@ -8,8 +8,7 @@
     "https://api.fitbit.com/1.2/user/-/sleep/date/2022-07-4.json",
     {
       headers: {
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMzg2SjkiLCJzdWIiOiI5WERGREMiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3aHIgd3BybyB3bnV0IHdzbGUgd3dlaSB3c29jIHdhY3Qgd3NldCB3bG9jIiwiZXhwIjoxNjU2OTQ4MjI2LCJpYXQiOjE2NTY5MTk0MjZ9.mOoEFzCQqoDw-npYVkIJgTOXEkDIYaC7uMExrlpite4",
+        Authorization: "Bearer ",
       },
       method: "GET",
     },
