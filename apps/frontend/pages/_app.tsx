@@ -86,15 +86,25 @@ const authLink = setContext(async (_, { headers }) => {
   // get the authentication token from local storage if it exists
   const authDetailsStr = localStorage.getItem(LocalStorageKeys.AUTH_DETAILS);
 
-  const { access_token, refresh_token }: LoginMutation["login"] = authDetailsStr
+  const loginData: LoginMutation["login"] = authDetailsStr
     ? JSON.parse(authDetailsStr)
     : {};
 
+  if (!loginData) {
+    return {
+      headers: {
+        ...headers,
+      },
+    };
+  }
+
+  const { access_token, refresh_token } = loginData;
+
   const expireUnixSeconds =
-    +localStorage.getItem(LocalStorageKeys.AUTH_EXPIRY) / 1000;
+    +(localStorage.getItem(LocalStorageKeys.AUTH_EXPIRY) ?? 0) / 1000;
   const nowUnixSeconds = Date.now() / 1000;
 
-  if (!access_token) {
+  if (!access_token || !refresh_token) {
     return {
       headers,
     };
@@ -108,9 +118,7 @@ const authLink = setContext(async (_, { headers }) => {
   if (expireUnixSeconds && nowUnixSeconds > expireUnixSeconds) {
     useExternalLog("ApolloAuthentication", "Refreshing token");
 
-    const {
-      data: { refresh },
-    } = await unauthenticatedClient.mutate<
+    const { data } = await unauthenticatedClient.mutate<
       RefreshMutation,
       RefreshMutationVariables
     >({
@@ -121,17 +129,18 @@ const authLink = setContext(async (_, { headers }) => {
     });
 
     // refresh expires_in is in seconds
-    const expiryTime = Date.now() + refresh.expires_in * 1000 - 1000;
+    const expiryTime =
+      Date.now() + (data?.refresh?.expires_in ?? 0) * 1000 - 1000;
     localStorage.setItem(
       LocalStorageKeys.AUTH_DETAILS,
-      JSON.stringify(refresh),
+      JSON.stringify(data?.refresh),
     );
     localStorage.setItem(LocalStorageKeys.AUTH_EXPIRY, expiryTime.toString());
 
     return {
       headers: {
         ...headers,
-        authorization: `Bearer ${refresh.access_token}`,
+        authorization: `Bearer ${data?.refresh?.access_token}`,
       },
     };
   }
