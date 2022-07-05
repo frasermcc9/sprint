@@ -1,4 +1,4 @@
-query GetTodaysSleep {
+query MostRecentSleep {
   currentUser {
     id
     todaysSleep {
@@ -8,6 +8,49 @@ query GetTodaysSleep {
       deep
       awakenings
       score
+      date
+      variables {
+        name
+        emoji
+        custom
+      }
     }
   }
+}
+
+query CustomSleepVariables {
+  currentUser {
+    id
+    sleepVariables {
+      name
+      emoji
+      custom
+    }
+  }
+}
+
+mutation SetSleepVariables($sleepDate: String!, $variables: [String!]!) {
+  setSleepVariables(sleepDate: $sleepDate, variables: $variables)
+}
+
+mutation AddSleepVariable(
+  $name: String!
+  $emoji: String!
+  $sleepDate: String!
+  $custom: Boolean!
+) {
+  addSleepVariable(
+    custom: $custom
+    emoji: $emoji
+    name: $name
+    sleepDate: $sleepDate
+  ) {
+    name
+    emoji
+    custom
+  }
+}
+
+mutation RemoveSleepVariable($name: String!, $sleepDate: String!) {
+  removeSleepVariable(name: $name, sleepDate: $sleepDate)
 }

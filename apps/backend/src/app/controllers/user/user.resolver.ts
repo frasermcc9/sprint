@@ -1,25 +1,27 @@
 import { UseGuards } from "@nestjs/common";
 import {
-  Resolver,
-  Query,
-  Mutation,
   Args,
-  ResolveField,
+  Mutation,
   Parent,
+  Query,
+  ResolveField,
+  Resolver,
 } from "@nestjs/graphql";
 import { calculateMaxHr, Feature } from "@sprint/common";
-import { calculateNewParams } from "../../service/run-processing/runProcessing";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
 import { User } from "../../middleware/user.decorator";
+import { formatDuration } from "../../service/run-processing/run-duration";
+import { calculateNewParams } from "../../service/run-processing/runProcessing";
 import {
   AccountStage,
   ExperienceLevel,
   PublicUser,
+  Sleep,
+  SleepVariable,
   User as GQLUser,
 } from "../../types/graphql";
 import { UserService } from "./user.service";
-import { formatDuration } from "../../service/run-processing/run-duration";
 
 @Resolver("User")
 @Resolver("PublicUser")
@@ -51,6 +53,11 @@ export class UserResolver {
   @Query()
   async prepRun(@User() user: FitbitUser, @Args("duration") duration: number) {
     const dbUser = await this.userService.getUser(user.id);
+
+    if (!dbUser.currentRunParams) {
+      return null;
+    }
+
     return formatDuration(dbUser.currentRunParams, duration);
   }
 
@@ -137,6 +144,7 @@ export class UserResolver {
     @Args("duration") duration: number,
   ) {
     const dbUser = await this.userService.getUser(user.id);
+
     dbUser.defaultRunDuration = duration;
     await dbUser.save();
 
@@ -149,6 +157,8 @@ export class UserResolver {
     @Args("feature") feature: Feature,
   ) {
     const dbUser = await this.userService.getUser(user.id);
+    if (!dbUser) return null;
+
     dbUser.featuresSeen = dbUser.featuresSeen ?? [];
     if (!dbUser.featuresSeen.includes(feature)) {
       dbUser.featuresSeen.push(feature);
@@ -191,24 +201,26 @@ export class UserResolver {
     @Args("intensityFeedback") intensityFeedback: number,
   ) {
     const dbUser = await this.userService.getUser(user.id);
+    if (!dbUser || !dbUser.currentRunParams) return null;
+
     const currentParams = dbUser.currentRunParams;
     const newParams = calculateNewParams(currentParams, intensityFeedback);
 
     dbUser.currentRunParams = newParams;
 
-    return await dbUser.save();
+    return await dbUser?.save();
   }
 
   @ResolveField()
   async maxHr(@Parent() user: FitbitUser): Promise<number> {
     const dbUser = await this.userService.getUser(user.id);
-    return calculateMaxHr(dbUser.dob);
+    return calculateMaxHr(dbUser?.dob);
   }
 
   @ResolveField()
   async runs(@Parent() user: FitbitUser) {
     const dbUser = await this.userService.getUser(user.id);
-    return dbUser.runs ?? [];
+    return dbUser?.runs ?? [];
   }
 
   @ResolveField()
@@ -225,39 +237,29 @@ export class UserResolver {
   }
 
   @ResolveField()
-  async todaysSleep(@User() user: FitbitUser): Promise<unknown> {
-    const sleepToday = await this.userService.getSleepData(user.token);
+  async todaysSleep(@User() user: FitbitUser): Promise<Partial<Sleep> | null> {
+    const sleepToday = await this.userService.getSleepData(user.id, user.token);
 
-    if (sleepToday.sleep.length === 0) {
-      return null;
-    }
+    if (!sleepToday) return null;
 
-    const mainSleep = sleepToday.sleep.find((s) => s.isMainSleep);
-    if (!mainSleep) {
-      return null;
-    }
-
-    const {
-      levels: {
-        summary: { deep, light, rem, wake },
-      },
-    } = mainSleep;
-
-    const score = this.userService.getSleepScore({
-      awake: wake.minutes,
-      rem: rem.minutes,
-      awakenings: wake.count,
-      deep: deep.minutes,
-      light: light.minutes,
-    });
+    const { awake, awakenings, deep, light, rem, date } = sleepToday;
 
     return {
-      rem: rem.minutes,
-      light: light.minutes,
-      awake: wake.minutes,
-      deep: deep.minutes,
-      awakenings: wake.count,
-      score,
+      awake,
+      awakenings,
+      deep,
+      light,
+      rem,
+      ownerId: user.id,
+      date,
     };
+  }
+
+  @ResolveField()
+  async sleepVariables(
+    @User() user: FitbitUser,
+  ): Promise<Partial<SleepVariable>[]> {
+    const dbUser = await this.userService.getUser(user.id);
+    return dbUser?.sleepVariables ?? [];
   }
 }

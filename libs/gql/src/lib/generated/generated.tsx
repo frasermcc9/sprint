@@ -47,13 +47,16 @@ export enum ExperienceLevel {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptFriendRequest: PublicUser;
+  addSleepVariable?: Maybe<SleepVariable>;
   completeOnboarding?: Maybe<User>;
   createEvent?: Maybe<AnalyticsEvent>;
   login?: Maybe<Auth>;
   markFeatureSeen: Array<Maybe<Scalars['String']>>;
   refresh?: Maybe<Auth>;
   rejectFriendRequest: Scalars['ID'];
+  removeSleepVariable?: Maybe<Scalars['String']>;
   sendFriendRequest?: Maybe<Scalars['Boolean']>;
+  setSleepVariables: Array<Maybe<Scalars['String']>>;
   updateDefaultRunDuration: Scalars['Int'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
   updateProfile?: Maybe<User>;
@@ -64,6 +67,14 @@ export type Mutation = {
 
 export type MutationAcceptFriendRequestArgs = {
   friendId: Scalars['ID'];
+};
+
+
+export type MutationAddSleepVariableArgs = {
+  custom: Scalars['Boolean'];
+  emoji: Scalars['String'];
+  name: Scalars['String'];
+  sleepDate: Scalars['String'];
 };
 
 
@@ -101,8 +112,20 @@ export type MutationRejectFriendRequestArgs = {
 };
 
 
+export type MutationRemoveSleepVariableArgs = {
+  name: Scalars['String'];
+  sleepDate: Scalars['String'];
+};
+
+
 export type MutationSendFriendRequestArgs = {
   friendId: Scalars['ID'];
+};
+
+
+export type MutationSetSleepVariablesArgs = {
+  sleepDate: Scalars['String'];
+  variables: Array<InputMaybe<Scalars['String']>>;
 };
 
 
@@ -169,10 +192,20 @@ export type Sleep = {
   __typename?: 'Sleep';
   awake: Scalars['Int'];
   awakenings: Scalars['Int'];
+  date: Scalars['String'];
   deep: Scalars['Int'];
   light: Scalars['Int'];
+  ownerId: Scalars['ID'];
   rem: Scalars['Int'];
   score: Scalars['Int'];
+  variables?: Maybe<Array<Maybe<SleepVariable>>>;
+};
+
+export type SleepVariable = {
+  __typename?: 'SleepVariable';
+  custom: Scalars['Boolean'];
+  emoji?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type User = {
@@ -191,6 +224,7 @@ export type User = {
   lastName: Scalars['String'];
   maxHr: Scalars['Int'];
   runs?: Maybe<Array<Maybe<Run>>>;
+  sleepVariables?: Maybe<Array<Maybe<SleepVariable>>>;
   stage: AccountStage;
   todaysSleep?: Maybe<Sleep>;
   utcOffset: Scalars['Float'];
@@ -234,10 +268,41 @@ export type AnalyticsObservationMutationVariables = Exact<{
 
 export type AnalyticsObservationMutation = { __typename?: 'Mutation', createEvent?: { __typename?: 'AnalyticsEvent', user: string, event: string, payload?: string | null } | null };
 
-export type GetTodaysSleepQueryVariables = Exact<{ [key: string]: never; }>;
+export type MostRecentSleepQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTodaysSleepQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, todaysSleep?: { __typename?: 'Sleep', awake: number, rem: number, light: number, deep: number, awakenings: number, score: number } | null } | null };
+export type MostRecentSleepQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, todaysSleep?: { __typename?: 'Sleep', awake: number, rem: number, light: number, deep: number, awakenings: number, score: number, date: string, variables?: Array<{ __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null> | null } | null } | null };
+
+export type CustomSleepVariablesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CustomSleepVariablesQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, sleepVariables?: Array<{ __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null> | null } | null };
+
+export type SetSleepVariablesMutationVariables = Exact<{
+  sleepDate: Scalars['String'];
+  variables: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type SetSleepVariablesMutation = { __typename?: 'Mutation', setSleepVariables: Array<string | null> };
+
+export type AddSleepVariableMutationVariables = Exact<{
+  name: Scalars['String'];
+  emoji: Scalars['String'];
+  sleepDate: Scalars['String'];
+  custom: Scalars['Boolean'];
+}>;
+
+
+export type AddSleepVariableMutation = { __typename?: 'Mutation', addSleepVariable?: { __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null };
+
+export type RemoveSleepVariableMutationVariables = Exact<{
+  name: Scalars['String'];
+  sleepDate: Scalars['String'];
+}>;
+
+
+export type RemoveSleepVariableMutation = { __typename?: 'Mutation', removeSleepVariable?: string | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -490,8 +555,8 @@ export function useAnalyticsObservationMutation(baseOptions?: Apollo.MutationHoo
 export type AnalyticsObservationMutationHookResult = ReturnType<typeof useAnalyticsObservationMutation>;
 export type AnalyticsObservationMutationResult = Apollo.MutationResult<AnalyticsObservationMutation>;
 export type AnalyticsObservationMutationOptions = Apollo.BaseMutationOptions<AnalyticsObservationMutation, AnalyticsObservationMutationVariables>;
-export const GetTodaysSleepDocument = gql`
-    query GetTodaysSleep {
+export const MostRecentSleepDocument = gql`
+    query MostRecentSleep {
   currentUser {
     id
     todaysSleep {
@@ -501,37 +566,189 @@ export const GetTodaysSleepDocument = gql`
       deep
       awakenings
       score
+      date
+      variables {
+        name
+        emoji
+        custom
+      }
     }
   }
 }
     `;
 
 /**
- * __useGetTodaysSleepQuery__
+ * __useMostRecentSleepQuery__
  *
- * To run a query within a React component, call `useGetTodaysSleepQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTodaysSleepQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useMostRecentSleepQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMostRecentSleepQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetTodaysSleepQuery({
+ * const { data, loading, error } = useMostRecentSleepQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetTodaysSleepQuery(baseOptions?: Apollo.QueryHookOptions<GetTodaysSleepQuery, GetTodaysSleepQueryVariables>) {
+export function useMostRecentSleepQuery(baseOptions?: Apollo.QueryHookOptions<MostRecentSleepQuery, MostRecentSleepQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTodaysSleepQuery, GetTodaysSleepQueryVariables>(GetTodaysSleepDocument, options);
+        return Apollo.useQuery<MostRecentSleepQuery, MostRecentSleepQueryVariables>(MostRecentSleepDocument, options);
       }
-export function useGetTodaysSleepLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTodaysSleepQuery, GetTodaysSleepQueryVariables>) {
+export function useMostRecentSleepLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MostRecentSleepQuery, MostRecentSleepQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTodaysSleepQuery, GetTodaysSleepQueryVariables>(GetTodaysSleepDocument, options);
+          return Apollo.useLazyQuery<MostRecentSleepQuery, MostRecentSleepQueryVariables>(MostRecentSleepDocument, options);
         }
-export type GetTodaysSleepQueryHookResult = ReturnType<typeof useGetTodaysSleepQuery>;
-export type GetTodaysSleepLazyQueryHookResult = ReturnType<typeof useGetTodaysSleepLazyQuery>;
-export type GetTodaysSleepQueryResult = Apollo.QueryResult<GetTodaysSleepQuery, GetTodaysSleepQueryVariables>;
+export type MostRecentSleepQueryHookResult = ReturnType<typeof useMostRecentSleepQuery>;
+export type MostRecentSleepLazyQueryHookResult = ReturnType<typeof useMostRecentSleepLazyQuery>;
+export type MostRecentSleepQueryResult = Apollo.QueryResult<MostRecentSleepQuery, MostRecentSleepQueryVariables>;
+export const CustomSleepVariablesDocument = gql`
+    query CustomSleepVariables {
+  currentUser {
+    id
+    sleepVariables {
+      name
+      emoji
+      custom
+    }
+  }
+}
+    `;
+
+/**
+ * __useCustomSleepVariablesQuery__
+ *
+ * To run a query within a React component, call `useCustomSleepVariablesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCustomSleepVariablesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCustomSleepVariablesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCustomSleepVariablesQuery(baseOptions?: Apollo.QueryHookOptions<CustomSleepVariablesQuery, CustomSleepVariablesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CustomSleepVariablesQuery, CustomSleepVariablesQueryVariables>(CustomSleepVariablesDocument, options);
+      }
+export function useCustomSleepVariablesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CustomSleepVariablesQuery, CustomSleepVariablesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CustomSleepVariablesQuery, CustomSleepVariablesQueryVariables>(CustomSleepVariablesDocument, options);
+        }
+export type CustomSleepVariablesQueryHookResult = ReturnType<typeof useCustomSleepVariablesQuery>;
+export type CustomSleepVariablesLazyQueryHookResult = ReturnType<typeof useCustomSleepVariablesLazyQuery>;
+export type CustomSleepVariablesQueryResult = Apollo.QueryResult<CustomSleepVariablesQuery, CustomSleepVariablesQueryVariables>;
+export const SetSleepVariablesDocument = gql`
+    mutation SetSleepVariables($sleepDate: String!, $variables: [String!]!) {
+  setSleepVariables(sleepDate: $sleepDate, variables: $variables)
+}
+    `;
+export type SetSleepVariablesMutationFn = Apollo.MutationFunction<SetSleepVariablesMutation, SetSleepVariablesMutationVariables>;
+
+/**
+ * __useSetSleepVariablesMutation__
+ *
+ * To run a mutation, you first call `useSetSleepVariablesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetSleepVariablesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setSleepVariablesMutation, { data, loading, error }] = useSetSleepVariablesMutation({
+ *   variables: {
+ *      sleepDate: // value for 'sleepDate'
+ *      variables: // value for 'variables'
+ *   },
+ * });
+ */
+export function useSetSleepVariablesMutation(baseOptions?: Apollo.MutationHookOptions<SetSleepVariablesMutation, SetSleepVariablesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetSleepVariablesMutation, SetSleepVariablesMutationVariables>(SetSleepVariablesDocument, options);
+      }
+export type SetSleepVariablesMutationHookResult = ReturnType<typeof useSetSleepVariablesMutation>;
+export type SetSleepVariablesMutationResult = Apollo.MutationResult<SetSleepVariablesMutation>;
+export type SetSleepVariablesMutationOptions = Apollo.BaseMutationOptions<SetSleepVariablesMutation, SetSleepVariablesMutationVariables>;
+export const AddSleepVariableDocument = gql`
+    mutation AddSleepVariable($name: String!, $emoji: String!, $sleepDate: String!, $custom: Boolean!) {
+  addSleepVariable(
+    custom: $custom
+    emoji: $emoji
+    name: $name
+    sleepDate: $sleepDate
+  ) {
+    name
+    emoji
+    custom
+  }
+}
+    `;
+export type AddSleepVariableMutationFn = Apollo.MutationFunction<AddSleepVariableMutation, AddSleepVariableMutationVariables>;
+
+/**
+ * __useAddSleepVariableMutation__
+ *
+ * To run a mutation, you first call `useAddSleepVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddSleepVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addSleepVariableMutation, { data, loading, error }] = useAddSleepVariableMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      emoji: // value for 'emoji'
+ *      sleepDate: // value for 'sleepDate'
+ *      custom: // value for 'custom'
+ *   },
+ * });
+ */
+export function useAddSleepVariableMutation(baseOptions?: Apollo.MutationHookOptions<AddSleepVariableMutation, AddSleepVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddSleepVariableMutation, AddSleepVariableMutationVariables>(AddSleepVariableDocument, options);
+      }
+export type AddSleepVariableMutationHookResult = ReturnType<typeof useAddSleepVariableMutation>;
+export type AddSleepVariableMutationResult = Apollo.MutationResult<AddSleepVariableMutation>;
+export type AddSleepVariableMutationOptions = Apollo.BaseMutationOptions<AddSleepVariableMutation, AddSleepVariableMutationVariables>;
+export const RemoveSleepVariableDocument = gql`
+    mutation RemoveSleepVariable($name: String!, $sleepDate: String!) {
+  removeSleepVariable(name: $name, sleepDate: $sleepDate)
+}
+    `;
+export type RemoveSleepVariableMutationFn = Apollo.MutationFunction<RemoveSleepVariableMutation, RemoveSleepVariableMutationVariables>;
+
+/**
+ * __useRemoveSleepVariableMutation__
+ *
+ * To run a mutation, you first call `useRemoveSleepVariableMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveSleepVariableMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeSleepVariableMutation, { data, loading, error }] = useRemoveSleepVariableMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      sleepDate: // value for 'sleepDate'
+ *   },
+ * });
+ */
+export function useRemoveSleepVariableMutation(baseOptions?: Apollo.MutationHookOptions<RemoveSleepVariableMutation, RemoveSleepVariableMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveSleepVariableMutation, RemoveSleepVariableMutationVariables>(RemoveSleepVariableDocument, options);
+      }
+export type RemoveSleepVariableMutationHookResult = ReturnType<typeof useRemoveSleepVariableMutation>;
+export type RemoveSleepVariableMutationResult = Apollo.MutationResult<RemoveSleepVariableMutation>;
+export type RemoveSleepVariableMutationOptions = Apollo.BaseMutationOptions<RemoveSleepVariableMutation, RemoveSleepVariableMutationVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {

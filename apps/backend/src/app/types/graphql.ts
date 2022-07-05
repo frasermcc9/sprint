@@ -39,6 +39,9 @@ export interface IMutation {
     login(code: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     refresh(token: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     createEvent(event: string, payload?: Nullable<string>): Nullable<AnalyticsEvent> | Promise<Nullable<AnalyticsEvent>>;
+    setSleepVariables(variables: Nullable<string>[], sleepDate: string): Nullable<string>[] | Promise<Nullable<string>[]>;
+    addSleepVariable(name: string, emoji: string, custom: boolean, sleepDate: string): Nullable<SleepVariable> | Promise<Nullable<SleepVariable>>;
+    removeSleepVariable(name: string, sleepDate: string): Nullable<string> | Promise<Nullable<string>>;
     updateExperienceLevel(): Nullable<ExperienceLevel> | Promise<Nullable<ExperienceLevel>>;
     completeOnboarding(experience: ExperienceLevel, firstName: string, lastName: string, dob: string): Nullable<User> | Promise<Nullable<User>>;
     updateDefaultRunDuration(duration: number): number | Promise<number>;
@@ -75,6 +78,15 @@ export interface Sleep {
     deep: number;
     awakenings: number;
     score: number;
+    ownerId: string;
+    date: string;
+    variables?: Nullable<Nullable<SleepVariable>[]>;
+}
+
+export interface SleepVariable {
+    name: string;
+    emoji?: Nullable<string>;
+    custom: boolean;
 }
 
 export interface User {
@@ -96,6 +108,7 @@ export interface User {
     friendRequests: Nullable<PublicUser>[];
     currentRunParams: RunParams;
     todaysSleep?: Nullable<Sleep>;
+    sleepVariables?: Nullable<Nullable<SleepVariable>[]>;
 }
 
 export interface RunParams {

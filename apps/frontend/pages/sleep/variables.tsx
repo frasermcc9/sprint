@@ -1,44 +1,114 @@
-import { Layout, useEmojiFactory } from "@sprint/components";
-import classNames from "classnames";
+import { Sleep } from "@sprint/common";
+import { Layout, SleepVariable } from "@sprint/components";
+import {
+  MostRecentSleepDocument,
+  MostRecentSleepQuery,
+  useAddSleepVariableMutation,
+  useCustomSleepVariablesQuery,
+  useMostRecentSleepQuery,
+  useRemoveSleepVariableMutation,
+} from "@sprint/gql";
 import { useRouter } from "next/router";
-import { useState } from "react";
-
-const defaultVariables = [
-  {
-    name: "Alcohol",
-    emoji: "🍺",
-  },
-  {
-    name: "Caffeine",
-    emoji: "☕",
-  },
-  {
-    name: "Shared Bed",
-    emoji: "🛌",
-  },
-  {
-    name: "Sick",
-    emoji: "🤒",
-  },
-  {
-    name: "Pet in Bedroom",
-    emoji: "🐶",
-  },
-  {
-    name: "Read In Bed",
-    emoji: "📖",
-  },
-  {
-    name: "Phone in Bed",
-    emoji: "📱",
-  },
-];
+import { useCallback, useMemo } from "react";
 
 const Index: React.FC = () => {
-  const { back } = useRouter();
-  const makeEmoji = useEmojiFactory();
+  const { back, query } = useRouter();
+  const date = query.date as string;
 
-  const [variables, setVariables] = useState<string[]>([]);
+  const { data: sleepData } = useMostRecentSleepQuery();
+  const { data: sleepVariables } = useCustomSleepVariablesQuery();
+
+  const [addVariableMut] = useAddSleepVariableMutation();
+  const [removeVariableMut] = useRemoveSleepVariableMutation();
+
+  const removeVariable = useCallback(
+    (name: string) => {
+      removeVariableMut({
+        variables: { name, sleepDate: date },
+        optimisticResponse: {
+          removeSleepVariable: name,
+        },
+        update: (cache, { data: newData }) => {
+          const oldData = cache.readQuery<MostRecentSleepQuery>({
+            query: MostRecentSleepDocument,
+          });
+
+          if (!oldData || !newData || !oldData.currentUser) {
+            return;
+          }
+
+          cache.writeQuery({
+            query: MostRecentSleepDocument,
+            data: {
+              currentUser: {
+                ...oldData.currentUser,
+                todaysSleep: {
+                  ...oldData.currentUser.todaysSleep,
+                  variables:
+                    oldData.currentUser?.todaysSleep?.variables?.filter(
+                      (v) => v?.name !== name,
+                    ),
+                },
+              },
+            },
+          });
+        },
+      });
+    },
+    [date, removeVariableMut],
+  );
+
+  const addVariable = useCallback(
+    (name: string, emoji: string, custom: boolean) => {
+      addVariableMut({
+        variables: { name, emoji, custom, sleepDate: date },
+        optimisticResponse: {
+          addSleepVariable: {
+            name,
+            emoji,
+            custom,
+          },
+        },
+        update: (cache, { data: newData }) => {
+          const oldData = cache.readQuery<MostRecentSleepQuery>({
+            query: MostRecentSleepDocument,
+          });
+
+          if (!oldData || !newData || !oldData.currentUser) {
+            return;
+          }
+
+          cache.writeQuery({
+            query: MostRecentSleepDocument,
+            data: {
+              currentUser: {
+                ...oldData.currentUser,
+                todaysSleep: {
+                  ...oldData.currentUser.todaysSleep,
+                  variables: [
+                    ...(oldData.currentUser.todaysSleep?.variables ?? []),
+                    newData?.addSleepVariable,
+                  ],
+                },
+              },
+            },
+          });
+        },
+      });
+    },
+    [addVariableMut, date],
+  );
+
+  const joinedVariables = useMemo(
+    () => [
+      ...Sleep.defaultVariables,
+      ...(sleepVariables?.currentUser?.sleepVariables ?? []),
+    ],
+    [sleepVariables?.currentUser?.sleepVariables],
+  );
+
+  const selectedVariables =
+    sleepData?.currentUser?.todaysSleep?.variables ?? [];
 
   return (
     <Layout.Page animation={Layout.PageUpAnimation}>
@@ -58,34 +128,24 @@ const Index: React.FC = () => {
       </Layout.Header>
 
       <div className="font-palanquin flex flex-col divide-y-2 divide-gray-300 text-xl font-light">
-        {defaultVariables.map(({ name, emoji }) => (
-          <div
-            key={name}
-            className={classNames(
-              "flex items-center justify-between px-4 transition-colors duration-100",
-              {
-                "bg-indigo-100": variables.includes(name),
-              },
-            )}
-            onClick={() => {
-              if (variables.includes(name)) {
-                return setVariables(variables.filter((v) => v !== name));
-              }
-              setVariables([...variables, name]);
-            }}
-          >
-            <div className="flex items-center gap-x-3 py-3">
-              <div>{makeEmoji(emoji, "24px")}</div>
-              <div>{name}</div>
-            </div>
-            <input
-              type="checkbox"
-              readOnly
-              className="pointer-events-none h-4 w-4"
-              checked={variables.includes(name)}
+        {joinedVariables.map((variable) => {
+          if (!variable) return null;
+          const { name, emoji, custom } = variable;
+          return (
+            <SleepVariable
+              key={name}
+              active={selectedVariables.some((v) => v?.name === name)}
+              emoji={emoji ?? ""}
+              name={name}
+              onClick={() => {
+                if (selectedVariables.some((v) => v?.name === name)) {
+                  return removeVariable(name);
+                }
+                return addVariable(name, emoji ?? "", custom);
+              }}
             />
-          </div>
-        ))}
+          );
+        })}
         <div></div>
       </div>
     </Layout.Page>
