@@ -20,11 +20,11 @@
 
   model.compile({
     loss: "meanSquaredError",
-    optimizer: tf.train.adam(0.05),
+    optimizer: tf.train.adam(0.02),
   });
 
   await model.fit(inputTensor, outputTensor, {
-    epochs: 100,
+    epochs: 40,
     shuffle: true,
     validationSplit: 0.2,
     verbose: 0,
