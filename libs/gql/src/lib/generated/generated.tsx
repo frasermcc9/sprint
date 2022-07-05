@@ -119,7 +119,7 @@ export type MutationUpdateProfileArgs = {
 
 
 export type MutationUpdateProfilePicArgs = {
-  pic: Scalars['String'];
+  avatarUrl: Scalars['String'];
 };
 
 
@@ -309,6 +309,13 @@ export type UpdateProfileMutationVariables = Exact<{
 
 
 export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile?: { __typename?: 'User', firstName: string, lastName: string, dob: string } | null };
+
+export type UpdateProfilePicMutationVariables = Exact<{
+  avatarUrl: Scalars['String'];
+}>;
+
+
+export type UpdateProfilePicMutation = { __typename?: 'Mutation', updateProfilePic?: { __typename?: 'User', avatarUrl: string } | null };
 
 
 export const LoginDocument = gql`
@@ -898,3 +905,36 @@ export function useUpdateProfileMutation(baseOptions?: Apollo.MutationHookOption
 export type UpdateProfileMutationHookResult = ReturnType<typeof useUpdateProfileMutation>;
 export type UpdateProfileMutationResult = Apollo.MutationResult<UpdateProfileMutation>;
 export type UpdateProfileMutationOptions = Apollo.BaseMutationOptions<UpdateProfileMutation, UpdateProfileMutationVariables>;
+export const UpdateProfilePicDocument = gql`
+    mutation updateProfilePic($avatarUrl: String!) {
+  updateProfilePic(avatarUrl: $avatarUrl) {
+    avatarUrl
+  }
+}
+    `;
+export type UpdateProfilePicMutationFn = Apollo.MutationFunction<UpdateProfilePicMutation, UpdateProfilePicMutationVariables>;
+
+/**
+ * __useUpdateProfilePicMutation__
+ *
+ * To run a mutation, you first call `useUpdateProfilePicMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProfilePicMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProfilePicMutation, { data, loading, error }] = useUpdateProfilePicMutation({
+ *   variables: {
+ *      avatarUrl: // value for 'avatarUrl'
+ *   },
+ * });
+ */
+export function useUpdateProfilePicMutation(baseOptions?: Apollo.MutationHookOptions<UpdateProfilePicMutation, UpdateProfilePicMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateProfilePicMutation, UpdateProfilePicMutationVariables>(UpdateProfilePicDocument, options);
+      }
+export type UpdateProfilePicMutationHookResult = ReturnType<typeof useUpdateProfilePicMutation>;
+export type UpdateProfilePicMutationResult = Apollo.MutationResult<UpdateProfilePicMutation>;
+export type UpdateProfilePicMutationOptions = Apollo.BaseMutationOptions<UpdateProfilePicMutation, UpdateProfilePicMutationVariables>;

@@ -122,11 +122,11 @@ export class UserResolver {
   @Mutation()
   async updateProfilePic(
     @User() user: FitbitUser,
-    @Args("photoUrl") photoUrl: string,
+    @Args("avatarUrl") avatarUrl: string,
   ) {
     const dbUser = await this.userService.getUser(user.id);
 
-    dbUser.avatarUrl = photoUrl;
+    dbUser.avatarUrl = avatarUrl;
 
     return await dbUser.save();
   }
