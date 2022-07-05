@@ -14,7 +14,7 @@ export default function Index() {
     return null;
   }
 
-  if (loading || !data.currentUser) {
+  if (loading || !data?.currentUser) {
     return <div>Loading...</div>;
   }
 

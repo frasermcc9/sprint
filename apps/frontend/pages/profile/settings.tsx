@@ -11,10 +11,12 @@ export const Settings: React.FC = () => {
   const { data, loading, error } = useCurrentUserQuery();
 
   const [firstName, setFirstName] = useLoadingState(
-    data?.currentUser?.firstName,
+    data?.currentUser?.firstName ?? "",
   );
-  const [lastName, setLastName] = useLoadingState(data?.currentUser?.lastName);
-  const [dob, setDob] = useLoadingState(data?.currentUser?.dob);
+  const [lastName, setLastName] = useLoadingState(
+    data?.currentUser?.lastName ?? "",
+  );
+  const [dob, setDob] = useLoadingState(data?.currentUser?.dob ?? "");
 
   const isChanged = useMemo(
     () =>
@@ -47,16 +49,16 @@ export const Settings: React.FC = () => {
         },
       },
       update: (cache, { data: updated }) => {
-        if (!updated?.updateProfile) {
+        if (!updated?.updateProfile || !data?.currentUser) {
           return;
         }
 
         cache.modify({
           id: cache.identify(data.currentUser),
           fields: {
-            firstName: () => updated.updateProfile.firstName,
-            lastName: () => updated.updateProfile.lastName,
-            dob: () => updated.updateProfile.dob,
+            firstName: () => updated.updateProfile?.firstName,
+            lastName: () => updated.updateProfile?.lastName,
+            dob: () => updated.updateProfile?.dob,
           },
         });
       },

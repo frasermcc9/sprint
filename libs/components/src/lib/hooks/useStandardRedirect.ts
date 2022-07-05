@@ -1,9 +1,5 @@
 import { LocalStorageKeys } from "@sprint/common";
-import {
-  AccountStage,
-  useCurrentUserLazyQuery,
-  useCurrentUserQuery,
-} from "@sprint/gql";
+import { AccountStage, useCurrentUserLazyQuery } from "@sprint/gql";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";

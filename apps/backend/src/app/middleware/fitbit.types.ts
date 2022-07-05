@@ -7,7 +7,7 @@ export interface TopBadge {
   badgeGradientStartColor: string;
   badgeType: string;
   category: string;
-  cheers: any[];
+  cheers: unknown[];
   dateTime: string;
   description: string;
   earnedMessage: string;
@@ -30,8 +30,6 @@ export interface TopBadge {
 }
 
 export type FitbitUser = Partial<{
-  id: string;
-  token: string;
   age: number;
   ambassador: boolean;
   autoStrideEnabled: boolean;
@@ -81,4 +79,4 @@ export type FitbitUser = Partial<{
   waterUnitName: string;
   weight: number;
   weightUnit: string;
-}>;
+}> & { id: string; token: string };
