@@ -18,7 +18,12 @@ import { SleepModule } from "./controllers/sleep/sleep.module";
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.DATABASE_URL),
+    MongooseModule.forRoot(
+      (() => {
+        if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL not set");
+        return process.env.DATABASE_URL;
+      })(),
+    ),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       typePaths: ["./**/*.graphql"],
       driver: ApolloDriver,
