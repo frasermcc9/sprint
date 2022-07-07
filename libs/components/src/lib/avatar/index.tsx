@@ -1,8 +1,7 @@
 import React, { useCallback, useState } from "react";
 import Image from "next/image";
 import { PencilIcon } from "@heroicons/react/solid";
-// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { storage } from "../../../../../apps/frontend/services/firebase";
+import { storage } from "../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { toast } from "react-toastify";
 import { useCurrentUserQuery, useUpdateProfilePicMutation } from "@sprint/gql";
