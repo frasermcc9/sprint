@@ -1,12 +1,18 @@
+import { UseGuards } from "@nestjs/common";
 import { Resolver, Mutation, Args } from "@nestjs/graphql";
+import { FitbitGuard } from "../../middleware/fitbit.guard";
+import { FitbitUser } from "../../middleware/fitbit.types";
+import { User } from "../../middleware/user.decorator";
 import { RunService } from "./run.service";
 
 @Resolver("Run")
+@UseGuards(FitbitGuard)
 export class RunResolver {
   constructor(private readonly runService: RunService) {}
 
   @Mutation()
   async createRun(
+    @User() user: FitbitUser,
     @Args("userId") userId: string,
     @Args("maxHR") maxHR: number,
     @Args("token") token: string,
