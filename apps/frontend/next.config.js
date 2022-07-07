@@ -6,7 +6,7 @@ const withNx = require("@nrwl/next/plugins/with-nx");
  **/
 const nextConfig = {
   images: {
-    domains: ["static0.fitbit.com"],
+    domains: ["static0.fitbit.com", "firebasestorage.googleapis.com"],
   },
   nx: {
     // Set this to true if you would like to to use SVGR

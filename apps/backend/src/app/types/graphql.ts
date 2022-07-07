@@ -48,6 +48,7 @@ export interface IMutation {
     acceptFriendRequest(friendId: string): PublicUser | Promise<PublicUser>;
     rejectFriendRequest(friendId: string): string | Promise<string>;
     updateRunParams(intensityFeedBack: number): Nullable<User> | Promise<Nullable<User>>;
+    updateProfilePic(avatarUrl: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export interface Run {

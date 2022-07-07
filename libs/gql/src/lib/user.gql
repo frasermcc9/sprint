@@ -96,3 +96,9 @@ mutation UpdateProfile($firstName: String!, $lastName: String!, $dob: String!) {
     dob
   }
 }
+
+mutation updateProfilePic($avatarUrl: String!) {
+  updateProfilePic(avatarUrl: $avatarUrl) {
+    avatarUrl
+  }
+}

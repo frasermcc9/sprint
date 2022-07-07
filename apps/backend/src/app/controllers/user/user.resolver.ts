@@ -120,6 +120,18 @@ export class UserResolver {
   }
 
   @Mutation()
+  async updateProfilePic(
+    @User() user: FitbitUser,
+    @Args("avatarUrl") avatarUrl: string,
+  ) {
+    const dbUser = await this.userService.getUser(user.id);
+
+    dbUser.avatarUrl = avatarUrl;
+
+    return await dbUser.save();
+  }
+
+  @Mutation()
   async updateDefaultRunDuration(
     @User() user: FitbitUser,
     @Args("duration") duration: number,
