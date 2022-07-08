@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { HttpService } from "nestjs-http-promise";
 import { stringify } from "qs";
 
@@ -19,8 +19,8 @@ export class AuthService {
     clientId = process.env.FITBIT_OAUTH_CLIENT_ID,
     redirectUrl = process.env.FRONTEND_HOST + "/get_token",
   }: {
-    clientId: string;
-    redirectUrl: string;
+    clientId?: string;
+    redirectUrl?: string;
   }) {
     return (
       `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(
@@ -40,8 +40,8 @@ export class AuthService {
     clientSecret = process.env.FITBIT_OAUTH_CLIENT_SECRET,
   }: {
     code: string;
-    clientId: string;
-    clientSecret: string;
+    clientId?: string;
+    clientSecret?: string;
   }): Promise<AuthResponse> {
     const authData = clientId + ":" + clientSecret;
     const buff = Buffer.from(authData);
@@ -66,6 +66,7 @@ export class AuthService {
       return data;
     } catch (e) {
       console.error(e.toJSON());
+      throw new UnauthorizedException("Failed to exchange code");
     }
   }
 
@@ -75,8 +76,8 @@ export class AuthService {
     token,
   }: {
     token: string;
-    clientId: string;
-    clientSecret: string;
+    clientId?: string;
+    clientSecret?: string;
   }) {
     const authData = clientId + ":" + clientSecret;
     const buff = Buffer.from(authData);

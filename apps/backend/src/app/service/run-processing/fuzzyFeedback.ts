@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
+
 import { Fuzzy } from "./fuzzyHelpers";
 import { explanations } from "./HIITreasoning";
 import { differenceInDays } from "date-fns";

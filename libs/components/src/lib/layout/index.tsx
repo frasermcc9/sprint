@@ -28,7 +28,7 @@ const Page = forwardRef<HTMLElement, PropsWithChildren<PageProps>>(
       >
         <div
           className={classNames(
-            "flex w-full max-w-6xl flex-grow flex-col self-center",
+            "flex w-full max-w-6xl flex-grow flex-col self-center pb-20",
             className,
           )}
         >

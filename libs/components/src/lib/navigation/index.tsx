@@ -1,7 +1,7 @@
-import React, { useCallback } from "react";
-import { useRouter } from "next/router";
 import { MockController } from "@sprint/common";
 import Image from "next/image";
+import { useRouter } from "next/router";
+import React, { useCallback } from "react";
 
 export interface Tab {
   displayInactive: any;

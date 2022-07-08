@@ -1,12 +1,14 @@
 import { ChevronUpIcon } from "@heroicons/react/solid";
-import { readableTimeNoSeconds } from "@sprint/common";
+import { readableTimeNoSeconds, Sleep } from "@sprint/common";
 import {
   IconButton,
   Layout,
   SleepBreakdown,
+  SleepVariable,
   useColorRangeRule,
+  useLog,
 } from "@sprint/components";
-import { useGetTodaysSleepQuery } from "@sprint/gql";
+import { useMostRecentSleepQuery } from "@sprint/gql";
 import classNames from "classnames";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -27,9 +29,14 @@ const Index: React.FC = () => {
 
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const { data, loading } = useGetTodaysSleepQuery();
+  const { data, loading } = useMostRecentSleepQuery();
 
-  if (loading || !data) {
+  useLog(
+    "SleepPage",
+    `Showing sleep data for ${data?.currentUser?.todaysSleep?.date}`,
+  );
+
+  if (loading || !data?.currentUser?.todaysSleep) {
     return <div>Loading...</div>;
   }
 
@@ -42,7 +49,7 @@ const Index: React.FC = () => {
 
   const timeInBed = sleepDuration + todaysSleep.awake;
 
-  const calcPercent = (t) => Math.round((t / timeInBed) * 100) + "%";
+  const calcPercent = (t: number) => Math.round((t / timeInBed) * 100) + "%";
 
   const times = {
     awake: {
@@ -124,11 +131,35 @@ const Index: React.FC = () => {
         <h1 className="font-palanquin my-2 text-2xl font-semibold">
           Variables
         </h1>
+        <div className="flex flex-col gap-y-2">
+          {todaysSleep.variables?.map((variable) => {
+            if (!variable) return null;
+
+            const { custom, name, emoji } = variable;
+            return (
+              <SleepVariable
+                key={name}
+                active={true}
+                emoji={
+                  custom
+                    ? emoji ?? ""
+                    : Sleep.defaultVariables.find((v) => v.name === name)
+                        ?.emoji ?? ""
+                }
+                name={name}
+                readonly
+                rounded
+              />
+            );
+          })}
+        </div>
         <button
-          className="font-palanquin text-light w-full rounded-lg border border-dashed border-gray-400 py-4 text-center transition-colors hover:bg-gray-200"
-          onClick={() => push("/sleep/variables")}
+          className="font-palanquin text-light mt-2 w-full rounded-lg border border-dashed border-gray-400 py-4 text-center transition-colors hover:bg-gray-200"
+          onClick={() => push("/sleep/variables?date=" + todaysSleep.date)}
         >
-          No variables. Tap here to add some!
+          {!todaysSleep.variables?.length
+            ? "No variables. Tap here to add some!"
+            : "Add additional variables"}
         </button>
       </Layout.Margin>
     </Layout.Page>

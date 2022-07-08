@@ -5,7 +5,7 @@
 
   const { request } = await import("undici");
   const { body } = await request(
-    "https://api.fitbit.com/1.2/user/-/sleep/date/2022-07-02.json",
+    "https://api.fitbit.com/1.2/user/-/sleep/date/2022-07-4.json",
     {
       headers: {
         Authorization: "Bearer ",

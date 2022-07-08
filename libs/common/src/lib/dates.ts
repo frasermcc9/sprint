@@ -26,8 +26,8 @@ const formatYYYYMMDD = new Intl.DateTimeFormat("fr-CA", {
   month: "2-digit",
   day: "2-digit",
 });
-export const toYYYYMMDD = (date: Date) => {
-  return formatYYYYMMDD.format(date);
+export const toYYYYMMDD = (date: Date | null) => {
+  return date ? formatYYYYMMDD.format(date) : "";
 };
 
 const formatMonthYYYY = new Intl.DateTimeFormat("en-US", {
@@ -48,4 +48,21 @@ export const daysForLocale = (
   return [...Array(7).keys()].map((day) =>
     format(new Date(Date.UTC(2021, 5, day))),
   );
+};
+
+export const stripTime = (date: Date) => {
+  const manipulated = new Date(date);
+  manipulated.setHours(0, 0, 0, 0);
+  return manipulated;
+};
+
+export const Dates = {
+  stripTime,
+  daysForLocale,
+  modFloor,
+  toMonthYYYY,
+  toYYYYMMDD,
+  readableTimeNoSeconds,
+  readableTime,
+  calculateAge,
 };

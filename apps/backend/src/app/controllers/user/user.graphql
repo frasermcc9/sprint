@@ -16,6 +16,7 @@ type Mutation {
   rejectFriendRequest(friendId: ID!): ID!
   updateRunParams(intensityFeedBack: Int!): User
   updateProfilePic(avatarUrl: String!): User
+  createSleepVariable(emoji: String!, name: String!): SleepVariable!
 }
 
 type Query {
@@ -42,6 +43,7 @@ type User {
   friendRequests: [PublicUser]!
   currentRunParams: RunParams!
   todaysSleep: Sleep
+  sleepVariables: [SleepVariable]
 }
 
 type RunParams {

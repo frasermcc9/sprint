@@ -1,39 +1,22 @@
-export interface LevelData {
-  dateTime: Date;
-  level: string;
-  seconds: number;
+export interface SleepResponse {
+  pagination: Pagination;
+  sleep: Sleep[];
 }
 
-export interface ShortData {
-  dateTime: Date;
-  level: string;
-  seconds: number;
-}
-
-export interface SleepSegment {
-  count: number;
-  minutes: number;
-  thirtyDayAvgMinutes: number;
-}
-
-export interface SleepLevelSummary {
-  deep: SleepSegment;
-  light: SleepSegment;
-  rem: SleepSegment;
-  wake: SleepSegment;
-}
-
-export interface Levels {
-  data: LevelData[];
-  shortData: ShortData[];
-  summary: SleepLevelSummary;
+export interface Pagination {
+  beforeDate: string;
+  limit: number;
+  next: string;
+  offset: number;
+  previous: string;
+  sort: string;
 }
 
 export interface Sleep {
   dateOfSleep: string;
   duration: number;
   efficiency: number;
-  endTime: Date;
+  endTime: string;
   infoCode: number;
   isMainSleep: boolean;
   levels: Levels;
@@ -43,26 +26,38 @@ export interface Sleep {
   minutesAsleep: number;
   minutesAwake: number;
   minutesToFallAsleep: number;
-  startTime: Date;
+  startTime: string;
   timeInBed: number;
   type: string;
 }
 
-export interface Stages {
-  deep: number;
-  light: number;
-  rem: number;
-  wake: number;
+export interface Levels {
+  data: LevelsData[];
+  shortData: ShortLevelsData[];
+  summary: Summary;
 }
 
-export interface SleepSummary {
-  stages: Stages;
-  totalMinutesAsleep: number;
-  totalSleepRecords: number;
-  totalTimeInBed: number;
+export interface LevelsData {
+  dateTime: string;
+  level: string;
+  seconds: number;
 }
 
-export interface SleepResponse {
-  sleep: Sleep[];
-  summary: SleepSummary;
+export interface ShortLevelsData {
+  dateTime: string;
+  level: string;
+  seconds: number;
+}
+
+export interface Summary {
+  deep: StageSummary;
+  light: StageSummary;
+  rem: StageSummary;
+  wake: StageSummary;
+}
+
+export interface StageSummary {
+  count: number;
+  minutes: number;
+  thirtyDayAvgMinutes: number;
 }
