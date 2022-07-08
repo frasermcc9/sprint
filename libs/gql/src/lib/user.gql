@@ -102,3 +102,11 @@ mutation updateProfilePic($avatarUrl: String!) {
     avatarUrl
   }
 }
+
+mutation CreateSleepVariable($name: String!, $emoji: String!) {
+  createSleepVariable(emoji: $emoji, name: $name) {
+    name
+    emoji
+    custom
+  }
+}

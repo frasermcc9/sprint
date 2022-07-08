@@ -30,15 +30,6 @@ export class SleepResolver {
   }
 
   @Mutation()
-  async setSleepVariables(
-    @User() user: FitbitUser,
-    @Args("variables") variables: string[],
-    @Args("sleepDate") sleepDate: string,
-  ) {
-    return this.sleepService.setVariables(user.id, variables, sleepDate) ?? [];
-  }
-
-  @Mutation()
   async addSleepVariable(
     @User() user: FitbitUser,
     @Args("name") name: string,

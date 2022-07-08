@@ -29,10 +29,6 @@ query CustomSleepVariables {
   }
 }
 
-mutation SetSleepVariables($sleepDate: String!, $variables: [String!]!) {
-  setSleepVariables(sleepDate: $sleepDate, variables: $variables)
-}
-
 mutation AddSleepVariable(
   $name: String!
   $emoji: String!

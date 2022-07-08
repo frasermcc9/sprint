@@ -17,7 +17,6 @@ type SleepVariable {
 }
 
 type Mutation {
-  setSleepVariables(variables: [String]!, sleepDate: String!): [String]!
   addSleepVariable(
     name: String!
     emoji: String!

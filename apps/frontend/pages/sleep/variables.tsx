@@ -1,5 +1,11 @@
+import { PlusCircleIcon } from "@heroicons/react/outline";
 import { Sleep } from "@sprint/common";
-import { Layout, SleepVariable } from "@sprint/components";
+import {
+  Layout,
+  SleepVariable,
+  TextInput,
+  useEmojiFactory,
+} from "@sprint/components";
 import {
   MostRecentSleepDocument,
   MostRecentSleepQuery,
@@ -7,9 +13,11 @@ import {
   useCustomSleepVariablesQuery,
   useMostRecentSleepQuery,
   useRemoveSleepVariableMutation,
+  useCreateSleepVariableMutation,
 } from "@sprint/gql";
+import classNames from "classnames";
 import { useRouter } from "next/router";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const Index: React.FC = () => {
   const { back, query } = useRouter();
@@ -20,6 +28,7 @@ const Index: React.FC = () => {
 
   const [addVariableMut] = useAddSleepVariableMutation();
   const [removeVariableMut] = useRemoveSleepVariableMutation();
+  const [createSleepVariableMut] = useCreateSleepVariableMutation();
 
   const removeVariable = useCallback(
     (name: string) => {
@@ -99,6 +108,45 @@ const Index: React.FC = () => {
     [addVariableMut, date],
   );
 
+  const createVariable = useCallback(
+    (name: string, emoji: string) => {
+      createSleepVariableMut({
+        variables: {
+          emoji,
+          name,
+        },
+        optimisticResponse: {
+          createSleepVariable: {
+            custom: true,
+            emoji,
+            name,
+          },
+        },
+        update: (cache, { data: newData }) => {
+          if (!sleepVariables || !sleepVariables.currentUser) return;
+
+          console.log([
+            ...(sleepVariables?.currentUser?.sleepVariables ?? []),
+            newData?.createSleepVariable,
+          ]);
+
+          console.log(sleepVariables);
+
+          cache.modify({
+            id: cache.identify(sleepVariables.currentUser),
+            fields: {
+              sleepVariables: () => [
+                ...(sleepVariables?.currentUser?.sleepVariables ?? []),
+                newData?.createSleepVariable,
+              ],
+            },
+          });
+        },
+      });
+    },
+    [createSleepVariableMut, sleepVariables],
+  );
+
   const joinedVariables = useMemo(
     () => [
       ...Sleep.defaultVariables,
@@ -109,6 +157,33 @@ const Index: React.FC = () => {
 
   const selectedVariables =
     sleepData?.currentUser?.todaysSleep?.variables ?? [];
+
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [selectedNewEmoji, setSelectedNewEmoji] = useState<string>("😀");
+  const [selectedNewName, setSelectedNewName] = useState<string>("");
+  const [changed, setChanged] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      if (typeof window !== "undefined") {
+        const data = await import("@emoji-mart/data");
+        const { Picker } = await import("emoji-mart");
+        new Picker({
+          ref,
+          data,
+          onEmojiSelect: (e) => {
+            setSelectedNewEmoji(e.native);
+            setChanged(true);
+            setShowEmoji(false);
+          },
+        });
+      }
+    })();
+  }, [showEmoji]);
+
+  const makeEmoji = useEmojiFactory();
 
   return (
     <Layout.Page animation={Layout.PageUpAnimation}>
@@ -128,6 +203,28 @@ const Index: React.FC = () => {
       </Layout.Header>
 
       <div className="font-palanquin flex flex-col divide-y-2 divide-gray-300 text-xl font-light">
+        <div className="flex items-center justify-between gap-x-4 px-4 py-3">
+          <div className="flex items-center gap-x-4">
+            <button
+              className={classNames({ "saturate-0": !changed })}
+              onClick={() => setShowEmoji((p) => !p)}
+            >
+              {makeEmoji(selectedNewEmoji, "2rem")}
+            </button>
+            <TextInput
+              value={selectedNewName}
+              onChange={(e) => setSelectedNewName(e.target.value)}
+            />
+            {showEmoji && <div className="fixed top-20" ref={ref} />}
+          </div>
+          <button
+            className="flex gap-x-2 p-1"
+            onClick={() => createVariable(selectedNewName, selectedNewEmoji)}
+          >
+            <PlusCircleIcon className="w-8 text-gray-600" />
+            <span>Add</span>
+          </button>
+        </div>
         {joinedVariables.map((variable) => {
           if (!variable) return null;
           const { name, emoji, custom } = variable;
@@ -146,7 +243,6 @@ const Index: React.FC = () => {
             />
           );
         })}
-        <div></div>
       </div>
     </Layout.Page>
   );

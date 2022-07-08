@@ -39,7 +39,6 @@ export interface IMutation {
     login(code: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     refresh(token: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     createEvent(event: string, payload?: Nullable<string>): Nullable<AnalyticsEvent> | Promise<Nullable<AnalyticsEvent>>;
-    setSleepVariables(variables: Nullable<string>[], sleepDate: string): Nullable<string>[] | Promise<Nullable<string>[]>;
     addSleepVariable(name: string, emoji: string, custom: boolean, sleepDate: string): Nullable<SleepVariable> | Promise<Nullable<SleepVariable>>;
     removeSleepVariable(name: string, sleepDate: string): Nullable<string> | Promise<Nullable<string>>;
     updateExperienceLevel(): Nullable<ExperienceLevel> | Promise<Nullable<ExperienceLevel>>;
@@ -52,6 +51,7 @@ export interface IMutation {
     rejectFriendRequest(friendId: string): string | Promise<string>;
     updateRunParams(intensityFeedBack: number): Nullable<User> | Promise<Nullable<User>>;
     updateProfilePic(avatarUrl: string): Nullable<User> | Promise<Nullable<User>>;
+    createSleepVariable(emoji: string, name: string): SleepVariable | Promise<SleepVariable>;
 }
 
 export interface Run {

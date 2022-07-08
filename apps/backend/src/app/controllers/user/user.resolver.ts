@@ -211,6 +211,30 @@ export class UserResolver {
     return await dbUser?.save();
   }
 
+  @Mutation()
+  async createSleepVariable(
+    @User() user: FitbitUser,
+    @Args("name") name: string,
+    @Args("emoji") emoji: string,
+  ) {
+    const dbUser = await this.userService.getUser(user.id);
+    if (!dbUser) return null;
+
+    dbUser.sleepVariables?.push({
+      name,
+      emoji,
+    });
+
+    dbUser.markModified("sleepVariables");
+    await dbUser.save();
+
+    return {
+      name,
+      emoji,
+      custom: true,
+    };
+  }
+
   @ResolveField()
   async maxHr(@Parent() user: FitbitUser): Promise<number> {
     const dbUser = await this.userService.getUser(user.id);
@@ -260,6 +284,6 @@ export class UserResolver {
     @User() user: FitbitUser,
   ): Promise<Partial<SleepVariable>[]> {
     const dbUser = await this.userService.getUser(user.id);
-    return dbUser?.sleepVariables ?? [];
+    return dbUser?.sleepVariables?.map((v) => ({ ...v, custom: true })) ?? [];
   }
 }
