@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from "react";
-import Image from "next/image";
 import { PencilIcon } from "@heroicons/react/solid";
-import { storage } from "../firebase/firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { toast } from "react-toastify";
 import { useCurrentUserQuery, useUpdateProfilePicMutation } from "@sprint/gql";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import Image from "next/image";
+import React, { useCallback } from "react";
+import { toast } from "react-toastify";
+import { storage } from "../firebase/firebase";
 
 export interface AvatarProps {
   avatarUrl: string;
@@ -17,14 +17,14 @@ export const Avatar: React.FC<AvatarProps> = ({
   showEdit,
   userId,
 }) => {
-  const hiddenFileInput = React.useRef(null);
+  const hiddenFileInput = React.useRef<HTMLInputElement>(null);
   const imageRef = ref(storage, `user-content/${userId}/profile-image`);
 
   const { data, loading, error } = useCurrentUserQuery();
   const [execProfilePicUpdate] = useUpdateProfilePicMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e?.target.files[0]) {
+    if (e?.target?.files?.[0]) {
       if (e.target.files[0].size > 5000000) {
         toast.error("Image size must be less than 5MB");
         return;
@@ -61,14 +61,18 @@ export const Avatar: React.FC<AvatarProps> = ({
           },
         },
         update: (cache, { data: updated }) => {
-          if (!updated?.updateProfilePic) {
+          if (
+            !updated?.updateProfilePic ||
+            !data?.currentUser ||
+            !updated?.updateProfilePic?.avatarUrl
+          ) {
             return;
           }
 
           cache.modify({
             id: cache.identify(data.currentUser),
             fields: {
-              avatarUrl: () => updated.updateProfilePic.avatarUrl,
+              avatarUrl: () => updated?.updateProfilePic?.avatarUrl,
             },
           });
         },
@@ -85,7 +89,7 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   //Click invisable input file
   const handleEdit = () => {
-    hiddenFileInput?.current.click();
+    hiddenFileInput?.current?.click();
   };
 
   if (error) {
