@@ -6,8 +6,8 @@ export interface NativeModalProps {
   closeModal: () => void;
   text: string;
   title: string;
-  action: () => void;
-  actionText: string;
+  action?: () => void;
+  actionText?: string;
 }
 
 export const NativeModal: React.FC<NativeModalProps> = ({
@@ -19,7 +19,7 @@ export const NativeModal: React.FC<NativeModalProps> = ({
   title,
 }) => {
   const actionWrapper = useCallback(() => {
-    action();
+    action?.();
     closeModal();
   }, [action, closeModal]);
 
@@ -70,13 +70,15 @@ export const NativeModal: React.FC<NativeModalProps> = ({
                   >
                     Cancel
                   </button>
-                  <button
-                    type="button"
-                    className="inline-flex w-full justify-center rounded-r-md border-l border-gray-300 px-4 py-2 text-lg font-bold text-indigo-600 focus:outline-none active:bg-gray-200"
-                    onClick={actionWrapper}
-                  >
-                    {actionText}
-                  </button>
+                  {action && (
+                    <button
+                      type="button"
+                      className="inline-flex w-full justify-center rounded-r-md border-l border-gray-300 px-4 py-2 text-lg font-bold text-indigo-600 focus:outline-none active:bg-gray-200"
+                      onClick={actionWrapper}
+                    >
+                      {actionText}
+                    </button>
+                  )}
                 </div>
               </Dialog.Panel>
             </Transition.Child>

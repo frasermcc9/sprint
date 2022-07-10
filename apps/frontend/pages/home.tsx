@@ -1,18 +1,17 @@
 import {
-  Layout,
   HomeHeader,
+  Layout,
   StartRun,
+  StartSleep,
+  StartSleepAnalysis,
   useHomeHeaderController,
   useStandardRedirect,
   useStartRunController,
-  StartSleep,
+  useStartSleepAnalysisController,
   useStartSleepController,
 } from "@sprint/components";
-import { useCurrentUserLazyQuery } from "@sprint/gql";
 
 export default function Index() {
-  const [execute] = useCurrentUserLazyQuery();
-
   useStandardRedirect();
 
   return (
@@ -24,6 +23,7 @@ export default function Index() {
         <div className="flex flex-col gap-y-6">
           <StartRun useController={useStartRunController} />
           <StartSleep useController={useStartSleepController} />
+          <StartSleepAnalysis useController={useStartSleepAnalysisController} />
         </div>
       </Layout.Margin>
     </Layout.Page>

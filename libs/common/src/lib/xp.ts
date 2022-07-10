@@ -45,7 +45,16 @@ export const inverseExpFunction = (xp: number) => {
  * @param xp
  * @returns
  */
-export const xpDetails = (xp: number) => {
+export const xpDetails = (xp?: number) => {
+  if (xp === undefined) {
+    return {
+      xpRequiredForLevel: 0,
+      xpForUser: 0,
+      level: 0,
+      xpThroughLevel: 0,
+    };
+  }
+
   const level = inverseExpFunction(xp);
   const xpToReach = expFunction(level);
   const xpThroughLevel = xp - xpToReach;
