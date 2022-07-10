@@ -208,6 +208,10 @@ export class SleepService {
         },
       );
 
+      const scoreAverage =
+        sleepScoresAndVars.reduce((a, c) => a + c.score, 0) /
+        sleepScoresAndVars.length;
+
       const variableSet = new Set<string>();
       for (const sleep of sleepScoresAndVars) {
         for (const variable of sleep.variables) {
@@ -251,6 +255,7 @@ export class SleepService {
       return {
         components,
         regressionIntercept,
+        scoreAverage,
       };
     } catch (e) {
       console.error(e);
