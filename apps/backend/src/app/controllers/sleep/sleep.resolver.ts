@@ -79,7 +79,6 @@ export class SleepResolver {
 
   @Query()
   async analyzeSleep(@User() user: FitbitUser) {
-    this.sleepService.analyzeSleep(user.id, user.token) ?? true;
-    return true;
+    return await this.sleepService.analyzeSleep(user.id, user.token);
   }
 }

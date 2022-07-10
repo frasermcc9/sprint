@@ -161,7 +161,7 @@ export type PublicUser = {
 
 export type Query = {
   __typename?: 'Query';
-  analyzeSleep?: Maybe<Scalars['Boolean']>;
+  analyzeSleep?: Maybe<SleepAnalysis>;
   currentUser?: Maybe<User>;
   getAuthLink: Scalars['String'];
   prepRun?: Maybe<RunParams>;
@@ -202,6 +202,18 @@ export type Sleep = {
   tomorrow: Scalars['String'];
   variables?: Maybe<Array<Maybe<SleepVariable>>>;
   yesterday: Scalars['String'];
+};
+
+export type SleepAnalysis = {
+  __typename?: 'SleepAnalysis';
+  components: Array<SleepAnalysisComponent>;
+  regressionIntercept: Scalars['Float'];
+};
+
+export type SleepAnalysisComponent = {
+  __typename?: 'SleepAnalysisComponent';
+  regressionGradient: Scalars['Float'];
+  variable: Scalars['String'];
 };
 
 export type SleepVariable = {
@@ -315,7 +327,7 @@ export type RemoveSleepVariableMutation = { __typename?: 'Mutation', removeSleep
 export type AnalyzeSleepQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AnalyzeSleepQuery = { __typename?: 'Query', analyzeSleep?: boolean | null };
+export type AnalyzeSleepQuery = { __typename?: 'Query', analyzeSleep?: { __typename?: 'SleepAnalysis', regressionIntercept: number, components: Array<{ __typename?: 'SleepAnalysisComponent', variable: string, regressionGradient: number }> } | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -753,7 +765,13 @@ export type RemoveSleepVariableMutationResult = Apollo.MutationResult<RemoveSlee
 export type RemoveSleepVariableMutationOptions = Apollo.BaseMutationOptions<RemoveSleepVariableMutation, RemoveSleepVariableMutationVariables>;
 export const AnalyzeSleepDocument = gql`
     query AnalyzeSleep {
-  analyzeSleep
+  analyzeSleep {
+    components {
+      variable
+      regressionGradient
+    }
+    regressionIntercept
+  }
 }
     `;
 

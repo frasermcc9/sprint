@@ -181,7 +181,13 @@ const Index: React.FC = () => {
         </div>
       </Layout.Header>
       <Layout.Margin>
-        <button onClick={() => exec()}>Execute</button>
+        <button
+          onClick={async () => {
+            console.log(await exec());
+          }}
+        >
+          Execute
+        </button>
         <h1 className="font-palanquin my-2 text-2xl font-semibold">
           Variables
         </h1>

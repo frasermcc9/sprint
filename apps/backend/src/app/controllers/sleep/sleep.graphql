@@ -33,6 +33,16 @@ type Mutation {
   removeSleepVariable(name: String!, sleepDate: String!): VariableEditResponse
 }
 
+type SleepAnalysisComponent {
+  variable: String!
+  regressionGradient: Float!
+}
+
+type SleepAnalysis {
+  components: [SleepAnalysisComponent!]!
+  regressionIntercept: Float!
+}
+
 type Query {
-  analyzeSleep: Boolean
+  analyzeSleep: SleepAnalysis
 }

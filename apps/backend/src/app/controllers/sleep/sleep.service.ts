@@ -1,6 +1,8 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import { Sleep as SleepCommon } from "@sprint/common";
 import * as tf from "@tensorflow/tfjs-node";
+import MLR from "ml-regression-multivariate-linear";
 import { HttpService } from "nestjs-http-promise";
 import {
   User,
@@ -9,8 +11,6 @@ import {
 } from "../../db/schema/user.schema";
 import { Sleep } from "../../types/graphql";
 import { SleepRangeResponse } from "./interfaces/sleep-range.interface";
-import MLR from "ml-regression-multivariate-linear";
-import { Sleep as SleepCommon } from "@sprint/common";
 
 @Injectable()
 export class SleepService {
@@ -236,12 +236,22 @@ export class SleepService {
       for (const sleep of sleepScoresAndVars) {
         const input = createArray(sleep.variables);
         inputMatrix.push(input);
-        outputMatrix.push([sleep.score / 100]);
+        outputMatrix.push([sleep.score]);
       }
 
       const mlr = new MLR(inputMatrix, outputMatrix);
-      console.log(variableMap);
-      console.log(mlr.weights);
+      const weights = mlr.weights.slice(0, variableCount);
+      const regressionIntercept = mlr.weights[variableCount][0];
+
+      const components = weights.map((weight, index) => ({
+        regressionGradient: weight[0],
+        variable: variableIndex[index],
+      }));
+
+      return {
+        components,
+        regressionIntercept,
+      };
     } catch (e) {
       console.error(e);
       throw new InternalServerErrorException("Error when getting sleep range");

@@ -31,7 +31,7 @@ export interface Auth {
 export interface IQuery {
     getAuthLink(): string | Promise<string>;
     testAuth(): Nullable<string> | Promise<Nullable<string>>;
-    analyzeSleep(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    analyzeSleep(): Nullable<SleepAnalysis> | Promise<Nullable<SleepAnalysis>>;
     currentUser(): Nullable<User> | Promise<Nullable<User>>;
     prepRun(): Nullable<RunParams> | Promise<Nullable<RunParams>>;
 }
@@ -95,6 +95,16 @@ export interface SleepVariable {
 export interface VariableEditResponse {
     date: string;
     variables: Nullable<SleepVariable>[];
+}
+
+export interface SleepAnalysisComponent {
+    variable: string;
+    regressionGradient: number;
+}
+
+export interface SleepAnalysis {
+    components: SleepAnalysisComponent[];
+    regressionIntercept: number;
 }
 
 export interface User {

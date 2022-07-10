@@ -64,5 +64,11 @@ mutation RemoveSleepVariable($name: String!, $sleepDate: String!) {
 }
 
 query AnalyzeSleep {
-  analyzeSleep
+  analyzeSleep {
+    components {
+      variable
+      regressionGradient
+    }
+    regressionIntercept
+  }
 }
