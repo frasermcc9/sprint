@@ -18,3 +18,5 @@ export type MockController<
 > = (...args: Parameters<T>) => FunctionsReturnUnknown<ReturnType<T>>;
 
 export type FCC<P = unknown> = React.FC<PropsWithChildren<P>>;
+
+export type Nullish<T> = T | null | undefined;

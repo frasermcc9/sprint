@@ -55,6 +55,9 @@ export class SleepResolver {
   ) {
     await this.sleepService.removeVariable(user.id, name, sleepDate);
 
-    return name;
+  @Query()
+  async analyzeSleep(@User() user: FitbitUser) {
+    this.sleepService.analyzeSleep(user.id, user.token) ?? true;
+    return true;
   }
 }
