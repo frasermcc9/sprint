@@ -41,7 +41,7 @@ export class SleepResolver {
     const sleep = await this.sleepService.addVariable(user.id, name, sleepDate);
 
     if (!sleep) {
-      return [null];
+      return null;
     }
 
     return {
@@ -65,7 +65,7 @@ export class SleepResolver {
       sleepDate,
     );
     if (!sleep) {
-      return [null];
+      return null;
     }
 
     return {

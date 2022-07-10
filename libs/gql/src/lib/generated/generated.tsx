@@ -47,7 +47,7 @@ export enum ExperienceLevel {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptFriendRequest: PublicUser;
-  addSleepVariable: VariableEditResponse;
+  addSleepVariable?: Maybe<VariableEditResponse>;
   completeOnboarding?: Maybe<User>;
   createEvent?: Maybe<AnalyticsEvent>;
   createSleepVariable: SleepVariable;
@@ -55,7 +55,7 @@ export type Mutation = {
   markFeatureSeen: Array<Maybe<Scalars['String']>>;
   refresh?: Maybe<Auth>;
   rejectFriendRequest: Scalars['ID'];
-  removeSleepVariable: VariableEditResponse;
+  removeSleepVariable?: Maybe<VariableEditResponse>;
   sendFriendRequest?: Maybe<Scalars['Boolean']>;
   updateDefaultRunDuration: Scalars['Int'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
@@ -302,7 +302,7 @@ export type AddSleepVariableMutationVariables = Exact<{
 }>;
 
 
-export type AddSleepVariableMutation = { __typename?: 'Mutation', addSleepVariable: { __typename?: 'VariableEditResponse', date: string, variables: Array<{ __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null> } };
+export type AddSleepVariableMutation = { __typename?: 'Mutation', addSleepVariable?: { __typename?: 'VariableEditResponse', date: string, variables: Array<{ __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null> } | null };
 
 export type RemoveSleepVariableMutationVariables = Exact<{
   name: Scalars['String'];
@@ -310,7 +310,7 @@ export type RemoveSleepVariableMutationVariables = Exact<{
 }>;
 
 
-export type RemoveSleepVariableMutation = { __typename?: 'Mutation', removeSleepVariable: { __typename?: 'VariableEditResponse', date: string, variables: Array<{ __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null> } };
+export type RemoveSleepVariableMutation = { __typename?: 'Mutation', removeSleepVariable?: { __typename?: 'VariableEditResponse', date: string, variables: Array<{ __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null> } | null };
 
 export type AnalyzeSleepQueryVariables = Exact<{ [key: string]: never; }>;
 

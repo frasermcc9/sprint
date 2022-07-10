@@ -29,8 +29,8 @@ type Mutation {
     emoji: String!
     custom: Boolean!
     sleepDate: String!
-  ): VariableEditResponse!
-  removeSleepVariable(name: String!, sleepDate: String!): VariableEditResponse!
+  ): VariableEditResponse
+  removeSleepVariable(name: String!, sleepDate: String!): VariableEditResponse
 }
 
 type Query {
