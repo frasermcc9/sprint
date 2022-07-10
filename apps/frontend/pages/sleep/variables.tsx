@@ -18,6 +18,7 @@ import {
 import classNames from "classnames";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import data from "@emoji-mart/data";
 
 const Index: React.FC = () => {
   const { back, query } = useRouter();
@@ -165,10 +166,14 @@ const Index: React.FC = () => {
   const [selectedNewName, setSelectedNewName] = useState<string>("");
   const [changed, setChanged] = useState(false);
 
+  const canCreateEmoji = useMemo(
+    () => changed && selectedNewName.length,
+    [changed, selectedNewName.length],
+  );
+
   useEffect(() => {
     (async () => {
       if (typeof window !== "undefined") {
-        const data = await import("@emoji-mart/data");
         const { Picker } = await import("emoji-mart");
         new Picker({
           ref,
@@ -219,7 +224,11 @@ const Index: React.FC = () => {
           </div>
           <button
             className="flex gap-x-2 p-1"
-            onClick={() => createVariable(selectedNewName, selectedNewEmoji)}
+            disabled={!canCreateEmoji}
+            onClick={() =>
+              canCreateEmoji &&
+              createVariable(selectedNewName, selectedNewEmoji)
+            }
           >
             <PlusCircleIcon className="w-8 text-gray-600" />
             <span>Add</span>

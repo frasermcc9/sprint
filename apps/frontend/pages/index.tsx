@@ -4,10 +4,8 @@ import {
   useSignInButtonController,
   useStandardRedirect,
 } from "@sprint/components";
-import { useCurrentUserLazyQuery } from "@sprint/gql";
 
 export default function Index() {
-  const [execute] = useCurrentUserLazyQuery();
   useStandardRedirect();
 
   return (

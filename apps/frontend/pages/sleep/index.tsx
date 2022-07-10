@@ -12,7 +12,7 @@ import {
   useColorRangeRule,
   useLog,
 } from "@sprint/components";
-import { useAnalyzeSleepLazyQuery, useMostRecentSleepQuery } from "@sprint/gql";
+import { useMostRecentSleepQuery } from "@sprint/gql";
 import classNames from "classnames";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -39,8 +39,6 @@ const Index: React.FC = () => {
   const [cursor, setCursor] = useState<number>(
     (data?.currentUser?.todaysSleep.length ?? 1) - 1,
   );
-
-  const [exec] = useAnalyzeSleepLazyQuery({ fetchPolicy: "no-cache" });
 
   useLog(
     "SleepPage",
@@ -181,13 +179,6 @@ const Index: React.FC = () => {
         </div>
       </Layout.Header>
       <Layout.Margin>
-        <button
-          onClick={async () => {
-            console.log(await exec());
-          }}
-        >
-          Execute
-        </button>
         <h1 className="font-palanquin my-2 text-2xl font-semibold">
           Variables
         </h1>
