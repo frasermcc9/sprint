@@ -18,12 +18,17 @@ export class SleepService {
 
   constructor(
     @InjectModel(User.name) private readonly userModel: UserCollection,
+    private readonly httpService: HttpService,
   ) {}
 
   async onModuleInit() {
     this.model = await tf.loadLayersModel(
       `file://${__dirname}/assets/sleep-model/model.json`,
     );
+  }
+
+  async findUser(id: string) {
+    return await this.userModel.findOne({ id });
   }
 
   getSleepScore({
@@ -53,7 +58,7 @@ export class SleepService {
     const user = await this.userModel.findOne({ id });
     if (!user) return null;
 
-    const sleep = user.sleeps?.find((s) => s.date === sleepDate);
+    const sleep = this.findSleep(user, sleepDate);
     if (!sleep) return null;
 
     sleep.variables = variables;
@@ -70,7 +75,7 @@ export class SleepService {
 
     if (!user) return [];
 
-    const sleep = user.sleeps?.find((s) => s.date === forSleep.date);
+    const sleep = this.findSleep(user, forSleep.date);
     if (!sleep) return [];
 
     const customVariables = user.sleepVariables;
@@ -92,15 +97,19 @@ export class SleepService {
     });
   }
 
+  findSleep(user: UserDocument, date: string) {
+    return user.sleeps?.get(date);
+  }
+
   async removeVariable(id: string, name: string, sleepDate: string) {
     const user = await this.userModel.findOne({ id });
     if (!user) return null;
 
-    const sleep = user.sleeps?.find((s) => s.date === sleepDate);
+    const sleep = this.findSleep(user, sleepDate);
     if (!sleep) return null;
 
     const index = sleep.variables?.indexOf(name) ?? -1;
-    if (index === -1) return null;
+    if (index === -1) return sleep;
 
     sleep.variables?.splice(index, 1);
 
@@ -108,14 +117,16 @@ export class SleepService {
     user.markModified("sleeps.variables");
 
     await user.save();
+
+    return sleep;
   }
 
   async addVariable(id: string, name: string, sleepDate: string) {
     const user = await this.userModel.findOne({ id });
-    if (!user) return false;
+    if (!user) return null;
 
-    const sleep = user.sleeps?.find((s) => s.date === sleepDate);
-    if (!sleep || !sleep.variables) return false;
+    const sleep = this.findSleep(user, sleepDate);
+    if (!sleep || !sleep.variables) return null;
 
     const exists = sleep.variables.includes(name);
     if (!exists) {
@@ -125,6 +136,29 @@ export class SleepService {
       user.markModified("sleeps.variables");
 
       await user.save();
+    }
+    return sleep;
+  }
+
+  async transformVariables(userId: string, ...variables: string[]) {
+    return Promise.all(
+      variables.map(async (v) => {
+        const custom = SleepCommon.defaultVariables.find((dv) => dv.name === v)
+          ? false
+          : true;
+        return {
+          name: v,
+          custom,
+          emoji: custom
+            ? (await this.findUser(userId))?.sleepVariables?.find(
+                (uv) => uv.name === v,
+              )?.emoji
+            : null,
+        };
+      }),
+    );
+  }
+
   async analyzeSleep(userId: string, bearer: string) {
     const dbUser = await this.userModel.findOne({ id: userId });
     if (!dbUser) return null;
@@ -203,7 +237,7 @@ export class SleepService {
         const input = createArray(sleep.variables);
         inputMatrix.push(input);
         outputMatrix.push([sleep.score / 100]);
-    }
+      }
 
       const mlr = new MLR(inputMatrix, outputMatrix);
       console.log(variableMap);

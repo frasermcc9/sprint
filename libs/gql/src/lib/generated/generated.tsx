@@ -47,7 +47,7 @@ export enum ExperienceLevel {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptFriendRequest: PublicUser;
-  addSleepVariable?: Maybe<SleepVariable>;
+  addSleepVariable: VariableEditResponse;
   completeOnboarding?: Maybe<User>;
   createEvent?: Maybe<AnalyticsEvent>;
   createSleepVariable: SleepVariable;
@@ -55,7 +55,7 @@ export type Mutation = {
   markFeatureSeen: Array<Maybe<Scalars['String']>>;
   refresh?: Maybe<Auth>;
   rejectFriendRequest: Scalars['ID'];
-  removeSleepVariable?: Maybe<Scalars['String']>;
+  removeSleepVariable: VariableEditResponse;
   sendFriendRequest?: Maybe<Scalars['Boolean']>;
   updateDefaultRunDuration: Scalars['Int'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
@@ -161,6 +161,7 @@ export type PublicUser = {
 
 export type Query = {
   __typename?: 'Query';
+  analyzeSleep?: Maybe<Scalars['Boolean']>;
   currentUser?: Maybe<User>;
   getAuthLink: Scalars['String'];
   prepRun?: Maybe<RunParams>;
@@ -198,7 +199,9 @@ export type Sleep = {
   ownerId: Scalars['ID'];
   rem: Scalars['Int'];
   score: Scalars['Int'];
+  tomorrow: Scalars['String'];
   variables?: Maybe<Array<Maybe<SleepVariable>>>;
+  yesterday: Scalars['String'];
 };
 
 export type SleepVariable = {
@@ -226,7 +229,7 @@ export type User = {
   runs?: Maybe<Array<Maybe<Run>>>;
   sleepVariables?: Maybe<Array<Maybe<SleepVariable>>>;
   stage: AccountStage;
-  todaysSleep?: Maybe<Sleep>;
+  todaysSleep: Array<Maybe<Sleep>>;
   utcOffset: Scalars['Float'];
   xp: Scalars['Int'];
 };
@@ -234,6 +237,17 @@ export type User = {
 
 export type UserFriendsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type UserTodaysSleepArgs = {
+  sourceUrl?: InputMaybe<Scalars['String']>;
+};
+
+export type VariableEditResponse = {
+  __typename?: 'VariableEditResponse';
+  date: Scalars['String'];
+  variables: Array<Maybe<SleepVariable>>;
 };
 
 export type LoginMutationVariables = Exact<{
@@ -268,10 +282,12 @@ export type AnalyticsObservationMutationVariables = Exact<{
 
 export type AnalyticsObservationMutation = { __typename?: 'Mutation', createEvent?: { __typename?: 'AnalyticsEvent', user: string, event: string, payload?: string | null } | null };
 
-export type MostRecentSleepQueryVariables = Exact<{ [key: string]: never; }>;
+export type MostRecentSleepQueryVariables = Exact<{
+  sourceUrl?: InputMaybe<Scalars['String']>;
+}>;
 
 
-export type MostRecentSleepQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, todaysSleep?: { __typename?: 'Sleep', awake: number, rem: number, light: number, deep: number, awakenings: number, score: number, date: string, variables?: Array<{ __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null> | null } | null } | null };
+export type MostRecentSleepQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, todaysSleep: Array<{ __typename?: 'Sleep', awake: number, rem: number, light: number, deep: number, awakenings: number, score: number, date: string, tomorrow: string, yesterday: string, variables?: Array<{ __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null> | null } | null> } | null };
 
 export type CustomSleepVariablesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -286,7 +302,7 @@ export type AddSleepVariableMutationVariables = Exact<{
 }>;
 
 
-export type AddSleepVariableMutation = { __typename?: 'Mutation', addSleepVariable?: { __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null };
+export type AddSleepVariableMutation = { __typename?: 'Mutation', addSleepVariable: { __typename?: 'VariableEditResponse', date: string, variables: Array<{ __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null> } };
 
 export type RemoveSleepVariableMutationVariables = Exact<{
   name: Scalars['String'];
@@ -294,7 +310,12 @@ export type RemoveSleepVariableMutationVariables = Exact<{
 }>;
 
 
-export type RemoveSleepVariableMutation = { __typename?: 'Mutation', removeSleepVariable?: string | null };
+export type RemoveSleepVariableMutation = { __typename?: 'Mutation', removeSleepVariable: { __typename?: 'VariableEditResponse', date: string, variables: Array<{ __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } | null> } };
+
+export type AnalyzeSleepQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AnalyzeSleepQuery = { __typename?: 'Query', analyzeSleep?: boolean | null };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -556,10 +577,10 @@ export type AnalyticsObservationMutationHookResult = ReturnType<typeof useAnalyt
 export type AnalyticsObservationMutationResult = Apollo.MutationResult<AnalyticsObservationMutation>;
 export type AnalyticsObservationMutationOptions = Apollo.BaseMutationOptions<AnalyticsObservationMutation, AnalyticsObservationMutationVariables>;
 export const MostRecentSleepDocument = gql`
-    query MostRecentSleep {
+    query MostRecentSleep($sourceUrl: String) {
   currentUser {
     id
-    todaysSleep {
+    todaysSleep(sourceUrl: $sourceUrl) {
       awake
       rem
       light
@@ -572,6 +593,8 @@ export const MostRecentSleepDocument = gql`
         emoji
         custom
       }
+      tomorrow
+      yesterday
     }
   }
 }
@@ -589,6 +612,7 @@ export const MostRecentSleepDocument = gql`
  * @example
  * const { data, loading, error } = useMostRecentSleepQuery({
  *   variables: {
+ *      sourceUrl: // value for 'sourceUrl'
  *   },
  * });
  */
@@ -650,9 +674,12 @@ export const AddSleepVariableDocument = gql`
     name: $name
     sleepDate: $sleepDate
   ) {
-    name
-    emoji
-    custom
+    date
+    variables {
+      name
+      emoji
+      custom
+    }
   }
 }
     `;
@@ -687,7 +714,14 @@ export type AddSleepVariableMutationResult = Apollo.MutationResult<AddSleepVaria
 export type AddSleepVariableMutationOptions = Apollo.BaseMutationOptions<AddSleepVariableMutation, AddSleepVariableMutationVariables>;
 export const RemoveSleepVariableDocument = gql`
     mutation RemoveSleepVariable($name: String!, $sleepDate: String!) {
-  removeSleepVariable(name: $name, sleepDate: $sleepDate)
+  removeSleepVariable(name: $name, sleepDate: $sleepDate) {
+    date
+    variables {
+      name
+      emoji
+      custom
+    }
+  }
 }
     `;
 export type RemoveSleepVariableMutationFn = Apollo.MutationFunction<RemoveSleepVariableMutation, RemoveSleepVariableMutationVariables>;
@@ -717,6 +751,38 @@ export function useRemoveSleepVariableMutation(baseOptions?: Apollo.MutationHook
 export type RemoveSleepVariableMutationHookResult = ReturnType<typeof useRemoveSleepVariableMutation>;
 export type RemoveSleepVariableMutationResult = Apollo.MutationResult<RemoveSleepVariableMutation>;
 export type RemoveSleepVariableMutationOptions = Apollo.BaseMutationOptions<RemoveSleepVariableMutation, RemoveSleepVariableMutationVariables>;
+export const AnalyzeSleepDocument = gql`
+    query AnalyzeSleep {
+  analyzeSleep
+}
+    `;
+
+/**
+ * __useAnalyzeSleepQuery__
+ *
+ * To run a query within a React component, call `useAnalyzeSleepQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAnalyzeSleepQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAnalyzeSleepQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAnalyzeSleepQuery(baseOptions?: Apollo.QueryHookOptions<AnalyzeSleepQuery, AnalyzeSleepQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AnalyzeSleepQuery, AnalyzeSleepQueryVariables>(AnalyzeSleepDocument, options);
+      }
+export function useAnalyzeSleepLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AnalyzeSleepQuery, AnalyzeSleepQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AnalyzeSleepQuery, AnalyzeSleepQueryVariables>(AnalyzeSleepDocument, options);
+        }
+export type AnalyzeSleepQueryHookResult = ReturnType<typeof useAnalyzeSleepQuery>;
+export type AnalyzeSleepLazyQueryHookResult = ReturnType<typeof useAnalyzeSleepLazyQuery>;
+export type AnalyzeSleepQueryResult = Apollo.QueryResult<AnalyzeSleepQuery, AnalyzeSleepQueryVariables>;
 export const CurrentUserDocument = gql`
     query CurrentUser {
   currentUser {

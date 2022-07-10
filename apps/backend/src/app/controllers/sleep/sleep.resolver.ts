@@ -3,29 +3,30 @@ import {
   Args,
   Mutation,
   Parent,
+  Query,
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
 import { User } from "../../middleware/user.decorator";
-import { Sleep } from "../../types/graphql";
+import { Sleep as SleepType } from "../../types/graphql";
 import { SleepService } from "./sleep.service";
 
-@Resolver("Sleep")
 @UseGuards(FitbitGuard)
+@Resolver("Sleep")
 export class SleepResolver {
   constructor(private readonly sleepService: SleepService) {}
 
   @ResolveField()
-  async score(@Parent() parent: Sleep) {
+  async score(@Parent() parent: SleepType) {
     return this.sleepService.getSleepScore({
       ...parent,
     });
   }
 
   @ResolveField()
-  async variables(@Parent() parent: Sleep) {
+  async variables(@Parent() parent: SleepType) {
     return this.sleepService.getVariables(parent);
   }
 
@@ -37,13 +38,18 @@ export class SleepResolver {
     @Args("custom") custom: boolean,
     @Args("sleepDate") sleepDate: string,
   ) {
-    const found = await this.sleepService.addVariable(user.id, name, sleepDate);
-    if (!found) return null;
+    const sleep = await this.sleepService.addVariable(user.id, name, sleepDate);
+
+    if (!sleep) {
+      return [null];
+    }
 
     return {
-      name,
-      emoji,
-      custom,
+      date: sleep.date,
+      variables: await this.sleepService.transformVariables(
+        user.id,
+        ...(sleep.variables ?? []),
+      ),
     };
   }
 
@@ -53,7 +59,23 @@ export class SleepResolver {
     @Args("name") name: string,
     @Args("sleepDate") sleepDate: string,
   ) {
-    await this.sleepService.removeVariable(user.id, name, sleepDate);
+    const sleep = await this.sleepService.removeVariable(
+      user.id,
+      name,
+      sleepDate,
+    );
+    if (!sleep) {
+      return [null];
+    }
+
+    return {
+      date: sleep.date,
+      variables: await this.sleepService.transformVariables(
+        user.id,
+        ...(sleep.variables ?? []),
+      ),
+    };
+  }
 
   @Query()
   async analyzeSleep(@User() user: FitbitUser) {

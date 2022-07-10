@@ -30,82 +30,90 @@ const Index: React.FC = () => {
   const [removeVariableMut] = useRemoveSleepVariableMutation();
   const [createSleepVariableMut] = useCreateSleepVariableMutation();
 
+  const sleepForDate = useMemo(
+    () => sleepData?.currentUser?.todaysSleep.find((s) => s?.date === date),
+    [date, sleepData?.currentUser?.todaysSleep],
+  );
+
   const removeVariable = useCallback(
     (name: string) => {
       removeVariableMut({
         variables: { name, sleepDate: date },
-        optimisticResponse: {
-          removeSleepVariable: name,
-        },
+        optimisticResponse: ({ name }) => ({
+          removeSleepVariable: {
+            date,
+            variables: [
+              ...(sleepForDate?.variables?.filter((v) => v?.name !== name) ??
+                []),
+            ],
+          },
+        }),
         update: (cache, { data: newData }) => {
           const oldData = cache.readQuery<MostRecentSleepQuery>({
             query: MostRecentSleepDocument,
           });
 
-          if (!oldData || !newData || !oldData.currentUser) {
+          if (!oldData || !newData || !oldData.currentUser || !sleepForDate) {
             return;
           }
 
-          cache.writeQuery({
+          cache.writeQuery<MostRecentSleepQuery>({
             query: MostRecentSleepDocument,
             data: {
               currentUser: {
                 ...oldData.currentUser,
-                todaysSleep: {
-                  ...oldData.currentUser.todaysSleep,
-                  variables:
-                    oldData.currentUser?.todaysSleep?.variables?.filter(
-                      (v) => v?.name !== name,
-                    ),
-                },
+                todaysSleep: [
+                  {
+                    ...sleepForDate,
+                    variables: newData.removeSleepVariable?.variables,
+                  },
+                ],
               },
             },
           });
         },
       });
     },
-    [date, removeVariableMut],
+    [date, removeVariableMut, sleepForDate],
   );
 
   const addVariable = useCallback(
     (name: string, emoji: string, custom: boolean) => {
       addVariableMut({
         variables: { name, emoji, custom, sleepDate: date },
-        optimisticResponse: {
+        optimisticResponse: ({ sleepDate, ...rest }) => ({
           addSleepVariable: {
-            name,
-            emoji,
-            custom,
+            date,
+            variables: [...(sleepForDate?.variables ?? []), rest],
           },
-        },
+        }),
         update: (cache, { data: newData }) => {
           const oldData = cache.readQuery<MostRecentSleepQuery>({
             query: MostRecentSleepDocument,
           });
 
-          if (!oldData || !newData || !oldData.currentUser) {
+          if (!oldData || !newData || !oldData.currentUser || !sleepForDate) {
             return;
           }
 
-          cache.writeQuery({
+          cache.writeQuery<MostRecentSleepQuery>({
             query: MostRecentSleepDocument,
             data: {
               currentUser: {
                 ...oldData.currentUser,
-                todaysSleep: {
-                  ...oldData.currentUser.todaysSleep,
-                  variables: [
-                    ...(oldData.currentUser.todaysSleep?.variables ?? []),
-                    newData?.addSleepVariable,
-                  ],
-                },
+                todaysSleep: [
+                  {
+                    ...sleepForDate,
+                    variables: newData.addSleepVariable?.variables,
+                  },
+                ],
               },
             },
           });
         },
       });
     },
-    [addVariableMut, date],
+    [addVariableMut, date, sleepForDate],
   );
 
   const createVariable = useCallback(
@@ -124,13 +132,6 @@ const Index: React.FC = () => {
         },
         update: (cache, { data: newData }) => {
           if (!sleepVariables || !sleepVariables.currentUser) return;
-
-          console.log([
-            ...(sleepVariables?.currentUser?.sleepVariables ?? []),
-            newData?.createSleepVariable,
-          ]);
-
-          console.log(sleepVariables);
 
           cache.modify({
             id: cache.identify(sleepVariables.currentUser),
@@ -155,8 +156,7 @@ const Index: React.FC = () => {
     [sleepVariables?.currentUser?.sleepVariables],
   );
 
-  const selectedVariables =
-    sleepData?.currentUser?.todaysSleep?.variables ?? [];
+  const selectedVariables = sleepForDate?.variables ?? [];
 
   const ref = useRef<HTMLDivElement>(null);
 

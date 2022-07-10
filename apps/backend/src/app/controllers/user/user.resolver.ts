@@ -261,22 +261,24 @@ export class UserResolver {
   }
 
   @ResolveField()
-  async todaysSleep(@User() user: FitbitUser): Promise<Partial<Sleep> | null> {
-    const sleepToday = await this.userService.getSleepData(user.id, user.token);
+  async todaysSleep(
+    @User() user: FitbitUser,
+    @Args("sourceUrl") sourceUrl: string | null,
+  ): Promise<Partial<Sleep>[] | null> {
+    const sleepToday = await this.userService.getSleepData(
+      user.id,
+      user.token,
+      { srcUrl: sourceUrl },
+    );
 
-    if (!sleepToday) return null;
+    if (!sleepToday) return [];
 
-    const { awake, awakenings, deep, light, rem, date } = sleepToday;
-
-    return {
-      awake,
-      awakenings,
-      deep,
-      light,
-      rem,
-      ownerId: user.id,
-      date,
-    };
+    return [
+      {
+        ...sleepToday,
+        ownerId: user.id,
+      },
+    ];
   }
 
   @ResolveField()
