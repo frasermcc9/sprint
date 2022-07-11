@@ -1,6 +1,4 @@
 import { LoginPanel, useStandardRedirect } from "@sprint/components";
-import { useRouter } from "next/router";
-import React from "react";
 
 export function Index() {
   useStandardRedirect();

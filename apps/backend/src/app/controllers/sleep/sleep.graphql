@@ -1,0 +1,27 @@
+type Sleep {
+  awake: Int!
+  rem: Int!
+  light: Int!
+  deep: Int!
+  awakenings: Int!
+  score: Int!
+  ownerId: ID!
+  date: String!
+  variables: [SleepVariable]
+}
+
+type SleepVariable {
+  name: String!
+  emoji: String
+  custom: Boolean!
+}
+
+type Mutation {
+  addSleepVariable(
+    name: String!
+    emoji: String!
+    custom: Boolean!
+    sleepDate: String!
+  ): SleepVariable
+  removeSleepVariable(name: String!, sleepDate: String!): String
+}

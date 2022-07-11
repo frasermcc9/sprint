@@ -14,7 +14,7 @@ export default function Index() {
     return null;
   }
 
-  if (loading || !data.currentUser) {
+  if (loading || !data?.currentUser) {
     return <div>Loading...</div>;
   }
 
@@ -45,7 +45,7 @@ export default function Index() {
               Joined {toMonthYYYY(new Date(createdAtUTS))}
             </span>
           </div>
-          <Avatar avatarUrl={avatarUrl} showEdit />
+          <Avatar avatarUrl={avatarUrl} userId={id} showEdit />
         </section>
       </Layout.Margin>
     </Layout.Page>

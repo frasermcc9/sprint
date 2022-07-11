@@ -75,10 +75,15 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
                 "Content-Type": "application/x-www-form-urlencoded",
               },
             })
-          )?.data?.user as FitbitUser);
+          )?.data?.user as FitbitUser | null);
+
+      if (!castedUser || !castedUser.encodedId) {
+        throw new UnauthorizedException("No user found");
+      }
 
       // move encodedId to id for easier access
       castedUser.id = castedUser.encodedId;
+      castedUser.token = bearer;
 
       if (!isCacheValid) {
         this.userCache.set(userId, {
@@ -89,10 +94,10 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
 
       await this.userModel.createIfNotExistsAndMerge({
         id: castedUser.id,
-        firstName: castedUser.firstName,
-        lastName: castedUser.lastName,
+        firstName: castedUser.firstName ?? "",
+        lastName: castedUser.lastName ?? "",
         stage: AccountStage.INITIAL,
-        dob: castedUser.dateOfBirth,
+        dob: castedUser.dateOfBirth ?? "",
         avatarUrl: castedUser.avatar,
         createdAtUTS: Date.now(),
         utcOffset: (castedUser.offsetFromUTCMillis ?? 0) / 1000 / 60 / 60,

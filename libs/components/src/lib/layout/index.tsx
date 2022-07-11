@@ -28,7 +28,7 @@ const Page = forwardRef<HTMLElement, PropsWithChildren<PageProps>>(
       >
         <div
           className={classNames(
-            "flex w-full max-w-6xl flex-grow flex-col self-center",
+            "flex w-full max-w-6xl flex-grow flex-col self-center pb-20",
             className,
           )}
         >
@@ -49,10 +49,17 @@ const Header: FCC = ({ children }) => {
   );
 };
 
+const PageUpAnimation = {
+  hidden: { opacity: 0, x: 0, y: 200 },
+  enter: { opacity: 1, x: 0, y: 0 },
+  exit: { opacity: 0, x: 0, y: 200 },
+};
+
 const Layout = {
   Page,
   Margin,
   Header,
+  PageUpAnimation,
 } as const;
 
 export { Layout };

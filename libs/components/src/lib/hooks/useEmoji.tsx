@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { parse } from "twemoji-parser";
 
 /**
@@ -37,3 +37,20 @@ export function useEmoji(
     return InlineEmoji;
   }, [emoji, textSize]);
 }
+
+export const useEmojiFactory = () => {
+  return useCallback((emoji: string, size: string) => {
+    const URL = parse(emoji)[0]?.url;
+
+    return (
+      <img
+        src={URL}
+        alt=""
+        draggable={false}
+        style={{ width: size }}
+        width={size}
+        className={"inline"}
+      />
+    );
+  }, []);
+};

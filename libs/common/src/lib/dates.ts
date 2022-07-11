@@ -7,13 +7,27 @@ export const calculateAge = (dob: string) => {
 export const readableTime = (seconds: number) =>
   format(seconds * 1000, "hh:mm:ss");
 
+export const readableTimeNoSeconds = (
+  minutes: number,
+  { suffix }: { suffix?: boolean } = {},
+) =>
+  minutes > 60
+    ? new Date(minutes * 60 * 1000)
+        .toISOString()
+        .slice(11, 16)
+        .replace(/^0/, "") + (suffix ? "h" : "")
+    : new Date(minutes * 60 * 1000)
+        .toISOString()
+        .slice(14, 16)
+        .replace(/^0/, "") + (suffix ? "m" : "");
+
 const formatYYYYMMDD = new Intl.DateTimeFormat("fr-CA", {
   year: "numeric",
   month: "2-digit",
   day: "2-digit",
 });
-export const toYYYYMMDD = (date: Date) => {
-  return formatYYYYMMDD.format(date);
+export const toYYYYMMDD = (date: Date | null) => {
+  return date ? formatYYYYMMDD.format(date) : "";
 };
 
 const formatMonthYYYY = new Intl.DateTimeFormat("en-US", {
@@ -36,4 +50,19 @@ export const daysForLocale = (
   );
 };
 
-const solution = (N: number, A: number[]) => A.reduce((acc, cur) => cur > N ? [...Array(N)].fill(Math.max(...acc)) : Object.assign([], acc, { [cur - 1]: acc[cur - 1] + 1 }), [...Array(N)].fill(0));
+export const stripTime = (date: Date) => {
+  const manipulated = new Date(date);
+  manipulated.setHours(0, 0, 0, 0);
+  return manipulated;
+};
+
+export const Dates = {
+  stripTime,
+  daysForLocale,
+  modFloor,
+  toMonthYYYY,
+  toYYYYMMDD,
+  readableTimeNoSeconds,
+  readableTime,
+  calculateAge,
+};

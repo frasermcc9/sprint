@@ -19,7 +19,7 @@ export const StreakPopover: React.FC<StreakPopupProps> = ({
   const today = new Date().getDay();
 
   const previousDays = useMemo(() => {
-    const previousDays = [];
+    const previousDays: number[] = [];
     previousDays[4] = today;
     for (let i = 0; i < 5; i++) {
       previousDays[5 - 1 - i] = modFloor(today - i - 1, 7);

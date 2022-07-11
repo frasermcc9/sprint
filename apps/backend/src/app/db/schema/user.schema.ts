@@ -4,6 +4,16 @@ import { Document, Model } from "mongoose";
 import { AccountStage, ExperienceLevel } from "../../types/graphql";
 import { Run } from "./run.schema";
 
+type Sleep = {
+  date: string;
+  variables?: string[];
+};
+
+type SleepVariable = {
+  name: string;
+  emoji: string;
+};
+
 @Schema()
 export class User {
   @Prop({ required: true })
@@ -50,6 +60,31 @@ export class User {
 
   @Prop({ required: true, type: Array, default: [] })
   pendingFriends?: Array<string>;
+
+  @Prop({
+    required: true,
+    type: Object,
+    default: {
+      highIntensity: 30,
+      lowIntensity: 30,
+      repetitions: 3,
+      sets: 3,
+      restPeriod: 120,
+    },
+  })
+  currentRunParams?: {
+    highIntensity: number;
+    lowIntensity: number;
+    repetitions: number;
+    sets: number;
+    restPeriod: number;
+  };
+
+  @Prop({ type: [{ type: Object }], default: [] })
+  sleeps?: Array<Sleep>;
+
+  @Prop({ type: [{ type: Object }], default: [] })
+  sleepVariables?: Array<SleepVariable>;
 }
 
 interface Methods {
@@ -70,6 +105,11 @@ interface Methods {
     this: UserDocument,
     { reject }: { reject: string },
   ): Promise<void>;
+  addSleep(this: UserDocument, { sleep }: { sleep: Sleep }): Promise<void>;
+  getSleep(
+    this: UserDocument,
+    { date }: { date: string },
+  ): Promise<Sleep | null>;
 }
 
 interface Statics {
@@ -103,27 +143,45 @@ const methods: Methods = {
     this: UserDocument,
     { requesterId }: { requesterId: string },
   ) {
-    this.pendingFriends.push(requesterId);
+    this.pendingFriends?.push(requesterId);
     this.markModified("pendingFriends");
     await this.save();
   },
   async addFriend(this: UserDocument, { newFriendId }) {
-    this.friends.push(newFriendId);
-    const pending = this.pendingFriends.indexOf(newFriendId);
+    this.friends?.push(newFriendId);
+    const pending = this.pendingFriends?.indexOf(newFriendId) ?? -1;
     if (pending > -1) {
-      this.pendingFriends.splice(pending, 1);
+      this.pendingFriends?.splice(pending, 1);
       this.markModified("pendingFriends");
     }
     this.markModified("friends");
     await this.save();
   },
   async rejectFriendRequest({ reject }) {
-    const pending = this.pendingFriends.indexOf(reject);
+    const pending = this.pendingFriends?.indexOf(reject) ?? -1;
     if (pending > -1) {
-      this.pendingFriends.splice(pending, 1);
+      this.pendingFriends?.splice(pending, 1);
       this.markModified("pendingFriends");
       await this.save();
     }
+  },
+  async addSleep(this: UserDocument, { sleep }: { sleep: Sleep }) {
+    const mostRecent = this.sleeps?.at(-1);
+    if (
+      mostRecent &&
+      new Date(mostRecent.date).getTime() >= new Date(sleep.date).getTime()
+    ) {
+      return;
+    }
+    this.sleeps?.push(sleep);
+    this.markModified("sleeps");
+    await this.save();
+  },
+  async getSleep(
+    this: UserDocument,
+    { date }: { date: string },
+  ): Promise<Sleep | null> {
+    return this.sleeps?.find((s) => s.date === date) ?? null;
   },
 };
 

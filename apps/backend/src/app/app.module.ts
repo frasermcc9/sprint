@@ -14,10 +14,16 @@ import { User, UserSchema } from "./db/schema/user.schema";
 import { UserModule } from "./controllers/user/user.module";
 import { RunModule } from "./controllers/run/run.module";
 import { ScienceModule } from "./controllers/science/science.module";
+import { SleepModule } from "./controllers/sleep/sleep.module";
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.DATABASE_URL),
+    MongooseModule.forRoot(
+      (() => {
+        if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL not set");
+        return process.env.DATABASE_URL;
+      })(),
+    ),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       typePaths: ["./**/*.graphql"],
       driver: ApolloDriver,
@@ -32,6 +38,7 @@ import { ScienceModule } from "./controllers/science/science.module";
     UserModule,
     RunModule,
     ScienceModule,
+    SleepModule,
   ],
   controllers: [AppController],
   providers: [AppService, FitbitGuard, FitbitStrategy],

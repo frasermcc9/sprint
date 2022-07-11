@@ -21,20 +21,18 @@ export const useGetTokenPageController = () => {
   useEffect(() => {
     (async () => {
       if (isReady && typeof code === "string") {
-        const {
-          data: { login },
-        } = await doLogin({
+        const { data } = await doLogin({
           variables: {
             code,
           },
         });
 
-        if (login) {
-          const expiryTime = Date.now() / 1000 + login.expires_in - 1000;
+        if (data?.login?.expires_in) {
+          const expiryTime = Date.now() / 1000 + data.login.expires_in - 1000;
 
           localStorage.setItem(
             LocalStorageKeys.AUTH_DETAILS,
-            JSON.stringify(login),
+            JSON.stringify(data.login),
           );
           localStorage.setItem(
             LocalStorageKeys.AUTH_EXPIRY,

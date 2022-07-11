@@ -32,6 +32,7 @@ export interface IQuery {
     getAuthLink(): string | Promise<string>;
     testAuth(): Nullable<string> | Promise<Nullable<string>>;
     currentUser(): Nullable<User> | Promise<Nullable<User>>;
+    prepRun(): Nullable<RunParams> | Promise<Nullable<RunParams>>;
 }
 
 export interface IMutation {
@@ -39,6 +40,8 @@ export interface IMutation {
     refresh(token: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     createRun(token: string, startDate: string, endDate: string, startTime: string, endTime: string): Nullable<Run> | Promise<Nullable<Run>>;
     createEvent(event: string, payload?: Nullable<string>): Nullable<AnalyticsEvent> | Promise<Nullable<AnalyticsEvent>>;
+    addSleepVariable(name: string, emoji: string, custom: boolean, sleepDate: string): Nullable<SleepVariable> | Promise<Nullable<SleepVariable>>;
+    removeSleepVariable(name: string, sleepDate: string): Nullable<string> | Promise<Nullable<string>>;
     updateExperienceLevel(): Nullable<ExperienceLevel> | Promise<Nullable<ExperienceLevel>>;
     completeOnboarding(experience: ExperienceLevel, firstName: string, lastName: string, dob: string): Nullable<User> | Promise<Nullable<User>>;
     updateDefaultRunDuration(duration: number): number | Promise<number>;
@@ -47,6 +50,9 @@ export interface IMutation {
     sendFriendRequest(friendId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
     acceptFriendRequest(friendId: string): PublicUser | Promise<PublicUser>;
     rejectFriendRequest(friendId: string): string | Promise<string>;
+    updateRunParams(intensityFeedBack: number): Nullable<User> | Promise<Nullable<User>>;
+    updateProfilePic(avatarUrl: string): Nullable<User> | Promise<Nullable<User>>;
+    createSleepVariable(emoji: string, name: string): SleepVariable | Promise<SleepVariable>;
 }
 
 export interface Run {
@@ -62,6 +68,24 @@ export interface AnalyticsEvent {
     user: string;
     event: string;
     payload?: Nullable<string>;
+}
+
+export interface Sleep {
+    awake: number;
+    rem: number;
+    light: number;
+    deep: number;
+    awakenings: number;
+    score: number;
+    ownerId: string;
+    date: string;
+    variables?: Nullable<Nullable<SleepVariable>[]>;
+}
+
+export interface SleepVariable {
+    name: string;
+    emoji?: Nullable<string>;
+    custom: boolean;
 }
 
 export interface User {
@@ -81,6 +105,17 @@ export interface User {
     xp: number;
     friends: Nullable<PublicUser>[];
     friendRequests: Nullable<PublicUser>[];
+    currentRunParams: RunParams;
+    todaysSleep?: Nullable<Sleep>;
+    sleepVariables?: Nullable<Nullable<SleepVariable>[]>;
+}
+
+export interface RunParams {
+    highIntensity?: Nullable<number>;
+    lowIntensity?: Nullable<number>;
+    repetitions?: Nullable<number>;
+    sets?: Nullable<number>;
+    restPeriod?: Nullable<number>;
 }
 
 export interface PublicUser {

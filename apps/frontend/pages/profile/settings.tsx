@@ -11,10 +11,12 @@ export const Settings: React.FC = () => {
   const { data, loading, error } = useCurrentUserQuery();
 
   const [firstName, setFirstName] = useLoadingState(
-    data?.currentUser?.firstName,
+    data?.currentUser?.firstName ?? "",
   );
-  const [lastName, setLastName] = useLoadingState(data?.currentUser?.lastName);
-  const [dob, setDob] = useLoadingState(data?.currentUser?.dob);
+  const [lastName, setLastName] = useLoadingState(
+    data?.currentUser?.lastName ?? "",
+  );
+  const [dob, setDob] = useLoadingState(data?.currentUser?.dob ?? "");
 
   const isChanged = useMemo(
     () =>
@@ -47,16 +49,16 @@ export const Settings: React.FC = () => {
         },
       },
       update: (cache, { data: updated }) => {
-        if (!updated?.updateProfile) {
+        if (!updated?.updateProfile || !data?.currentUser) {
           return;
         }
 
         cache.modify({
           id: cache.identify(data.currentUser),
           fields: {
-            firstName: () => updated.updateProfile.firstName,
-            lastName: () => updated.updateProfile.lastName,
-            dob: () => updated.updateProfile.dob,
+            firstName: () => updated.updateProfile?.firstName,
+            lastName: () => updated.updateProfile?.lastName,
+            dob: () => updated.updateProfile?.dob,
           },
         });
       },
@@ -102,13 +104,7 @@ export const Settings: React.FC = () => {
   } = data;
 
   return (
-    <Layout.Page
-      animation={{
-        hidden: { opacity: 0, x: 0, y: 200 },
-        enter: { opacity: 1, x: 0, y: 0 },
-        exit: { opacity: 0, x: 0, y: 200 },
-      }}
-    >
+    <Layout.Page animation={Layout.PageUpAnimation}>
       <Layout.Header>
         <div className="font-palanquin flex w-full items-center border-b-2 border-gray-300 py-2 text-gray-700">
           <div className="invisible mx-8 w-32" />
@@ -127,7 +123,7 @@ export const Settings: React.FC = () => {
             Your Profile
           </h1>
           <div className="flex flex-col items-center justify-center gap-y-2">
-            <Avatar avatarUrl={avatarUrl} showEdit />
+            <Avatar avatarUrl={avatarUrl} showEdit userId={data?.currentUser.id} />
             <div className="w-full">
               <label
                 className="ml-0.5 text-sm font-semibold underline"
