@@ -1,12 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Run, RunCollection } from "../../db/schema/run.schema";
+import { UserCollection } from "../../db/schema/user.schema";
+import { FitbitUser } from "../../middleware/fitbit.types";
+import { User } from "../../middleware/user.decorator";
 import { calculateVO2max } from "../../service/run-processing/runProcessing";
 
 @Injectable()
 export class RunService {
   constructor(
     @InjectModel(Run.name) private readonly runModel: RunCollection,
+    @InjectModel(User.name) private readonly userModel: UserCollection,
   ) {}
 
   getRun(userId: string) {
@@ -20,8 +24,7 @@ export class RunService {
    * @param dateEnd date in format YYYY-MM-DD
    */
   async createRun(
-    userID: string,
-    maxHR: number,
+    fitbitId: string,
     access_token: string,
     dateStart: string,
     dateEnd: string,
@@ -29,6 +32,11 @@ export class RunService {
     endTime: string,
     intensityFB: number,
   ) {
+    const dbUser = await this.userModel.findOne({ id: fitbitId });
+    if (!dbUser) {
+      throw new Error("User not found");
+    }
+
     try {
       const res = await fetch(
         `https://api.fitbit.com/1/user/-/activities/heart/date/${dateStart}/${dateEnd}/1min/time/${startTime}/${endTime}.json1`,
@@ -45,10 +53,10 @@ export class RunService {
       const durationMins =
         (timeEnd.getTime() - timeStart.getTime()) / 1000 / 60;
 
-      const vo2Max = calculateVO2max(data, maxHR);
+      const vo2Max = calculateVO2max(data, dbUser.maxHR);
 
       const newRun = {
-        userId: userID,
+        userId: dbUser.id,
         date: dateStart,
         duration: durationMins,
         heartRate: hrActivity,

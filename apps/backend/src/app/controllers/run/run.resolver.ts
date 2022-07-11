@@ -13,9 +13,6 @@ export class RunResolver {
   @Mutation()
   async createRun(
     @User() user: FitbitUser,
-    @Args("userId") userId: string,
-    @Args("maxHR") maxHR: number,
-    @Args("token") token: string,
     @Args("startDate") startDate: string,
     @Args("endDate") endDate: string,
     @Args("startTime") startTime: string,
@@ -23,9 +20,8 @@ export class RunResolver {
     @Args("intensityFB") fb: number,
   ) {
     return this.runService.createRun(
-      userId,
-      maxHR,
-      token,
+      user.id,
+      user.token,
       startDate,
       endDate,
       startTime,
