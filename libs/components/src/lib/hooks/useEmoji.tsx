@@ -1,3 +1,4 @@
+import { Nullish } from "@sprint/common";
 import React, { useCallback, useMemo } from "react";
 import { parse } from "twemoji-parser";
 
@@ -39,8 +40,8 @@ export function useEmoji(
 }
 
 export const useEmojiFactory = () => {
-  return useCallback((emoji: string, size: string) => {
-    const URL = parse(emoji)[0]?.url;
+  return useCallback((emoji?: Nullish<string>, size = "20px") => {
+    const URL = parse(emoji ?? "")[0]?.url;
 
     return (
       <img

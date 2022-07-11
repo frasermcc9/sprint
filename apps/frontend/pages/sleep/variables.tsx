@@ -56,8 +56,8 @@ const Index: React.FC = () => {
     [createSleepVariableMut, sleepVariables],
   );
 
-  const [trackMut] = useTrackVariableMutation();
-  const [untrackMut] = useUntrackVariableMutation();
+  const [trackMut] = useTrackVariableMutation({});
+  const [untrackMut] = useUntrackVariableMutation({});
 
   const trackVariable = useCallback(
     (name: string) => {
