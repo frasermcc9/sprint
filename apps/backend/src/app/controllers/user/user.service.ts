@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Dates } from "@sprint/common";
+import { Dates, Nullish } from "@sprint/common";
 import { UserInputError } from "apollo-server-express";
 import { addDays } from "date-fns";
 import { HttpService } from "nestjs-http-promise";
@@ -91,22 +91,29 @@ export class UserService {
   async getSleepData(
     id: string,
     token: string,
-    date: Date = addDays(new Date(), 1),
+    {
+      date = addDays(new Date(), 1),
+      srcUrl,
+    }: {
+      date?: Date;
+      srcUrl?: Nullish<string>;
+    } = {},
   ) {
     const format = Dates.toYYYYMMDD(date);
 
     const user = await this.getUser(id);
 
     try {
-      const { data } = await this.httpService.get<SleepResponse>(
-        `https://api.fitbit.com/1.2/user/-/sleep/list.json?beforeDate=${format}&sort=desc&limit=1&offset=0`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const URL =
+        srcUrl ||
+        `https://api.fitbit.com/1.2/user/-/sleep/list.json?beforeDate=${format}&sort=desc&limit=1&offset=0`;
+
+      const { data } = await this.httpService.get<SleepResponse>(URL, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       const retry = async () => {
         const next = await this.httpService.get<SleepResponse>(
@@ -141,6 +148,8 @@ export class UserService {
         rem: mainSleep.levels.summary.rem.minutes,
         awakenings: mainSleep.levels.summary.wake.count,
         variables: [],
+        yesterday: data.pagination.next,
+        tomorrow: data.pagination.previous,
       };
 
       await user.addSleep({

@@ -42,8 +42,9 @@ type User {
   friends(limit: Int = 10): [PublicUser]!
   friendRequests: [PublicUser]!
   currentRunParams: RunParams!
-  todaysSleep: Sleep
+  todaysSleep(sourceUrl: String): [Sleep]!
   sleepVariables: [SleepVariable]
+  trackedVariables: [String!]!
 }
 
 type RunParams {
