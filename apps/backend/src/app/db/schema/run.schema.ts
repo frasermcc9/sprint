@@ -7,19 +7,13 @@ export class Run {
   userId: string;
 
   @Prop({ required: true })
-  date: Date;
+  date: string;
 
   @Prop({ required: true })
   duration: number;
 
   @Prop({ required: true })
-  distance: number;
-
-  @Prop({ required: true })
-  heartRate: [number];
-
-  @Prop({ required: true })
-  speed: [number];
+  heartRate: Array<number>;
 
   @Prop({ required: true, default: 0 })
   vo2max: number;

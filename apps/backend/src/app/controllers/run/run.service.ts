@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Run, RunCollection } from "../../db/schema/run.schema";
 import { UserCollection } from "../../db/schema/user.schema";
-import { FitbitUser } from "../../middleware/fitbit.types";
 import { User } from "../../middleware/user.decorator";
 import { calculateVO2max } from "../../service/run-processing/runProcessing";
 
@@ -46,14 +45,16 @@ export class RunService {
         },
       );
       const data = await res.json();
-      const hrActivity = Object.values(data);
+
+      // Need to check if this actually works to get heart rate data.
+      const hrActivity: number[] = Object.values(data);
 
       const timeStart = new Date(dateStart + "T" + startTime);
       const timeEnd = new Date(dateEnd + "T" + endTime);
       const durationMins =
         (timeEnd.getTime() - timeStart.getTime()) / 1000 / 60;
 
-      const vo2Max = calculateVO2max(data, dbUser.maxHR);
+      const vo2Max = calculateVO2max(hrActivity, dbUser.maxHR);
 
       const newRun = {
         userId: dbUser.id,
@@ -65,6 +66,10 @@ export class RunService {
       };
 
       this.runModel.create(newRun);
+
+      dbUser.runs?.push(newRun);
+      dbUser.save();
+
       return newRun;
     } catch (e) {
       console.error(e.toJSON());

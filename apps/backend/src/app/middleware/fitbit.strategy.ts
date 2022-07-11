@@ -9,6 +9,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { User, UserCollection } from "../db/schema/user.schema";
 import { AccountStage } from "../types/graphql";
 import LRU = require("lru-cache");
+import { calculateMaxHr } from "@sprint/common";
 
 interface JWT {
   aud: string;
@@ -91,12 +92,14 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
           token: bearer,
         });
       }
+      const maxHr = calculateMaxHr(castedUser.dateOfBirth ?? "");
 
       await this.userModel.createIfNotExistsAndMerge({
         id: castedUser.id,
         firstName: castedUser.firstName ?? "",
         lastName: castedUser.lastName ?? "",
         stage: AccountStage.INITIAL,
+        maxHR: maxHr,
         dob: castedUser.dateOfBirth ?? "",
         avatarUrl: castedUser.avatar,
         createdAtUTS: Date.now(),

@@ -3,8 +3,6 @@ import { RunService } from "./run.service";
 import { RunResolver } from "./run.resolver";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Run, RunSchema } from "../../db/schema/run.schema";
-import { UserResolver } from "../user/user.resolver";
-import { UserService } from "../user/user.service";
 import { User, UserSchema } from "../../db/schema/user.schema";
 
 @Module({

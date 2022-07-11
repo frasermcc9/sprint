@@ -34,6 +34,9 @@ export class User {
   @Prop({ required: false, type: Array })
   runs?: Array<Run>;
 
+  @Prop({ required: true, type: Number, default: 200 })
+  maxHR: number;
+
   @Prop({ required: true, type: String })
   dob: string;
 
