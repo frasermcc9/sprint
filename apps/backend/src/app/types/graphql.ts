@@ -42,6 +42,8 @@ export interface IMutation {
     createEvent(event: string, payload?: Nullable<string>): Nullable<AnalyticsEvent> | Promise<Nullable<AnalyticsEvent>>;
     addSleepVariable(name: string, emoji: string, custom: boolean, sleepDate: string): Nullable<VariableEditResponse> | Promise<Nullable<VariableEditResponse>>;
     removeSleepVariable(name: string, sleepDate: string): Nullable<VariableEditResponse> | Promise<Nullable<VariableEditResponse>>;
+    trackVariable(name: string): string[] | Promise<string[]>;
+    untrackVariable(name: string): string[] | Promise<string[]>;
     updateExperienceLevel(): Nullable<ExperienceLevel> | Promise<Nullable<ExperienceLevel>>;
     completeOnboarding(experience: ExperienceLevel, firstName: string, lastName: string, dob: string): Nullable<User> | Promise<Nullable<User>>;
     updateDefaultRunDuration(duration: number): number | Promise<number>;
@@ -127,6 +129,7 @@ export interface User {
     currentRunParams: RunParams;
     todaysSleep: Nullable<Sleep>[];
     sleepVariables?: Nullable<Nullable<SleepVariable>[]>;
+    trackedVariables: string[];
 }
 
 export interface RunParams {

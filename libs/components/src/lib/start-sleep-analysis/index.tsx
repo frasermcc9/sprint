@@ -23,7 +23,7 @@ export const StartSleepAnalysis: React.FC<StartSleepAnalysisProps> = ({
         title="Locked!"
         isOpen={modal}
         closeModal={() => setModal(false)}
-        text="You must be level 5 before accessing the Sleep Analysis page!"
+        text="You must be level 5 before accessing the Sleep Analysis page."
       />
       <div className="font-palanquin relative mx-auto h-44 w-full max-w-xl select-none overflow-hidden rounded-lg p-2 shadow-lg">
         <img

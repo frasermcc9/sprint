@@ -288,4 +288,10 @@ export class UserResolver {
     const dbUser = await this.userService.getUser(user.id);
     return dbUser?.sleepVariables?.map((v) => ({ ...v, custom: true })) ?? [];
   }
+
+  @ResolveField()
+  async trackedVariables(@User() user: FitbitUser) {
+    const dbUser = await this.userService.getUser(user.id);
+    return dbUser?.trackedVariables ?? [];
+  }
 }

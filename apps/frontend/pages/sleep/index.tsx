@@ -12,10 +12,18 @@ import {
   useColorRangeRule,
   useLog,
 } from "@sprint/components";
-import { useMostRecentSleepQuery } from "@sprint/gql";
+import {
+  MostRecentSleepDocument,
+  MostRecentSleepQuery,
+  SleepVariable as TSleepVar,
+  useAddSleepVariableMutation,
+  useCustomSleepVariablesQuery,
+  useMostRecentSleepQuery,
+  useRemoveSleepVariableMutation,
+} from "@sprint/gql";
 import classNames from "classnames";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 const Index: React.FC = () => {
   const { back, push } = useRouter();
@@ -33,6 +41,7 @@ const Index: React.FC = () => {
 
   const [detailsOpen, setDetailsOpen] = useState(false);
 
+  const { data: sleepVariables } = useCustomSleepVariablesQuery();
   const { data, loading, fetchMore } = useMostRecentSleepQuery({
     notifyOnNetworkStatusChange: true,
   });
@@ -47,60 +56,167 @@ const Index: React.FC = () => {
     }`,
   );
 
-  const sleepArray = data?.currentUser?.todaysSleep ?? [];
+  const sleepArray = useMemo(
+    () => data?.currentUser?.todaysSleep ?? [],
+    [data?.currentUser?.todaysSleep],
+  );
 
-  const todaysSleep = sleepArray?.at(cursor) ?? {
-    awake: 0,
-    awakenings: 0,
-    date: "",
-    deep: 0,
-    light: 0,
-    rem: 0,
-    sleep: 0,
-    ownerId: "",
-    score: 0,
-    tomorrow: "",
-    yesterday: "",
-    variables: [],
-  };
+  const todaysSleep = useMemo(
+    () =>
+      sleepArray?.at(cursor) ?? {
+        awake: 0,
+        awakenings: 0,
+        date: "",
+        deep: 0,
+        light: 0,
+        rem: 0,
+        sleep: 0,
+        ownerId: "",
+        score: 0,
+        tomorrow: "",
+        yesterday: "",
+        variables: [] as TSleepVar[],
+      },
+    [cursor, sleepArray],
+  );
 
   const sleepDuration =
     todaysSleep?.deep + todaysSleep?.light + todaysSleep?.rem ?? 0;
   const sleepScore = todaysSleep?.score ?? 0;
   const timeInBed = sleepDuration + todaysSleep?.awake ?? 0;
 
-  const calcPercent = (t?: number) =>
-    Math.round(((t ?? 0) / timeInBed) * 100) + "%";
+  const calcPercent = useCallback(
+    (t?: number) => Math.round(((t ?? 0) / timeInBed) * 100) + "%",
+    [timeInBed],
+  );
 
-  const times = {
-    awake: {
-      value: calcPercent(todaysSleep?.awake),
-      color: "bg-red-400",
-      name: "Awake",
-      duration: todaysSleep?.awake,
-    },
-    light: {
-      value: calcPercent(todaysSleep?.light),
-      color: "bg-pink-600",
-      name: "Light",
-      duration: todaysSleep?.light,
-    },
-    rem: {
-      value: calcPercent(todaysSleep?.rem),
-      color: "bg-indigo-400",
-      name: "REM",
-      duration: todaysSleep?.rem,
-    },
-    deep: {
-      value: calcPercent(todaysSleep?.deep),
-      color: "bg-violet-700",
-      name: "Deep",
-      duration: todaysSleep?.deep,
-    },
-  };
+  const times = useMemo(
+    () => ({
+      awake: {
+        value: calcPercent(todaysSleep?.awake),
+        color: "bg-red-400",
+        name: "Awake",
+        duration: todaysSleep?.awake,
+      },
+      light: {
+        value: calcPercent(todaysSleep?.light),
+        color: "bg-pink-600",
+        name: "Light",
+        duration: todaysSleep?.light,
+      },
+      rem: {
+        value: calcPercent(todaysSleep?.rem),
+        color: "bg-indigo-400",
+        name: "REM",
+        duration: todaysSleep?.rem,
+      },
+      deep: {
+        value: calcPercent(todaysSleep?.deep),
+        color: "bg-violet-700",
+        name: "Deep",
+        duration: todaysSleep?.deep,
+      },
+    }),
+    [calcPercent, todaysSleep],
+  );
 
   const yesterday = todaysSleep?.yesterday;
   const tomorrow = todaysSleep?.tomorrow;
+
+  const [addVariableMut] = useAddSleepVariableMutation();
+  const [removeVariableMut] = useRemoveSleepVariableMutation();
+
+  const removeVariable = useCallback(
+    (name: string) => {
+      removeVariableMut({
+        variables: { name, sleepDate: todaysSleep.date },
+        optimisticResponse: ({ name }) => ({
+          removeSleepVariable: {
+            date: todaysSleep.date,
+            variables: [
+              ...(todaysSleep?.variables?.filter((v) => v?.name !== name) ??
+                []),
+            ],
+          },
+        }),
+        update: (cache, { data: newData }) => {
+          const oldData = cache.readQuery<MostRecentSleepQuery>({
+            query: MostRecentSleepDocument,
+          });
+
+          if (!oldData || !newData || !oldData.currentUser || !todaysSleep) {
+            return;
+          }
+
+          cache.writeQuery<MostRecentSleepQuery>({
+            query: MostRecentSleepDocument,
+            data: {
+              currentUser: {
+                ...oldData.currentUser,
+                todaysSleep: [
+                  {
+                    ...todaysSleep,
+                    variables: newData.removeSleepVariable?.variables,
+                  },
+                ],
+              },
+            },
+          });
+        },
+      });
+    },
+    [removeVariableMut, todaysSleep],
+  );
+
+  const addVariable = useCallback(
+    (name: string, emoji: string, custom: boolean) => {
+      addVariableMut({
+        variables: { name, emoji, custom, sleepDate: todaysSleep.date },
+        optimisticResponse: ({ sleepDate, ...rest }) => ({
+          addSleepVariable: {
+            date: todaysSleep.date,
+            variables: [...(todaysSleep?.variables ?? []), rest],
+          },
+        }),
+        update: (cache, { data: newData }) => {
+          const oldData = cache.readQuery<MostRecentSleepQuery>({
+            query: MostRecentSleepDocument,
+          });
+
+          if (!oldData || !newData || !oldData.currentUser || !todaysSleep) {
+            return;
+          }
+
+          cache.writeQuery<MostRecentSleepQuery>({
+            query: MostRecentSleepDocument,
+            data: {
+              currentUser: {
+                ...oldData.currentUser,
+                todaysSleep: [
+                  {
+                    ...todaysSleep,
+                    variables: newData.addSleepVariable?.variables,
+                  },
+                ],
+              },
+            },
+          });
+        },
+      });
+    },
+    [addVariableMut, todaysSleep],
+  );
+
+  const joinedVariables = useMemo(
+    () =>
+      [
+        ...Sleep.defaultVariables,
+        ...(sleepVariables?.currentUser?.sleepVariables ?? []),
+      ].filter((v) =>
+        sleepVariables?.currentUser?.trackedVariables?.includes(v?.name ?? ""),
+      ),
+    [sleepVariables],
+  );
 
   return (
     <Layout.Page
@@ -183,14 +299,17 @@ const Index: React.FC = () => {
           Variables
         </h1>
         <div className="flex flex-col gap-y-2">
-          {todaysSleep.variables?.map((variable) => {
+          {joinedVariables?.map((variable) => {
             if (!variable) return null;
 
             const { custom, name, emoji } = variable;
+            const enabled = !!todaysSleep.variables?.some(
+              (v) => v?.name === name,
+            );
             return (
               <SleepVariable
                 key={name}
-                active={true}
+                active={enabled}
                 emoji={
                   custom
                     ? emoji ?? ""
@@ -198,8 +317,13 @@ const Index: React.FC = () => {
                         ?.emoji ?? ""
                 }
                 name={name}
-                readonly
                 rounded
+                onClick={() => {
+                  if (enabled) {
+                    return removeVariable(name);
+                  }
+                  return addVariable(name, emoji ?? "", custom);
+                }}
               />
             );
           })}
@@ -208,9 +332,9 @@ const Index: React.FC = () => {
           className="font-palanquin text-light mt-2 w-full rounded-lg border border-dashed border-gray-400 py-4 text-center transition-colors hover:bg-gray-200"
           onClick={() => push("/sleep/variables?date=" + todaysSleep.date)}
         >
-          {!todaysSleep.variables?.length
-            ? "No variables. Tap here to add some!"
-            : "Add additional variables"}
+          {!sleepVariables?.currentUser?.trackedVariables.length
+            ? "No variables. Tap here to track some!"
+            : "Track additional variables"}
         </button>
       </Layout.Margin>
     </Layout.Page>

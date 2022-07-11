@@ -212,13 +212,7 @@ export class SleepService {
         sleepScoresAndVars.reduce((a, c) => a + c.score, 0) /
         sleepScoresAndVars.length;
 
-      const variableSet = new Set<string>();
-      for (const sleep of sleepScoresAndVars) {
-        for (const variable of sleep.variables) {
-          variableSet.add(variable);
-        }
-      }
-      const variableIndex = Array.from(variableSet);
+      const variableIndex = [...new Set(dbUser.trackedVariables)];
       const variableCount = variableIndex.length;
 
       const variableMap: { [key: string]: number } = {};

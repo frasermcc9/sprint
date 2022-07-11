@@ -31,6 +31,8 @@ type Mutation {
     sleepDate: String!
   ): VariableEditResponse
   removeSleepVariable(name: String!, sleepDate: String!): VariableEditResponse
+  trackVariable(name: String!): [String!]!
+  untrackVariable(name: String!): [String!]!
 }
 
 type SleepAnalysisComponent {

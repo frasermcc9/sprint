@@ -1,9 +1,22 @@
-import { Layout } from "@sprint/components";
+import { Layout, useEmoji } from "@sprint/components";
+import { useAnalyzeSleepQuery } from "@sprint/gql";
 import { useRouter } from "next/router";
 import React from "react";
 
 export const SleepAnalysisPage: React.FC = () => {
   const { back } = useRouter();
+
+  const SleepEmoji = useEmoji("💤", "64px");
+
+  const { data, loading } = useAnalyzeSleepQuery();
+
+  const { components, regressionIntercept } = data?.analyzeSleep ?? {};
+
+  const sortedComponents = components
+    ?.slice()
+    .sort((a, b) => b.regressionGradient - a.regressionGradient);
+
+  console.log({ sortedComponents, regressionIntercept });
 
   return (
     <Layout.Page
@@ -27,7 +40,16 @@ export const SleepAnalysisPage: React.FC = () => {
           </span>
         </div>
       </Layout.Header>
-      <Layout.Margin></Layout.Margin>
+      <Layout.Margin>
+        {!loading && (
+          <div className="mt-8 flex w-full animate-pulse flex-col items-center gap-y-2">
+            <SleepEmoji />
+            <span className="font-palanquin text-lg font-light text-gray-700">
+              Analyzing Sleep...
+            </span>
+          </div>
+        )}
+      </Layout.Margin>
     </Layout.Page>
   );
 };

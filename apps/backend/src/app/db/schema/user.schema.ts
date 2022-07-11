@@ -85,6 +85,9 @@ export class User {
 
   @Prop({ type: [{ type: Object }], default: [] })
   sleepVariables?: Array<SleepVariable>;
+
+  @Prop({ type: Array, default: [] })
+  trackedVariables!: Array<string>;
 }
 
 interface Methods {

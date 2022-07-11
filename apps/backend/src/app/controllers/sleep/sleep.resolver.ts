@@ -81,4 +81,34 @@ export class SleepResolver {
   async analyzeSleep(@User() user: FitbitUser) {
     return await this.sleepService.analyzeSleep(user.id, user.token);
   }
+
+  @Mutation()
+  async trackVariable(@User() user: FitbitUser, @Args("name") name: string) {
+    const dbUser = await this.sleepService.findUser(user.id);
+    if (!dbUser) return [];
+
+    if (!dbUser.trackedVariables.includes(name)) {
+      dbUser.trackedVariables.push(name);
+      dbUser.markModified("trackedVariables");
+      await dbUser.save();
+    }
+
+    return dbUser.trackedVariables;
+  }
+
+  @Mutation()
+  async untrackVariable(@User() user: FitbitUser, @Args("name") name: string) {
+    const dbUser = await this.sleepService.findUser(user.id);
+    if (!dbUser) return [];
+
+    if (dbUser.trackedVariables.includes(name)) {
+      dbUser.trackedVariables = dbUser.trackedVariables.filter(
+        (v) => v !== name,
+      );
+      dbUser.markModified("trackedVariables");
+      await dbUser.save();
+    }
+
+    return dbUser.trackedVariables;
+  }
 }

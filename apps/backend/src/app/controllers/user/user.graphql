@@ -44,6 +44,7 @@ type User {
   currentRunParams: RunParams!
   todaysSleep(sourceUrl: String): [Sleep]!
   sleepVariables: [SleepVariable]
+  trackedVariables: [String!]!
 }
 
 type RunParams {
