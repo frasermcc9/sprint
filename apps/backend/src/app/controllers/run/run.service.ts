@@ -46,21 +46,23 @@ export class RunService {
       );
       const data = await res.json();
 
-      // Need to check if this actually works to get heart rate data.
-      const hrActivity: number[] = Object.values(data);
+      // Logic is tested and works, but error "No overload matches this call."
+      const dataset = Object.values(Object.values(data)[1])[0];
+      let hrActivityList = [];
+      dataset.forEach((element) => hrActivityList.push(element.value));
 
       const timeStart = new Date(dateStart + "T" + startTime);
       const timeEnd = new Date(dateEnd + "T" + endTime);
       const durationMins =
         (timeEnd.getTime() - timeStart.getTime()) / 1000 / 60;
 
-      const vo2Max = calculateVO2max(hrActivity, dbUser.maxHR);
+      const vo2Max = calculateVO2max(hrActivityList, dbUser.maxHR);
 
       const newRun = {
         userId: dbUser.id,
         date: dateStart,
         duration: durationMins,
-        heartRate: hrActivity,
+        heartRate: hrActivityList,
         vo2max: vo2Max,
         intensityFeedback: intensityFB,
       };
