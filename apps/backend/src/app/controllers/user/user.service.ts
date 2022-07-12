@@ -6,12 +6,16 @@ import { addDays } from "date-fns";
 import { HttpService } from "nestjs-http-promise";
 import { User, UserCollection } from "../../db/schema/user.schema";
 import { SleepResponse } from "./interfaces/sleep.interface";
+import { InjectEventEmitter } from "nest-typed-event-emitter";
+import { TypedEventEmitter } from "../../events";
+import { FitbitUser } from "../../middleware/fitbit.types";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: UserCollection,
     private readonly httpService: HttpService,
+    @InjectEventEmitter() private readonly eventEmitter: TypedEventEmitter,
   ) {}
 
   async getUser(fitbitId: string) {
@@ -89,8 +93,7 @@ export class UserService {
   }
 
   async getSleepData(
-    id: string,
-    token: string,
+    fitbitUser: FitbitUser,
     {
       date = addDays(new Date(), 1),
       srcUrl,
@@ -101,7 +104,8 @@ export class UserService {
   ) {
     const format = Dates.toYYYYMMDD(date);
 
-    const user = await this.getUser(id);
+    const user = await this.getUser(fitbitUser.id);
+    const token = fitbitUser.token;
 
     try {
       const URL =
@@ -152,12 +156,22 @@ export class UserService {
         tomorrow: data.pagination.previous,
       };
 
-      await user.addSleep({
+      const previousLatest = user.latestSleep();
+
+      const added = await user.addSleep({
         sleep: {
           date: mainSleep.dateOfSleep,
           variables: [],
         },
       });
+
+      if (added) {
+        this.eventEmitter.emit("action.sleep.added", {
+          user: fitbitUser,
+          sleepDate: sleep.date,
+          lastUploadedSleep: previousLatest?.date,
+        });
+      }
 
       return sleep;
     } catch (e) {

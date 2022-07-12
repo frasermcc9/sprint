@@ -56,6 +56,12 @@ export const stripTime = (date: Date) => {
   return manipulated;
 };
 
+const datesAreConsecutive = (a: string, b: string) =>
+  Date.parse(b) - Date.parse(a) === 86400000;
+
+const dateIsBefore = (base: string, compare: string) =>
+  Date.parse(base) < Date.parse(compare);
+
 export const Dates = {
   stripTime,
   daysForLocale,
@@ -65,4 +71,6 @@ export const Dates = {
   readableTimeNoSeconds,
   readableTime,
   calculateAge,
+  datesAreConsecutive,
+  dateIsBefore,
 };

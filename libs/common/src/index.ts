@@ -5,3 +5,5 @@ export * from "./lib/dates";
 export * from "./lib/features";
 export * from "./lib/xp";
 export * from "./lib/sleep";
+export * from "./lib/xp-rewards";
+export * from "./lib/numbers";
