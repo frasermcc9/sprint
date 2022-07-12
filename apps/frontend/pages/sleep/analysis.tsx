@@ -14,9 +14,13 @@ export const SleepAnalysisPage: React.FC = () => {
   const SleepEmoji = useEmoji("💤", "64px");
   const createEmoji = useEmojiFactory();
 
-  const { data: sleepData, loading: sleepLoading } = useAnalyzeSleepQuery();
+  const { data: sleepData, loading: sleepLoading } = useAnalyzeSleepQuery({
+    fetchPolicy: "cache-and-network",
+  });
   const { data: variablesData, loading: variablesLoading } =
-    useCustomSleepVariablesQuery();
+    useCustomSleepVariablesQuery({
+      fetchPolicy: "cache-and-network",
+    });
 
   const { components, regressionIntercept } = sleepData?.analyzeSleep ?? {};
 
