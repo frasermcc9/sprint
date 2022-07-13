@@ -1,6 +1,5 @@
 type Mutation {
   createRun(
-    user: User!
     startDate: String!
     endDate: String!
     startTime: String!
