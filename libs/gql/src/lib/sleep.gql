@@ -1,7 +1,7 @@
-query MostRecentSleep {
+query MostRecentSleep($sourceUrl: String) {
   currentUser {
     id
-    todaysSleep {
+    todaysSleep(sourceUrl: $sourceUrl) {
       awake
       rem
       light
@@ -14,6 +14,8 @@ query MostRecentSleep {
         emoji
         custom
       }
+      tomorrow
+      yesterday
     }
   }
 }
@@ -26,6 +28,7 @@ query CustomSleepVariables {
       emoji
       custom
     }
+    trackedVariables
   }
 }
 
@@ -41,12 +44,40 @@ mutation AddSleepVariable(
     name: $name
     sleepDate: $sleepDate
   ) {
-    name
-    emoji
-    custom
+    date
+    variables {
+      name
+      emoji
+      custom
+    }
   }
 }
 
 mutation RemoveSleepVariable($name: String!, $sleepDate: String!) {
-  removeSleepVariable(name: $name, sleepDate: $sleepDate)
+  removeSleepVariable(name: $name, sleepDate: $sleepDate) {
+    date
+    variables {
+      name
+      emoji
+      custom
+    }
+  }
+}
+
+mutation TrackVariable($name: String!) {
+  trackVariable(name: $name)
+}
+
+mutation UntrackVariable($name: String!) {
+  untrackVariable(name: $name)
+}
+
+query AnalyzeSleep {
+  analyzeSleep {
+    components {
+      variable
+      regressionGradient
+    }
+    regressionIntercept
+  }
 }

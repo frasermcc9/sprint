@@ -1,8 +1,16 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import { Sleep as SleepCommon } from "@sprint/common";
 import * as tf from "@tensorflow/tfjs-node";
-import { User, UserCollection } from "../../db/schema/user.schema";
+import MLR from "ml-regression-multivariate-linear";
+import { HttpService } from "nestjs-http-promise";
+import {
+  User,
+  UserCollection,
+  UserDocument,
+} from "../../db/schema/user.schema";
 import { Sleep } from "../../types/graphql";
+import { SleepRangeResponse } from "./interfaces/sleep-range.interface";
 
 @Injectable()
 export class SleepService {
@@ -10,12 +18,17 @@ export class SleepService {
 
   constructor(
     @InjectModel(User.name) private readonly userModel: UserCollection,
+    private readonly httpService: HttpService,
   ) {}
 
   async onModuleInit() {
     this.model = await tf.loadLayersModel(
       `file://${__dirname}/assets/sleep-model/model.json`,
     );
+  }
+
+  async findUser(id: string) {
+    return await this.userModel.findOne({ id });
   }
 
   getSleepScore({
@@ -45,7 +58,7 @@ export class SleepService {
     const user = await this.userModel.findOne({ id });
     if (!user) return null;
 
-    const sleep = user.sleeps?.find((s) => s.date === sleepDate);
+    const sleep = this.findSleep(user, sleepDate);
     if (!sleep) return null;
 
     sleep.variables = variables;
@@ -62,7 +75,7 @@ export class SleepService {
 
     if (!user) return [];
 
-    const sleep = user.sleeps?.find((s) => s.date === forSleep.date);
+    const sleep = this.findSleep(user, forSleep.date);
     if (!sleep) return [];
 
     const customVariables = user.sleepVariables;
@@ -84,15 +97,19 @@ export class SleepService {
     });
   }
 
+  findSleep(user: UserDocument, date: string) {
+    return user.sleeps?.get(date);
+  }
+
   async removeVariable(id: string, name: string, sleepDate: string) {
     const user = await this.userModel.findOne({ id });
     if (!user) return null;
 
-    const sleep = user.sleeps?.find((s) => s.date === sleepDate);
+    const sleep = this.findSleep(user, sleepDate);
     if (!sleep) return null;
 
     const index = sleep.variables?.indexOf(name) ?? -1;
-    if (index === -1) return null;
+    if (index === -1) return sleep;
 
     sleep.variables?.splice(index, 1);
 
@@ -100,14 +117,16 @@ export class SleepService {
     user.markModified("sleeps.variables");
 
     await user.save();
+
+    return sleep;
   }
 
   async addVariable(id: string, name: string, sleepDate: string) {
     const user = await this.userModel.findOne({ id });
-    if (!user) return false;
+    if (!user) return null;
 
-    const sleep = user.sleeps?.find((s) => s.date === sleepDate);
-    if (!sleep || !sleep.variables) return false;
+    const sleep = this.findSleep(user, sleepDate);
+    if (!sleep || !sleep.variables) return null;
 
     const exists = sleep.variables.includes(name);
     if (!exists) {
@@ -117,10 +136,124 @@ export class SleepService {
       user.markModified("sleeps.variables");
 
       await user.save();
-
-      return true;
     }
+    return sleep;
+  }
 
-    return false;
+  async transformVariables(userId: string, ...variables: string[]) {
+    return Promise.all(
+      variables.map(async (v) => {
+        const custom = SleepCommon.defaultVariables.find((dv) => dv.name === v)
+          ? false
+          : true;
+        return {
+          name: v,
+          custom,
+          emoji: custom
+            ? (await this.findUser(userId))?.sleepVariables?.find(
+                (uv) => uv.name === v,
+              )?.emoji
+            : null,
+        };
+      }),
+    );
+  }
+
+  async analyzeSleep(userId: string, bearer: string) {
+    const dbUser = await this.userModel.findOne({ id: userId });
+    if (!dbUser) return null;
+
+    const dbSleeps = dbUser?.sleeps;
+
+    const oldestSleep = dbUser.earliestSleep();
+    const newestSleep = dbUser.latestSleep();
+    if (!oldestSleep || !newestSleep || !dbSleeps) return null;
+
+    try {
+      const { data } = await this.httpService.get<SleepRangeResponse>(
+        `https://api.fitbit.com/1.2/user/-/sleep/date/${oldestSleep.date}/${newestSleep.date}.json`,
+        {
+          headers: {
+            Authorization: `Bearer ${bearer}`,
+          },
+        },
+      );
+
+      const sleepData = data.sleep;
+
+      const findSleep = (date: string) => {
+        return sleepData.find((s) => s.dateOfSleep === date);
+      };
+
+      const sleepScoresAndVars = Array.from(dbSleeps.values()).flatMap(
+        (sleep) => {
+          const sleepData = findSleep(sleep.date);
+          if (!sleepData) return [];
+
+          const scoreDiscriminants = {
+            awake: sleepData.levels.summary.wake.minutes,
+            deep: sleepData.levels.summary.deep.minutes,
+            light: sleepData.levels.summary.light.minutes,
+            rem: sleepData.levels.summary.rem.minutes,
+            awakenings: sleepData.levels.summary.wake.count,
+          };
+
+          const score = this.getSleepScore({ ...scoreDiscriminants });
+
+          return {
+            ...sleep,
+            score,
+            variables: sleep.variables ?? [],
+          };
+        },
+      );
+
+      const scoreAverage =
+        sleepScoresAndVars.reduce((a, c) => a + c.score, 0) /
+        sleepScoresAndVars.length;
+
+      const variableIndex = [...new Set(dbUser.trackedVariables)];
+      const variableCount = variableIndex.length;
+
+      const variableMap: { [key: string]: number } = {};
+      for (let i = 0; i < variableCount; i++) {
+        variableMap[variableIndex[i]] = i;
+      }
+
+      const createArray = (variables: string[]) => {
+        const array = new Array<number>(variableCount).fill(0);
+        for (const variable of variables) {
+          array[variableMap[variable]] = 1;
+        }
+        return array;
+      };
+
+      const inputMatrix: number[][] = [];
+      const outputMatrix: number[][] = [];
+
+      for (const sleep of sleepScoresAndVars) {
+        const input = createArray(sleep.variables);
+        inputMatrix.push(input);
+        outputMatrix.push([sleep.score]);
+      }
+
+      const mlr = new MLR(inputMatrix, outputMatrix);
+      const weights = mlr.weights.slice(0, variableCount);
+      const regressionIntercept = mlr.weights[variableCount][0];
+
+      const components = weights.map((weight, index) => ({
+        regressionGradient: weight[0],
+        variable: variableIndex[index],
+      }));
+
+      return {
+        components,
+        regressionIntercept,
+        scoreAverage,
+      };
+    } catch (e) {
+      console.error(e);
+      throw new InternalServerErrorException("Error when getting sleep range");
+    }
   }
 }

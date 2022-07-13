@@ -1,3 +1,4 @@
+import data from "@emoji-mart/data";
 import { PlusCircleIcon } from "@heroicons/react/outline";
 import { Sleep } from "@sprint/common";
 import {
@@ -7,106 +8,21 @@ import {
   useEmojiFactory,
 } from "@sprint/components";
 import {
-  MostRecentSleepDocument,
-  MostRecentSleepQuery,
-  useAddSleepVariableMutation,
-  useCustomSleepVariablesQuery,
-  useMostRecentSleepQuery,
-  useRemoveSleepVariableMutation,
   useCreateSleepVariableMutation,
+  useCustomSleepVariablesQuery,
+  useTrackVariableMutation,
+  useUntrackVariableMutation,
 } from "@sprint/gql";
 import classNames from "classnames";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const Index: React.FC = () => {
-  const { back, query } = useRouter();
-  const date = query.date as string;
+  const { back } = useRouter();
 
-  const { data: sleepData } = useMostRecentSleepQuery();
   const { data: sleepVariables } = useCustomSleepVariablesQuery();
 
-  const [addVariableMut] = useAddSleepVariableMutation();
-  const [removeVariableMut] = useRemoveSleepVariableMutation();
   const [createSleepVariableMut] = useCreateSleepVariableMutation();
-
-  const removeVariable = useCallback(
-    (name: string) => {
-      removeVariableMut({
-        variables: { name, sleepDate: date },
-        optimisticResponse: {
-          removeSleepVariable: name,
-        },
-        update: (cache, { data: newData }) => {
-          const oldData = cache.readQuery<MostRecentSleepQuery>({
-            query: MostRecentSleepDocument,
-          });
-
-          if (!oldData || !newData || !oldData.currentUser) {
-            return;
-          }
-
-          cache.writeQuery({
-            query: MostRecentSleepDocument,
-            data: {
-              currentUser: {
-                ...oldData.currentUser,
-                todaysSleep: {
-                  ...oldData.currentUser.todaysSleep,
-                  variables:
-                    oldData.currentUser?.todaysSleep?.variables?.filter(
-                      (v) => v?.name !== name,
-                    ),
-                },
-              },
-            },
-          });
-        },
-      });
-    },
-    [date, removeVariableMut],
-  );
-
-  const addVariable = useCallback(
-    (name: string, emoji: string, custom: boolean) => {
-      addVariableMut({
-        variables: { name, emoji, custom, sleepDate: date },
-        optimisticResponse: {
-          addSleepVariable: {
-            name,
-            emoji,
-            custom,
-          },
-        },
-        update: (cache, { data: newData }) => {
-          const oldData = cache.readQuery<MostRecentSleepQuery>({
-            query: MostRecentSleepDocument,
-          });
-
-          if (!oldData || !newData || !oldData.currentUser) {
-            return;
-          }
-
-          cache.writeQuery({
-            query: MostRecentSleepDocument,
-            data: {
-              currentUser: {
-                ...oldData.currentUser,
-                todaysSleep: {
-                  ...oldData.currentUser.todaysSleep,
-                  variables: [
-                    ...(oldData.currentUser.todaysSleep?.variables ?? []),
-                    newData?.addSleepVariable,
-                  ],
-                },
-              },
-            },
-          });
-        },
-      });
-    },
-    [addVariableMut, date],
-  );
 
   const createVariable = useCallback(
     (name: string, emoji: string) => {
@@ -125,13 +41,6 @@ const Index: React.FC = () => {
         update: (cache, { data: newData }) => {
           if (!sleepVariables || !sleepVariables.currentUser) return;
 
-          console.log([
-            ...(sleepVariables?.currentUser?.sleepVariables ?? []),
-            newData?.createSleepVariable,
-          ]);
-
-          console.log(sleepVariables);
-
           cache.modify({
             id: cache.identify(sleepVariables.currentUser),
             fields: {
@@ -147,6 +56,66 @@ const Index: React.FC = () => {
     [createSleepVariableMut, sleepVariables],
   );
 
+  const [trackMut] = useTrackVariableMutation({});
+  const [untrackMut] = useUntrackVariableMutation({});
+
+  const trackVariable = useCallback(
+    (name: string) => {
+      trackMut({
+        variables: {
+          name,
+        },
+        optimisticResponse: {
+          trackVariable: [
+            ...(sleepVariables?.currentUser?.trackedVariables ?? []),
+            name,
+          ],
+        },
+        update: (cache, { data: newData }) => {
+          if (!sleepVariables || !sleepVariables.currentUser) return;
+
+          console.log({ track: newData });
+          cache.modify({
+            id: cache.identify(sleepVariables.currentUser),
+            fields: {
+              trackedVariables: () => newData?.trackVariable,
+            },
+          });
+        },
+      });
+    },
+    [sleepVariables, trackMut],
+  );
+
+  const untrackVariable = useCallback(
+    (name: string) => {
+      untrackMut({
+        variables: {
+          name,
+        },
+        optimisticResponse: {
+          untrackVariable:
+            sleepVariables?.currentUser?.trackedVariables?.filter(
+              (v) => v !== name,
+            ) ?? [],
+        },
+        update: (cache, { data: newData }) => {
+          if (!sleepVariables || !sleepVariables.currentUser) return;
+
+          console.log({ untrack: newData });
+
+          cache.modify({
+            id: cache.identify(sleepVariables.currentUser),
+            fields: {
+              trackedVariables: () => newData?.untrackVariable,
+            },
+          });
+        },
+      });
+    },
+    [sleepVariables, untrackMut],
+  );
+
   const joinedVariables = useMemo(
     () => [
       ...Sleep.defaultVariables,
@@ -155,8 +124,7 @@ const Index: React.FC = () => {
     [sleepVariables?.currentUser?.sleepVariables],
   );
 
-  const selectedVariables =
-    sleepData?.currentUser?.todaysSleep?.variables ?? [];
+  const selectedVariables = sleepVariables?.currentUser?.trackedVariables ?? [];
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -165,10 +133,14 @@ const Index: React.FC = () => {
   const [selectedNewName, setSelectedNewName] = useState<string>("");
   const [changed, setChanged] = useState(false);
 
+  const canCreateEmoji = useMemo(
+    () => changed && selectedNewName.length,
+    [changed, selectedNewName.length],
+  );
+
   useEffect(() => {
     (async () => {
       if (typeof window !== "undefined") {
-        const data = await import("@emoji-mart/data");
         const { Picker } = await import("emoji-mart");
         new Picker({
           ref,
@@ -219,7 +191,11 @@ const Index: React.FC = () => {
           </div>
           <button
             className="flex gap-x-2 p-1"
-            onClick={() => createVariable(selectedNewName, selectedNewEmoji)}
+            disabled={!canCreateEmoji}
+            onClick={() =>
+              canCreateEmoji &&
+              createVariable(selectedNewName, selectedNewEmoji)
+            }
           >
             <PlusCircleIcon className="w-8 text-gray-600" />
             <span>Add</span>
@@ -227,18 +203,18 @@ const Index: React.FC = () => {
         </div>
         {joinedVariables.map((variable) => {
           if (!variable) return null;
-          const { name, emoji, custom } = variable;
+          const { name, emoji } = variable;
           return (
             <SleepVariable
               key={name}
-              active={selectedVariables.some((v) => v?.name === name)}
+              active={selectedVariables.some((v) => v === name)}
               emoji={emoji ?? ""}
               name={name}
               onClick={() => {
-                if (selectedVariables.some((v) => v?.name === name)) {
-                  return removeVariable(name);
+                if (selectedVariables.some((v) => v === name)) {
+                  return untrackVariable(name);
                 }
-                return addVariable(name, emoji ?? "", custom);
+                return trackVariable(name);
               }}
             />
           );

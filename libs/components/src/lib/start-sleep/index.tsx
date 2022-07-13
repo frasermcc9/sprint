@@ -17,9 +17,7 @@ export const StartSleep: React.FC<StartSleepProps> = ({ useController }) => {
       <img
         draggable={false}
         className="back-ease absolute left-0 top-0 z-10 h-full w-full scale-110 transform cursor-pointer overflow-hidden object-cover brightness-75 transition-all hover:rotate-2 hover:scale-125"
-        src={
-          "https://images.unsplash.com/photo-1572270947869-89e664b0792b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1744&q=80"
-        }
+        src={"https://images.unsplash.com/photo-1572270947869-89e664b0792b"}
         onClick={goToSleep}
         alt=""
       />

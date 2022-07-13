@@ -8,6 +8,8 @@ type Sleep {
   ownerId: ID!
   date: String!
   variables: [SleepVariable]
+  yesterday: String!
+  tomorrow: String!
 }
 
 type SleepVariable {
@@ -16,12 +18,33 @@ type SleepVariable {
   custom: Boolean!
 }
 
+type VariableEditResponse {
+  date: String!
+  variables: [SleepVariable]!
+}
+
 type Mutation {
   addSleepVariable(
     name: String!
     emoji: String!
     custom: Boolean!
     sleepDate: String!
-  ): SleepVariable
-  removeSleepVariable(name: String!, sleepDate: String!): String
+  ): VariableEditResponse
+  removeSleepVariable(name: String!, sleepDate: String!): VariableEditResponse
+  trackVariable(name: String!): [String!]!
+  untrackVariable(name: String!): [String!]!
+}
+
+type SleepAnalysisComponent {
+  variable: String!
+  regressionGradient: Float!
+}
+
+type SleepAnalysis {
+  components: [SleepAnalysisComponent!]!
+  regressionIntercept: Float!
+}
+
+type Query {
+  analyzeSleep: SleepAnalysis
 }

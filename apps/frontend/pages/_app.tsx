@@ -28,6 +28,7 @@ import {
   RefreshDocument,
   RefreshMutation,
   RefreshMutationVariables,
+  Sleep,
 } from "@sprint/gql";
 import { AppProps } from "next/app";
 import Head from "next/head";
@@ -155,7 +156,41 @@ const authLink = setContext(async (_, { headers }) => {
 
 const client = new ApolloClient({
   link: authLink.concat(errorLink).concat(httpLink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      User: {
+        fields: {
+          todaysSleep: {
+            keyArgs: false,
+            merge(existing: Sleep[] = [], incoming: Sleep[] | Sleep) {
+              const normalized = Array.isArray(incoming)
+                ? incoming
+                : [incoming];
+
+              const updated = [...existing];
+
+              for (const sleep of normalized) {
+                const index = updated.findIndex(
+                  (existingSleep) => existingSleep.date === sleep.date,
+                );
+
+                if (index === -1) {
+                  updated.unshift(sleep);
+                  continue;
+                }
+
+                updated[index] = {
+                  ...updated[index],
+                  ...sleep,
+                };
+              }
+              return updated;
+            },
+          },
+        },
+      },
+    },
+  }),
 });
 
 const unauthenticatedClient = new ApolloClient({

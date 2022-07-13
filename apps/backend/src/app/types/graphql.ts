@@ -31,6 +31,7 @@ export interface Auth {
 export interface IQuery {
     getAuthLink(): string | Promise<string>;
     testAuth(): Nullable<string> | Promise<Nullable<string>>;
+    analyzeSleep(): Nullable<SleepAnalysis> | Promise<Nullable<SleepAnalysis>>;
     currentUser(): Nullable<User> | Promise<Nullable<User>>;
     prepRun(): Nullable<RunParams> | Promise<Nullable<RunParams>>;
 }
@@ -40,8 +41,10 @@ export interface IMutation {
     refresh(token: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     createRun(token: string, startDate: string, endDate: string, startTime: string, endTime: string): Nullable<Run> | Promise<Nullable<Run>>;
     createEvent(event: string, payload?: Nullable<string>): Nullable<AnalyticsEvent> | Promise<Nullable<AnalyticsEvent>>;
-    addSleepVariable(name: string, emoji: string, custom: boolean, sleepDate: string): Nullable<SleepVariable> | Promise<Nullable<SleepVariable>>;
-    removeSleepVariable(name: string, sleepDate: string): Nullable<string> | Promise<Nullable<string>>;
+    addSleepVariable(name: string, emoji: string, custom: boolean, sleepDate: string): Nullable<VariableEditResponse> | Promise<Nullable<VariableEditResponse>>;
+    removeSleepVariable(name: string, sleepDate: string): Nullable<VariableEditResponse> | Promise<Nullable<VariableEditResponse>>;
+    trackVariable(name: string): string[] | Promise<string[]>;
+    untrackVariable(name: string): string[] | Promise<string[]>;
     updateExperienceLevel(): Nullable<ExperienceLevel> | Promise<Nullable<ExperienceLevel>>;
     completeOnboarding(experience: ExperienceLevel, firstName: string, lastName: string, dob: string): Nullable<User> | Promise<Nullable<User>>;
     updateDefaultRunDuration(duration: number): number | Promise<number>;
@@ -80,12 +83,29 @@ export interface Sleep {
     ownerId: string;
     date: string;
     variables?: Nullable<Nullable<SleepVariable>[]>;
+    yesterday: string;
+    tomorrow: string;
 }
 
 export interface SleepVariable {
     name: string;
     emoji?: Nullable<string>;
     custom: boolean;
+}
+
+export interface VariableEditResponse {
+    date: string;
+    variables: Nullable<SleepVariable>[];
+}
+
+export interface SleepAnalysisComponent {
+    variable: string;
+    regressionGradient: number;
+}
+
+export interface SleepAnalysis {
+    components: SleepAnalysisComponent[];
+    regressionIntercept: number;
 }
 
 export interface User {
@@ -106,8 +126,9 @@ export interface User {
     friends: Nullable<PublicUser>[];
     friendRequests: Nullable<PublicUser>[];
     currentRunParams: RunParams;
-    todaysSleep?: Nullable<Sleep>;
+    todaysSleep: Nullable<Sleep>[];
     sleepVariables?: Nullable<Nullable<SleepVariable>[]>;
+    trackedVariables: string[];
 }
 
 export interface RunParams {

@@ -83,11 +83,14 @@ export class User {
     restPeriod: number;
   };
 
-  @Prop({ type: [{ type: Object }], default: [] })
-  sleeps?: Array<Sleep>;
+  @Prop({ type: Map, of: Object, default: {} })
+  sleeps?: Map<string, Sleep>;
 
   @Prop({ type: [{ type: Object }], default: [] })
   sleepVariables?: Array<SleepVariable>;
+
+  @Prop({ type: Array, default: [] })
+  trackedVariables!: Array<string>;
 }
 
 interface Methods {
@@ -113,6 +116,8 @@ interface Methods {
     this: UserDocument,
     { date }: { date: string },
   ): Promise<Sleep | null>;
+  earliestSleep(this: UserDocument): Sleep | null;
+  latestSleep(this: UserDocument): Sleep | null;
 }
 
 interface Statics {
@@ -169,14 +174,8 @@ const methods: Methods = {
     }
   },
   async addSleep(this: UserDocument, { sleep }: { sleep: Sleep }) {
-    const mostRecent = this.sleeps?.at(-1);
-    if (
-      mostRecent &&
-      new Date(mostRecent.date).getTime() >= new Date(sleep.date).getTime()
-    ) {
-      return;
-    }
-    this.sleeps?.push(sleep);
+    if (this.sleeps?.has(sleep.date)) return;
+    this.sleeps?.set(sleep.date, sleep);
     this.markModified("sleeps");
     await this.save();
   },
@@ -184,7 +183,23 @@ const methods: Methods = {
     this: UserDocument,
     { date }: { date: string },
   ): Promise<Sleep | null> {
-    return this.sleeps?.find((s) => s.date === date) ?? null;
+    return this.sleeps?.get(date) ?? null;
+  },
+  earliestSleep(this: UserDocument): Sleep | null {
+    const dates = Array.from(this.sleeps?.keys() ?? []);
+    if (dates.length === 0) return null;
+    const earliestDate = dates.reduce((a, b) => {
+      return a < b ? a : b;
+    });
+    return this.sleeps?.get(earliestDate) ?? null;
+  },
+  latestSleep(this: UserDocument): Sleep | null {
+    const dates = Array.from(this.sleeps?.keys() ?? []);
+    if (dates.length === 0) return null;
+    const latestDate = dates.reduce((a, b) => {
+      return a > b ? a : b;
+    });
+    return this.sleeps?.get(latestDate) ?? null;
   },
 };
 
