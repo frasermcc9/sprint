@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { Int } from "@nestjs/graphql";
 import { InjectModel } from "@nestjs/mongoose";
 import { Run, RunCollection } from "../../db/schema/run.schema";
 import { UserCollection } from "../../db/schema/user.schema";
@@ -18,9 +19,13 @@ export class RunService {
 
   /**
    * Fetch activity heart rate series from Fitbit API
-   * @param token Fitbit access token
+   * @param fitbitId Fitbit user ID
+   * @param access_token Fitbit access token
    * @param dateStart date in format YYYY-MM-DD
    * @param dateEnd date in format YYYY-MM-DD
+   * @param timeStart time in format HH:MM
+   * @param timeEnd time in format HH:MM
+   * @param intensityFB intensity feedback from User
    */
   async createRun(
     fitbitId: string,
@@ -31,6 +36,29 @@ export class RunService {
     endTime: string,
     intensityFB: number,
   ) {
+    interface data {
+      activitiesHeart: {
+        customHeartRateZones: [];
+        dateTime: string;
+        heartRateZones: {
+          caloriesOut: number;
+          max: number;
+          min: number;
+          minutes: number;
+          name: string;
+        }[];
+        value: number;
+      }[];
+      activitiesHeartIntraday: {
+        dataset: {
+          time: string;
+          value: number;
+        }[];
+        datasetInterval: number;
+        datasetType: string;
+      }[];
+    }
+
     const dbUser = await this.userModel.findOne({ id: fitbitId });
     if (!dbUser) {
       throw new Error("User not found");
@@ -44,12 +72,17 @@ export class RunService {
           headers: { Authorization: `Bearer ${access_token}` },
         },
       );
-      const data = await res.json();
+      const data: data = await res.json();
 
       // Logic is tested and works, but error "No overload matches this call."
-      const dataset = Object.values(Object.values(data)[1])[0];
-      let hrActivityList = [];
-      dataset.forEach((element) => hrActivityList.push(element.value));
+      if (!res.ok || !data) {
+        throw new Error("No data");
+      }
+
+      const dataset = Object.values(data)[1];
+      const dataset2 = Object.values(dataset)[0];
+      const hrActivityList: number[] = [];
+      dataset2.forEach((element) => hrActivityList.push(element.value));
 
       const timeStart = new Date(dateStart + "T" + startTime);
       const timeEnd = new Date(dateEnd + "T" + endTime);
