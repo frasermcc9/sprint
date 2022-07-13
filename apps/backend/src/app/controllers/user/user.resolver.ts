@@ -265,11 +265,9 @@ export class UserResolver {
     @User() user: FitbitUser,
     @Args("sourceUrl") sourceUrl: string | null,
   ): Promise<Partial<Sleep>[] | null> {
-    const sleepToday = await this.userService.getSleepData(
-      user.id,
-      user.token,
-      { srcUrl: sourceUrl },
-    );
+    const sleepToday = await this.userService.getSleepData(user, {
+      srcUrl: sourceUrl,
+    });
 
     if (!sleepToday) return [];
 
