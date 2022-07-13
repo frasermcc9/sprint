@@ -6,6 +6,8 @@ import { addDays } from "date-fns";
 import { HttpService } from "nestjs-http-promise";
 import { User, UserCollection } from "../../db/schema/user.schema";
 import { SleepResponse } from "./interfaces/sleep.interface";
+import { generateFeedback } from "../../service/run-processing/fuzzyFeedback";
+import { Run } from "../../db/schema/run.schema";
 
 @Injectable()
 export class UserService {
@@ -20,6 +22,12 @@ export class UserService {
       throw new InternalServerErrorException("User not found");
     }
     return user;
+  }
+
+  async generateRunFeedback(fitbitId: string) {
+    const user = await this.getUser(fitbitId);
+    const runs: Run[] = user.runs as Run[];
+    return generateFeedback(user, runs);
   }
 
   async findFriends(forUser: string, amount: number) {

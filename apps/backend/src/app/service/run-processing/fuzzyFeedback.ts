@@ -166,7 +166,7 @@ const calculateAverages = (user: User, runs: [Run]) => {
 /**
  * Generates long-term feedback for a user using their runs (both single run and over time)
  */
-const generateFeedback = (user: User, runs: Run[]) => {
+export const generateFeedback = (user: User, runs: Run[]) => {
   const feedback = {
     feedbackSummary:
       "Once you've completed more than 1 week of runs, we will start comparing your progress over the past few weeks.",

@@ -44,12 +44,22 @@ export enum ExperienceLevel {
   Intermediate = 'INTERMEDIATE'
 }
 
+export type Feedback = {
+  __typename?: 'Feedback';
+  feedbackSummary?: Maybe<Scalars['String']>;
+  intensityFeedback?: Maybe<Scalars['String']>;
+  lastRunFeedback?: Maybe<Scalars['String']>;
+  performanceFeedback?: Maybe<Scalars['String']>;
+  volumeFeedback?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   acceptFriendRequest: PublicUser;
   addSleepVariable?: Maybe<VariableEditResponse>;
   completeOnboarding?: Maybe<User>;
   createEvent?: Maybe<AnalyticsEvent>;
+  createRun?: Maybe<Run>;
   createSleepVariable: SleepVariable;
   login?: Maybe<Auth>;
   markFeatureSeen: Array<Maybe<Scalars['String']>>;
@@ -91,6 +101,15 @@ export type MutationCompleteOnboardingArgs = {
 export type MutationCreateEventArgs = {
   event: Scalars['String'];
   payload?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationCreateRunArgs = {
+  endDate: Scalars['String'];
+  endTime: Scalars['String'];
+  intensity: Scalars['Int'];
+  startDate: Scalars['String'];
+  startTime: Scalars['String'];
 };
 
 
@@ -175,6 +194,7 @@ export type Query = {
   __typename?: 'Query';
   analyzeSleep?: Maybe<SleepAnalysis>;
   currentUser?: Maybe<User>;
+  generateRunFeedback?: Maybe<Feedback>;
   getAuthLink: Scalars['String'];
   prepRun?: Maybe<RunParams>;
   testAuth?: Maybe<Scalars['String']>;
@@ -183,11 +203,9 @@ export type Query = {
 export type Run = {
   __typename?: 'Run';
   date?: Maybe<Scalars['String']>;
-  distance?: Maybe<Scalars['Int']>;
   duration?: Maybe<Scalars['Int']>;
   heartRate?: Maybe<Array<Maybe<Scalars['Int']>>>;
   intensityFeedback?: Maybe<Scalars['Int']>;
-  speed?: Maybe<Array<Maybe<Scalars['Int']>>>;
   userId?: Maybe<Scalars['String']>;
   vo2max?: Maybe<Scalars['Int']>;
 };
