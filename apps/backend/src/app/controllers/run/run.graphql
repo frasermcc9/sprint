@@ -1,10 +1,11 @@
 type Mutation {
   createRun(
-    token: String!
+    user: User!
     startDate: String!
     endDate: String!
     startTime: String!
     endTime: String!
+    intensity: Int!
   ): Run
 }
 

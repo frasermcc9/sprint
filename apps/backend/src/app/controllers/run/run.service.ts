@@ -58,6 +58,14 @@ export class RunService {
         datasetType: string;
       }[];
     }
+    interface dataset {
+      dataset: {
+        time: string;
+        value: number;
+      }[];
+      datasetInterval: number;
+      datasetType: string;
+    }
 
     const dbUser = await this.userModel.findOne({ id: fitbitId });
     if (!dbUser) {
@@ -74,13 +82,13 @@ export class RunService {
       );
       const data: data = await res.json();
 
-      // Logic is tested and works, but error "No overload matches this call."
       if (!res.ok || !data) {
         throw new Error("No data");
       }
 
-      const dataset = Object.values(data)[1];
-      const dataset2 = Object.values(dataset)[0];
+      const dataset: dataset = Object.values(data)[1];
+      const dataset2: { time: string; value: number }[] =
+        Object.values(dataset)[0];
       const hrActivityList: number[] = [];
       dataset2.forEach((element) => hrActivityList.push(element.value));
 
