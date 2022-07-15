@@ -1,6 +1,6 @@
 import { CogIcon } from "@heroicons/react/outline";
 import { toMonthYYYY } from "@sprint/common";
-import { Avatar, Layout } from "@sprint/components";
+import { Avatar, Layout, RunCard } from "@sprint/components";
 import { useCurrentUserQuery } from "@sprint/gql";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
@@ -47,6 +47,15 @@ export default function Index() {
           </div>
           <Avatar avatarUrl={avatarUrl} userId={id} showEdit />
         </section>
+
+        <hr className="mt-2"></hr>
+        <div className="font-palanquin mt-2 flex flex-col text-gray-600">
+          <p className="text-2xl font-semibold text-gray-800">Your Runs</p>
+          <span className="mb-2 text-sm font-thin">In the last 90 days</span>
+          <RunCard duration="13" rundate="2020-01-01" />
+          <RunCard duration="13" rundate="2020-01-01" />
+          <RunCard duration="13" rundate="2020-01-01" />
+        </div>
       </Layout.Margin>
     </Layout.Page>
   );
