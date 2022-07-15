@@ -1,0 +1,58 @@
+{
+  "name": "multivariateLinearRegression",
+  "weights": [
+    [-0.14885445803220732],
+    [-0.02456640803011645],
+    [0.13912256560792224],
+    [0.07625456015042964],
+    [0.11198033816497421],
+    [46.693289071499294]
+  ],
+  "inputs": 5,
+  "outputs": 1,
+  "intercept": true,
+  "summary": {
+    "regressionStatistics": {
+      "standardError": 3.3560963818554743,
+      "observations": 1
+    },
+    "variables": [
+      {
+        "label": "X Variable 1",
+        "coefficients": [-0.14885445803220732],
+        "standardError": 0.013283564197964233,
+        "tStat": -11.205912495610173
+      },
+      {
+        "label": "X Variable 2",
+        "coefficients": [-0.02456640803011645],
+        "standardError": 0.036130568525885975,
+        "tStat": -0.6799341674492525
+      },
+      {
+        "label": "X Variable 3",
+        "coefficients": [0.13912256560792224],
+        "standardError": 0.007362070385690795,
+        "tStat": 18.897206671417628
+      },
+      {
+        "label": "X Variable 4",
+        "coefficients": [0.07625456015042964],
+        "standardError": 0.006427880171171825,
+        "tStat": 11.863096093860158
+      },
+      {
+        "label": "X Variable 5",
+        "coefficients": [0.11198033816497421],
+        "standardError": 0.010736255573340379,
+        "tStat": 10.430111075507277
+      },
+      {
+        "label": "Intercept",
+        "coefficients": [46.693289071499294],
+        "standardError": 1.3467670594321308,
+        "tStat": 34.670649793875775
+      }
+    ]
+  }
+}

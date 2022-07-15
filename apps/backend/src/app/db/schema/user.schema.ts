@@ -91,6 +91,9 @@ export class User {
 
   @Prop({ type: Array, default: [] })
   trackedVariables!: Array<string>;
+
+  @Prop({ type: Number, default: 0 })
+  sleepTrackStreak!: number;
 }
 
 interface Methods {
@@ -111,13 +114,15 @@ interface Methods {
     this: UserDocument,
     { reject }: { reject: string },
   ): Promise<void>;
-  addSleep(this: UserDocument, { sleep }: { sleep: Sleep }): Promise<void>;
+  addSleep(this: UserDocument, { sleep }: { sleep: Sleep }): Promise<boolean>;
   getSleep(
     this: UserDocument,
     { date }: { date: string },
   ): Promise<Sleep | null>;
   earliestSleep(this: UserDocument): Sleep | null;
   latestSleep(this: UserDocument): Sleep | null;
+  incrementSleepTrackStreak(this: UserDocument): Promise<void>;
+  resetSleepTrackStreak(this: UserDocument): Promise<void>;
 }
 
 interface Statics {
@@ -174,10 +179,11 @@ const methods: Methods = {
     }
   },
   async addSleep(this: UserDocument, { sleep }: { sleep: Sleep }) {
-    if (this.sleeps?.has(sleep.date)) return;
+    if (this.sleeps?.has(sleep.date)) return false;
     this.sleeps?.set(sleep.date, sleep);
     this.markModified("sleeps");
     await this.save();
+    return true;
   },
   async getSleep(
     this: UserDocument,
@@ -200,6 +206,14 @@ const methods: Methods = {
       return a > b ? a : b;
     });
     return this.sleeps?.get(latestDate) ?? null;
+  },
+  async incrementSleepTrackStreak(this: UserDocument) {
+    this.sleepTrackStreak++;
+    await this.save();
+  },
+  async resetSleepTrackStreak(this: UserDocument) {
+    this.sleepTrackStreak = 0;
+    await this.save();
   },
 };
 

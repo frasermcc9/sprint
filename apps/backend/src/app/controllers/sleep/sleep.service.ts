@@ -1,8 +1,7 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Sleep as SleepCommon } from "@sprint/common";
-import * as tf from "@tensorflow/tfjs-node";
-import MLR from "ml-regression-multivariate-linear";
+import { Numbers, Sleep as SleepCommon } from "@sprint/common";
+import { readFileSync } from "fs";
 import { HttpService } from "nestjs-http-promise";
 import {
   User,
@@ -11,10 +10,11 @@ import {
 } from "../../db/schema/user.schema";
 import { Sleep } from "../../types/graphql";
 import { SleepRangeResponse } from "./interfaces/sleep-range.interface";
+import { PolynomialRegressor } from "regression-multivariate-polynomial";
 
 @Injectable()
 export class SleepService {
-  private model: tf.LayersModel;
+  private polyModel: PolynomialRegressor;
 
   constructor(
     @InjectModel(User.name) private readonly userModel: UserCollection,
@@ -22,8 +22,11 @@ export class SleepService {
   ) {}
 
   async onModuleInit() {
-    this.model = await tf.loadLayersModel(
-      `file://${__dirname}/assets/sleep-model/model.json`,
+    this.polyModel = new PolynomialRegressor();
+    this.polyModel.fromConfig(
+      JSON.parse(
+        readFileSync(`${__dirname}/assets/poly-model/model.json`, "utf8"),
+      ),
     );
   }
 
@@ -44,14 +47,12 @@ export class SleepService {
     light: number;
     awakenings: number;
   }) {
-    const prediction = this.model.predict(
-      tf.tensor([awake, awakenings, rem, light, deep], [1, 5]),
+    return Numbers.clamp(
+      this.polyModel.predict([[awake, awakenings, rem, light, deep]])[0][0],
+      0,
+      100,
+      { round: true },
     );
-
-    if (Array.isArray(prediction)) {
-      return Math.round(Array.from(prediction[0].dataSync())[0]);
-    }
-    return Math.round(Array.from(prediction.dataSync())[0]);
   }
 
   async setVariables(id: string, variables: string[], sleepDate: string) {
@@ -237,9 +238,11 @@ export class SleepService {
         outputMatrix.push([sleep.score]);
       }
 
-      const mlr = new MLR(inputMatrix, outputMatrix);
-      const weights = mlr.weights.slice(0, variableCount);
-      const regressionIntercept = mlr.weights[variableCount][0];
+      const model = new PolynomialRegressor(1);
+      model.fit(inputMatrix, outputMatrix);
+
+      const weights = model.weights.slice(0, variableCount);
+      const regressionIntercept = model.weights[variableCount][0];
 
       const components = weights.map((weight, index) => ({
         regressionGradient: weight[0],
