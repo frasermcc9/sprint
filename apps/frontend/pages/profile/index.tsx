@@ -1,13 +1,16 @@
 import { CogIcon } from "@heroicons/react/outline";
-import { toMonthYYYY } from "@sprint/common";
-import { Avatar, Layout } from "@sprint/components";
-import { useCurrentUserQuery } from "@sprint/gql";
+import { EmblemImageUnion, toMonthYYYY } from "@sprint/common";
+import { Avatar, EditIcon, Layout, UserCard } from "@sprint/components";
+import { useCurrentUserQuery, useGetAvailableEmblemsQuery } from "@sprint/gql";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 
 export default function Index() {
   const { data, loading, error } = useCurrentUserQuery();
   const { push } = useRouter();
+
+  const { data: emblems } = useGetAvailableEmblemsQuery();
+  console.log(emblems?.currentUser?.availableEmblems);
 
   if (error) {
     toast.error(error.message);
@@ -19,7 +22,7 @@ export default function Index() {
   }
 
   const {
-    currentUser: { createdAtUTS, id, firstName, lastName, avatarUrl },
+    currentUser: { createdAtUTS, id, firstName, lastName, avatarUrl, emblem },
   } = data;
 
   return (
@@ -46,6 +49,16 @@ export default function Index() {
             </span>
           </div>
           <Avatar avatarUrl={avatarUrl} userId={id} showEdit />
+        </section>
+        <div className="my-2 h-px w-full bg-indigo-600" />
+        <section className="flex flex-col items-center">
+          <div className="font-palanquin mb-2 text-2xl font-semibold text-gray-800">
+            Your Emblem
+          </div>
+          <div className="relative p-2">
+            <UserCard emblem={emblem as EmblemImageUnion} onlyEmblem />
+            <EditIcon onClick={() => push("/profile/emblems")} />
+          </div>
         </section>
       </Layout.Margin>
     </Layout.Page>
