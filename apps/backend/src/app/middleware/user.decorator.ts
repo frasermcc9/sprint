@@ -7,3 +7,10 @@ export const User = createParamDecorator(
     return ctx.getContext().req.user;
   },
 );
+
+export const DBUser = createParamDecorator(
+  async (data: unknown, context: ExecutionContext) => {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext().req.dbUser;
+  },
+);
