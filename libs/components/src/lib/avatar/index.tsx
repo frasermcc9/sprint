@@ -87,7 +87,7 @@ export const Avatar: React.FC<AvatarProps> = ({
     [execProfilePicUpdate, avatarUrl, data?.currentUser],
   );
 
-  //Click invisable input file
+  //Click invisible input file
   const handleEdit = () => {
     hiddenFileInput?.current?.click();
   };

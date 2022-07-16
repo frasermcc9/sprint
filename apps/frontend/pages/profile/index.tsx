@@ -1,13 +1,22 @@
 import { CogIcon } from "@heroicons/react/outline";
-import { toMonthYYYY } from "@sprint/common";
-import { Avatar, Layout } from "@sprint/components";
-import { useCurrentUserQuery } from "@sprint/gql";
+import { EmblemImageUnion, toMonthYYYY } from "@sprint/common";
+import {
+  Avatar,
+  EditIcon,
+  Layout,
+  UserCard,
+  RunCard,
+} from "@sprint/components";
+import { useCurrentUserQuery, useGetAvailableEmblemsQuery } from "@sprint/gql";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 
 export default function Index() {
   const { data, loading, error } = useCurrentUserQuery();
   const { push } = useRouter();
+
+  const { data: emblems } = useGetAvailableEmblemsQuery();
+  console.log(emblems?.currentUser?.availableEmblems);
 
   if (error) {
     toast.error(error.message);
@@ -19,9 +28,16 @@ export default function Index() {
   }
 
   const {
-    currentUser: { createdAtUTS, id, firstName, lastName, avatarUrl },
+    currentUser: {
+      createdAtUTS,
+      id,
+      firstName,
+      lastName,
+      avatarUrl,
+      runs,
+      emblem,
+    },
   } = data;
-
   return (
     <Layout.Page>
       <Layout.Header>
@@ -47,6 +63,32 @@ export default function Index() {
           </div>
           <Avatar avatarUrl={avatarUrl} userId={id} showEdit />
         </section>
+
+        <div className="my-2 h-px w-full bg-indigo-600" />
+        <section className="flex flex-col items-center">
+          <div className="font-palanquin mb-2 text-2xl font-semibold text-gray-800">
+            Your Emblem
+          </div>
+          <div className="relative p-2">
+            <UserCard emblem={emblem as EmblemImageUnion} onlyEmblem />
+            <EditIcon onClick={() => push("/profile/emblems")} />
+          </div>
+        </section>
+
+        <hr className="mt-2"></hr>
+        <div className="font-palanquin mt-2 flex flex-col text-gray-600">
+          <p className="text-2xl font-semibold text-gray-800">Your Runs</p>
+          <span className="mb-2 text-sm font-thin">In the last 90 days</span>
+
+          {[...runs].reverse().map((run) => (
+            <RunCard
+              key={run.userId}
+              duration={run.duration ?? 0}
+              rundate={run.date ?? "no date"}
+              feedback={run.intensityFeedback ?? 0}
+            />
+          ))}
+        </div>
       </Layout.Margin>
     </Layout.Page>
   );

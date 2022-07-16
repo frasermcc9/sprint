@@ -7,10 +7,11 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
-import { calculateMaxHr, Feature } from "@sprint/common";
+import { calculateMaxHr, Feature, isValidEmblem } from "@sprint/common";
+import { User as UserModel } from "../../db/schema/user.schema";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
-import { User } from "../../middleware/user.decorator";
+import { DBUser, User } from "../../middleware/user.decorator";
 import { formatDuration } from "../../service/run-processing/run-duration";
 import { calculateNewParams } from "../../service/run-processing/runProcessing";
 import {
@@ -39,6 +40,7 @@ export class UserResolver {
       lastName: dbUser.lastName,
       experience: dbUser.experience,
       stage: dbUser.stage,
+      runs: dbUser.runs,
       dob: dbUser.dob,
       defaultRunDuration: dbUser.defaultRunDuration,
       features: dbUser.featuresSeen,
@@ -240,6 +242,20 @@ export class UserResolver {
     };
   }
 
+  @Mutation()
+  async updateEmblem(@User() user: FitbitUser, @Args("emblem") emblem: string) {
+    const dbUser = await this.userService.getUser(user.id);
+
+    if (isValidEmblem(emblem) && dbUser.unlockedEmblems.includes(emblem)) {
+      dbUser.emblem = emblem;
+      await dbUser.save();
+    } else {
+      return dbUser.emblem;
+    }
+
+    return emblem;
+  }
+
   @ResolveField()
   async maxHr(@Parent() user: FitbitUser): Promise<number> {
     const dbUser = await this.userService.getUser(user.id);
@@ -250,6 +266,16 @@ export class UserResolver {
   async runs(@Parent() user: FitbitUser) {
     const dbUser = await this.userService.getUser(user.id);
     return dbUser?.runs ?? [];
+  }
+
+  @ResolveField()
+  async emblem(@DBUser() user: UserModel) {
+    return user.emblem;
+  }
+
+  @ResolveField()
+  async availableEmblems(@DBUser() user: UserModel) {
+    return user.unlockedEmblems;
   }
 
   @ResolveField()

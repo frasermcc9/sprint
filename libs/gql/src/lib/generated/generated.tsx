@@ -70,6 +70,7 @@ export type Mutation = {
   trackVariable: Array<Scalars['String']>;
   untrackVariable: Array<Scalars['String']>;
   updateDefaultRunDuration: Scalars['Int'];
+  updateEmblem: Scalars['String'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
   updateProfile?: Maybe<User>;
   updateProfilePic?: Maybe<User>;
@@ -165,6 +166,11 @@ export type MutationUpdateDefaultRunDurationArgs = {
 };
 
 
+export type MutationUpdateEmblemArgs = {
+  emblem: Scalars['String'];
+};
+
+
 export type MutationUpdateProfileArgs = {
   dob: Scalars['String'];
   firstName: Scalars['String'];
@@ -184,6 +190,7 @@ export type MutationUpdateRunParamsArgs = {
 export type PublicUser = {
   __typename?: 'PublicUser';
   avatarUrl: Scalars['String'];
+  emblem: Scalars['String'];
   firstName: Scalars['String'];
   id: Scalars['String'];
   lastName: Scalars['String'];
@@ -255,11 +262,13 @@ export type SleepVariable = {
 
 export type User = {
   __typename?: 'User';
+  availableEmblems: Array<Scalars['String']>;
   avatarUrl: Scalars['String'];
   createdAtUTS: Scalars['Float'];
   currentRunParams: RunParams;
   defaultRunDuration: Scalars['Int'];
   dob: Scalars['String'];
+  emblem: Scalars['String'];
   experience?: Maybe<ExperienceLevel>;
   features: Array<Maybe<Scalars['String']>>;
   firstName: Scalars['String'];
@@ -268,7 +277,7 @@ export type User = {
   id: Scalars['String'];
   lastName: Scalars['String'];
   maxHr: Scalars['Int'];
-  runs?: Maybe<Array<Maybe<Run>>>;
+  runs: Array<Run>;
   sleepVariables?: Maybe<Array<Maybe<SleepVariable>>>;
   stage: AccountStage;
   todaysSleep: Array<Maybe<Sleep>>;
@@ -377,7 +386,7 @@ export type AnalyzeSleepQuery = { __typename?: 'Query', analyzeSleep?: { __typen
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, emblem: string, runs: Array<{ __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null }> } | null };
 
 export type FeaturesSeenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -389,7 +398,12 @@ export type GetFriendsQueryVariables = Exact<{
 }>;
 
 
-export type GetFriendsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, friends: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } | null>, friendRequests: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } | null> } | null };
+export type GetFriendsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, friends: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string } | null>, friendRequests: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string } | null> } | null };
+
+export type GetAvailableEmblemsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAvailableEmblemsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, availableEmblems: Array<string> } | null };
 
 export type UpdateDefaultRunDurationMutationVariables = Exact<{
   duration: Scalars['Int'];
@@ -417,7 +431,7 @@ export type AcceptFriendRequestMutationVariables = Exact<{
 }>;
 
 
-export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest: { __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } };
+export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest: { __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string } };
 
 export type RejectFriendRequestMutationVariables = Exact<{
   friendId: Scalars['ID'];
@@ -451,6 +465,13 @@ export type UpdateProfilePicMutationVariables = Exact<{
 
 
 export type UpdateProfilePicMutation = { __typename?: 'Mutation', updateProfilePic?: { __typename?: 'User', avatarUrl: string } | null };
+
+export type UpdateEmblemMutationVariables = Exact<{
+  emblem: Scalars['String'];
+}>;
+
+
+export type UpdateEmblemMutation = { __typename?: 'Mutation', updateEmblem: string };
 
 export type CreateSleepVariableMutationVariables = Exact<{
   name: Scalars['String'];
@@ -917,6 +938,14 @@ export const CurrentUserDocument = gql`
     lastName
     experience
     stage
+    runs {
+      userId
+      date
+      duration
+      heartRate
+      vo2max
+      intensityFeedback
+    }
     maxHr
     dob
     defaultRunDuration
@@ -924,6 +953,7 @@ export const CurrentUserDocument = gql`
     avatarUrl
     createdAtUTS
     xp
+    emblem
   }
 }
     `;
@@ -999,6 +1029,7 @@ export const GetFriendsDocument = gql`
       lastName
       avatarUrl
       xp
+      emblem
     }
     friendRequests {
       id
@@ -1006,6 +1037,7 @@ export const GetFriendsDocument = gql`
       lastName
       avatarUrl
       xp
+      emblem
     }
   }
 }
@@ -1038,6 +1070,41 @@ export function useGetFriendsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetFriendsQueryHookResult = ReturnType<typeof useGetFriendsQuery>;
 export type GetFriendsLazyQueryHookResult = ReturnType<typeof useGetFriendsLazyQuery>;
 export type GetFriendsQueryResult = Apollo.QueryResult<GetFriendsQuery, GetFriendsQueryVariables>;
+export const GetAvailableEmblemsDocument = gql`
+    query GetAvailableEmblems {
+  currentUser {
+    id
+    availableEmblems
+  }
+}
+    `;
+
+/**
+ * __useGetAvailableEmblemsQuery__
+ *
+ * To run a query within a React component, call `useGetAvailableEmblemsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAvailableEmblemsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAvailableEmblemsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAvailableEmblemsQuery(baseOptions?: Apollo.QueryHookOptions<GetAvailableEmblemsQuery, GetAvailableEmblemsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAvailableEmblemsQuery, GetAvailableEmblemsQueryVariables>(GetAvailableEmblemsDocument, options);
+      }
+export function useGetAvailableEmblemsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAvailableEmblemsQuery, GetAvailableEmblemsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAvailableEmblemsQuery, GetAvailableEmblemsQueryVariables>(GetAvailableEmblemsDocument, options);
+        }
+export type GetAvailableEmblemsQueryHookResult = ReturnType<typeof useGetAvailableEmblemsQuery>;
+export type GetAvailableEmblemsLazyQueryHookResult = ReturnType<typeof useGetAvailableEmblemsLazyQuery>;
+export type GetAvailableEmblemsQueryResult = Apollo.QueryResult<GetAvailableEmblemsQuery, GetAvailableEmblemsQueryVariables>;
 export const UpdateDefaultRunDurationDocument = gql`
     mutation UpdateDefaultRunDuration($duration: Int!) {
   updateDefaultRunDuration(duration: $duration)
@@ -1139,6 +1206,7 @@ export const AcceptFriendRequestDocument = gql`
     lastName
     avatarUrl
     xp
+    emblem
   }
 }
     `;
@@ -1315,6 +1383,37 @@ export function useUpdateProfilePicMutation(baseOptions?: Apollo.MutationHookOpt
 export type UpdateProfilePicMutationHookResult = ReturnType<typeof useUpdateProfilePicMutation>;
 export type UpdateProfilePicMutationResult = Apollo.MutationResult<UpdateProfilePicMutation>;
 export type UpdateProfilePicMutationOptions = Apollo.BaseMutationOptions<UpdateProfilePicMutation, UpdateProfilePicMutationVariables>;
+export const UpdateEmblemDocument = gql`
+    mutation UpdateEmblem($emblem: String!) {
+  updateEmblem(emblem: $emblem)
+}
+    `;
+export type UpdateEmblemMutationFn = Apollo.MutationFunction<UpdateEmblemMutation, UpdateEmblemMutationVariables>;
+
+/**
+ * __useUpdateEmblemMutation__
+ *
+ * To run a mutation, you first call `useUpdateEmblemMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateEmblemMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateEmblemMutation, { data, loading, error }] = useUpdateEmblemMutation({
+ *   variables: {
+ *      emblem: // value for 'emblem'
+ *   },
+ * });
+ */
+export function useUpdateEmblemMutation(baseOptions?: Apollo.MutationHookOptions<UpdateEmblemMutation, UpdateEmblemMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateEmblemMutation, UpdateEmblemMutationVariables>(UpdateEmblemDocument, options);
+      }
+export type UpdateEmblemMutationHookResult = ReturnType<typeof useUpdateEmblemMutation>;
+export type UpdateEmblemMutationResult = Apollo.MutationResult<UpdateEmblemMutation>;
+export type UpdateEmblemMutationOptions = Apollo.BaseMutationOptions<UpdateEmblemMutation, UpdateEmblemMutationVariables>;
 export const CreateSleepVariableDocument = gql`
     mutation CreateSleepVariable($name: String!, $emoji: String!) {
   createSleepVariable(emoji: $emoji, name: $name) {

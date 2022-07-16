@@ -10,6 +10,7 @@ type Mutation {
   # Returns features seen
   markFeatureSeen(feature: String!): [String]!
   updateProfile(firstName: String!, lastName: String!, dob: String!): User
+  updateEmblem(emblem: String!): String!
   sendFriendRequest(friendId: ID!): Boolean
   acceptFriendRequest(friendId: ID!): PublicUser!
   # Returns the rejected user ID
@@ -26,23 +27,30 @@ type Query {
 }
 
 type User {
+  # Info
   id: String!
   firstName: String!
   lastName: String!
+  createdAtUTS: Float!
+  utcOffset: Float!
+  # Onboarding
   experience: ExperienceLevel
   stage: AccountStage!
-  runs: [Run]
+  runs: [Run!]!
   maxHr: Int!
   dob: String!
   defaultRunDuration: Int!
+  currentRunParams: RunParams!
+  # Features
   features: [String]!
+  # Social
   avatarUrl: String!
-  createdAtUTS: Float!
-  utcOffset: Float!
+  emblem: String!
+  availableEmblems: [String!]!
   xp: Int!
   friends(limit: Int = 10): [PublicUser]!
   friendRequests: [PublicUser]!
-  currentRunParams: RunParams!
+  # Sleep
   todaysSleep(sourceUrl: String): [Sleep]!
   sleepVariables: [SleepVariable]
   trackedVariables: [String!]!
@@ -70,6 +78,7 @@ type PublicUser {
   lastName: String!
   avatarUrl: String!
   xp: Int!
+  emblem: String!
 }
 
 enum ExperienceLevel {
