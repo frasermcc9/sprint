@@ -98,7 +98,7 @@ export default function Add() {
                   <Fragment key={f?.id}>
                     {f && (
                       <div className="relative flex items-center">
-                        <UserCard emblem={"/img/e1.jpg"} {...f}>
+                        <UserCard {...f}>
                           <div className="absolute right-4 top-8 z-50 text-white">
                             <Menu
                               as="div"

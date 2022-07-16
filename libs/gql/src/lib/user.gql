@@ -71,6 +71,7 @@ mutation acceptFriendRequest($friendId: ID!) {
     lastName
     avatarUrl
     xp
+    emblem
   }
 }
 

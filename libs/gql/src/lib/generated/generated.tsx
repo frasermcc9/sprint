@@ -413,7 +413,7 @@ export type AcceptFriendRequestMutationVariables = Exact<{
 }>;
 
 
-export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest: { __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number } };
+export type AcceptFriendRequestMutation = { __typename?: 'Mutation', acceptFriendRequest: { __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string } };
 
 export type RejectFriendRequestMutationVariables = Exact<{
   friendId: Scalars['ID'];
@@ -1180,6 +1180,7 @@ export const AcceptFriendRequestDocument = gql`
     lastName
     avatarUrl
     xp
+    emblem
   }
 }
     `;
