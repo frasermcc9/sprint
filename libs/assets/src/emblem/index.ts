@@ -1,3 +1,6 @@
-import E1 from "./e1.jpg";
+import { EmblemImageMap } from "@sprint/common";
+import * as Levels from "./level";
 
-export { E1 };
+export const Emblems: EmblemImageMap = {
+  ...Levels,
+};

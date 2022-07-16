@@ -49,6 +49,7 @@ export interface IMutation {
     updateDefaultRunDuration(duration: number): number | Promise<number>;
     markFeatureSeen(feature: string): Nullable<string>[] | Promise<Nullable<string>[]>;
     updateProfile(firstName: string, lastName: string, dob: string): Nullable<User> | Promise<Nullable<User>>;
+    updateEmblem(emblem: string): string | Promise<string>;
     sendFriendRequest(friendId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
     acceptFriendRequest(friendId: string): PublicUser | Promise<PublicUser>;
     rejectFriendRequest(friendId: string): string | Promise<string>;
@@ -113,20 +114,22 @@ export interface User {
     id: string;
     firstName: string;
     lastName: string;
+    createdAtUTS: number;
+    utcOffset: number;
     experience?: Nullable<ExperienceLevel>;
     stage: AccountStage;
     runs?: Nullable<Nullable<Run>[]>;
     maxHr: number;
     dob: string;
     defaultRunDuration: number;
+    currentRunParams: RunParams;
     features: Nullable<string>[];
     avatarUrl: string;
-    createdAtUTS: number;
-    utcOffset: number;
+    emblem: string;
+    availableEmblems: string[];
     xp: number;
     friends: Nullable<PublicUser>[];
     friendRequests: Nullable<PublicUser>[];
-    currentRunParams: RunParams;
     todaysSleep: Nullable<Sleep>[];
     sleepVariables?: Nullable<Nullable<SleepVariable>[]>;
     trackedVariables: string[];
@@ -146,6 +149,7 @@ export interface PublicUser {
     lastName: string;
     avatarUrl: string;
     xp: number;
+    emblem: string;
 }
 
 type Nullable<T> = T | null;

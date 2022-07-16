@@ -12,6 +12,7 @@ query CurrentUser {
     avatarUrl
     createdAtUTS
     xp
+    emblem
   }
 }
 
@@ -31,6 +32,7 @@ query GetFriends($limit: Int) {
       lastName
       avatarUrl
       xp
+      emblem
     }
     friendRequests {
       id
@@ -38,7 +40,15 @@ query GetFriends($limit: Int) {
       lastName
       avatarUrl
       xp
+      emblem
     }
+  }
+}
+
+query GetAvailableEmblems {
+  currentUser {
+    id
+    availableEmblems
   }
 }
 
@@ -61,6 +71,7 @@ mutation acceptFriendRequest($friendId: ID!) {
     lastName
     avatarUrl
     xp
+    emblem
   }
 }
 
@@ -101,6 +112,10 @@ mutation updateProfilePic($avatarUrl: String!) {
   updateProfilePic(avatarUrl: $avatarUrl) {
     avatarUrl
   }
+}
+
+mutation UpdateEmblem($emblem: String!) {
+  updateEmblem(emblem: $emblem)
 }
 
 mutation CreateSleepVariable($name: String!, $emoji: String!) {

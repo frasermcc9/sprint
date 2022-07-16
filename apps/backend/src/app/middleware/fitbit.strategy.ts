@@ -92,19 +92,23 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
         });
       }
 
-      await this.userModel.createIfNotExistsAndMerge({
+      const dbUser = await this.userModel.createIfNotExistsAndMerge({
         id: castedUser.id,
         firstName: castedUser.firstName ?? "",
         lastName: castedUser.lastName ?? "",
         stage: AccountStage.INITIAL,
         dob: castedUser.dateOfBirth ?? "",
         avatarUrl: castedUser.avatar,
+        emblem: "Level1",
         createdAtUTS: Date.now(),
         utcOffset: (castedUser.offsetFromUTCMillis ?? 0) / 1000 / 60 / 60,
         xp: 0,
         trackedVariables: [],
         sleepTrackStreak: 0,
+        unlockedEmblems: ["Level1"],
       });
+
+      (request as Record<string, any>).dbUser = dbUser;
 
       return castedUser;
     } catch (e) {
