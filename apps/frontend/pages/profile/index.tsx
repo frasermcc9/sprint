@@ -52,7 +52,7 @@ export default function Index() {
           <p className="text-2xl font-semibold text-gray-800">Your Runs</p>
           <span className="mb-2 text-sm font-thin">In the last 90 days</span>
 
-          {runs.map((run) => (
+          {[...runs].reverse().map((run) => (
             <RunCard
               key={run.userId}
               duration={run.duration ?? 0}
