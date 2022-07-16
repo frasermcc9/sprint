@@ -35,8 +35,7 @@ type User {
   # Onboarding
   experience: ExperienceLevel
   stage: AccountStage!
-  # Runs
-  runs: [Run]
+  runs: [Run!]!
   maxHr: Int!
   dob: String!
   defaultRunDuration: Int!

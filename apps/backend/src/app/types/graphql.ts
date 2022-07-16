@@ -118,7 +118,7 @@ export interface User {
     utcOffset: number;
     experience?: Nullable<ExperienceLevel>;
     stage: AccountStage;
-    runs?: Nullable<Nullable<Run>[]>;
+    runs: Run[];
     maxHr: number;
     dob: string;
     defaultRunDuration: number;

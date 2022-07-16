@@ -40,6 +40,7 @@ export class UserResolver {
       lastName: dbUser.lastName,
       experience: dbUser.experience,
       stage: dbUser.stage,
+      runs: dbUser.runs,
       dob: dbUser.dob,
       defaultRunDuration: dbUser.defaultRunDuration,
       features: dbUser.featuresSeen,

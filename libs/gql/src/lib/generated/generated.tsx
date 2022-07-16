@@ -259,7 +259,7 @@ export type User = {
   id: Scalars['String'];
   lastName: Scalars['String'];
   maxHr: Scalars['Int'];
-  runs?: Maybe<Array<Maybe<Run>>>;
+  runs: Array<Run>;
   sleepVariables?: Maybe<Array<Maybe<SleepVariable>>>;
   stage: AccountStage;
   todaysSleep: Array<Maybe<Sleep>>;
@@ -368,7 +368,7 @@ export type AnalyzeSleepQuery = { __typename?: 'Query', analyzeSleep?: { __typen
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, emblem: string } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, emblem: string, runs: Array<{ __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null }> } | null };
 
 export type FeaturesSeenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -920,6 +920,14 @@ export const CurrentUserDocument = gql`
     lastName
     experience
     stage
+    runs {
+      userId
+      date
+      duration
+      heartRate
+      vo2max
+      intensityFeedback
+    }
     maxHr
     dob
     defaultRunDuration
