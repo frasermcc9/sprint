@@ -368,11 +368,7 @@ export type AnalyzeSleepQuery = { __typename?: 'Query', analyzeSleep?: { __typen
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-<<<<<<< HEAD
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, runs: Array<{ __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null }> } | null };
-=======
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, emblem: string } | null };
->>>>>>> main
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, emblem: string, runs: Array<{ __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null }> } | null };
 
 export type FeaturesSeenQueryVariables = Exact<{ [key: string]: never; }>;
 
