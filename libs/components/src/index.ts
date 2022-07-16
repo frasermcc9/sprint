@@ -22,3 +22,4 @@ export * from "./lib/icon-button";
 export * from "./lib/sleep-variable";
 export * from "./lib/start-sleep-analysis";
 export * from "./lib/run-card";
+export * from "./lib/edit-icon";

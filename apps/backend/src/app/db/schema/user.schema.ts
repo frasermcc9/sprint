@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Feature } from "@sprint/common";
+import { EmblemImageUnion, Feature } from "@sprint/common";
 import { Document, Model } from "mongoose";
 import { AccountStage, ExperienceLevel, Run } from "../../types/graphql";
 
@@ -80,6 +80,12 @@ export class User {
   @Prop({ required: true, type: String, default: "" })
   avatarUrl?: string;
 
+  @Prop({ required: true, type: String })
+  emblem!: EmblemImageUnion;
+
+  @Prop({ required: true, type: Array, default: ["Level1"] })
+  unlockedEmblems: EmblemImageUnion[];
+
   @Prop({ required: true, type: Number, default: Date.now() })
   createdAtUTS?: number;
 
@@ -154,6 +160,10 @@ interface Methods {
   latestSleep(this: UserDocument): Sleep | null;
   incrementSleepTrackStreak(this: UserDocument): Promise<void>;
   resetSleepTrackStreak(this: UserDocument): Promise<void>;
+  unlockEmblem(
+    this: UserDocument,
+    { emblem }: { emblem: EmblemImageUnion },
+  ): Promise<void>;
 }
 
 interface Statics {
@@ -244,6 +254,14 @@ const methods: Methods = {
   },
   async resetSleepTrackStreak(this: UserDocument) {
     this.sleepTrackStreak = 0;
+    await this.save();
+  },
+  async unlockEmblem(
+    this: UserDocument,
+    { emblem }: { emblem: EmblemImageUnion },
+  ): Promise<void> {
+    this.unlockedEmblems.push(emblem);
+    this.markModified("unlockedEmblems");
     await this.save();
   },
 };

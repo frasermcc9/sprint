@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Dates, Nullish } from "@sprint/common";
 import { UserInputError } from "apollo-server-express";
@@ -21,7 +25,7 @@ export class UserService {
   async getUser(fitbitId: string) {
     const user = await this.userModel.findOne({ id: fitbitId });
     if (!user) {
-      throw new InternalServerErrorException("User not found");
+      throw new UnauthorizedException("User not found");
     }
     return user;
   }

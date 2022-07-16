@@ -31,11 +31,7 @@ export const FriendsList: React.FC<FriendsListProps> = ({ useController }) => {
       <div className="mx-auto flex flex-col gap-y-2">
         {loading && <div>Loading...</div>}
         {friends?.map((friend) => (
-          <UserCard
-            key={friend?.id}
-            backgroundUrl={"/img/e1.jpg"}
-            {...friend}
-          />
+          <UserCard key={friend?.id} {...friend} />
         ))}
       </div>
     </>
@@ -57,10 +53,24 @@ export const useMockFriendsListController: typeof useFriendsListController =
     return {
       loading: false,
       friends: [
-        { firstName: "John", avatarUrl: "", lastName: "Doe", xp: 234, id: "0" },
+        {
+          firstName: "John",
+          avatarUrl: "",
+          lastName: "Doe",
+          xp: 234,
+          id: "0",
+          emblem: "Level1",
+        },
       ],
       requests: [
-        { firstName: "Jane", avatarUrl: "", lastName: "Doe", xp: 445, id: "1" },
+        {
+          firstName: "Jane",
+          avatarUrl: "",
+          lastName: "Doe",
+          xp: 445,
+          id: "1",
+          emblem: "Level1",
+        },
       ],
     };
   };

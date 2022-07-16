@@ -9,6 +9,11 @@ export interface EventMap {
     sleepDate: string;
     lastUploadedSleep?: string;
   };
+  "internal.xp.added": {
+    newXp: number;
+    xpAdded: number;
+    userId: string;
+  };
 }
 
 export interface BaseEvent {

@@ -1,13 +1,22 @@
 import { CogIcon } from "@heroicons/react/outline";
+<<<<<<< HEAD
 import { toMonthYYYY } from "@sprint/common";
 import { Avatar, Layout, RunCard } from "@sprint/components";
 import { useCurrentUserQuery } from "@sprint/gql";
+=======
+import { EmblemImageUnion, toMonthYYYY } from "@sprint/common";
+import { Avatar, EditIcon, Layout, UserCard } from "@sprint/components";
+import { useCurrentUserQuery, useGetAvailableEmblemsQuery } from "@sprint/gql";
+>>>>>>> main
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 
 export default function Index() {
   const { data, loading, error } = useCurrentUserQuery();
   const { push } = useRouter();
+
+  const { data: emblems } = useGetAvailableEmblemsQuery();
+  console.log(emblems?.currentUser?.availableEmblems);
 
   if (error) {
     toast.error(error.message);
@@ -19,7 +28,7 @@ export default function Index() {
   }
 
   const {
-    currentUser: { createdAtUTS, id, firstName, lastName, avatarUrl, runs },
+    currentUser: { createdAtUTS, id, firstName, lastName, avatarUrl, runs, emblem },
   } = data;
   return (
     <Layout.Page>
@@ -46,6 +55,7 @@ export default function Index() {
           </div>
           <Avatar avatarUrl={avatarUrl} userId={id} showEdit />
         </section>
+<<<<<<< HEAD
 
         <hr className="mt-2"></hr>
         <div className="font-palanquin mt-2 flex flex-col text-gray-600">
@@ -61,6 +71,18 @@ export default function Index() {
             />
           ))}
         </div>
+=======
+        <div className="my-2 h-px w-full bg-indigo-600" />
+        <section className="flex flex-col items-center">
+          <div className="font-palanquin mb-2 text-2xl font-semibold text-gray-800">
+            Your Emblem
+          </div>
+          <div className="relative p-2">
+            <UserCard emblem={emblem as EmblemImageUnion} onlyEmblem />
+            <EditIcon onClick={() => push("/profile/emblems")} />
+          </div>
+        </section>
+>>>>>>> main
       </Layout.Margin>
     </Layout.Page>
   );
