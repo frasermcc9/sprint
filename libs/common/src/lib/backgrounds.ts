@@ -10,7 +10,7 @@ export const emblemList = [
 export const emblemSet = new Set(emblemList);
 
 export type EmblemImageMap = {
-  [key in typeof emblemList[number]]: string;
+  [key in typeof emblemList[number]]: string | any;
 };
 
 export type EmblemImageUnion = keyof EmblemImageMap;
