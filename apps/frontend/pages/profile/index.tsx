@@ -19,9 +19,8 @@ export default function Index() {
   }
 
   const {
-    currentUser: { createdAtUTS, id, firstName, lastName, avatarUrl },
+    currentUser: { createdAtUTS, id, firstName, lastName, avatarUrl, runs },
   } = data;
-
   return (
     <Layout.Page>
       <Layout.Header>
@@ -52,9 +51,15 @@ export default function Index() {
         <div className="font-palanquin mt-2 flex flex-col text-gray-600">
           <p className="text-2xl font-semibold text-gray-800">Your Runs</p>
           <span className="mb-2 text-sm font-thin">In the last 90 days</span>
-          <RunCard duration="13" rundate="2020-01-01" />
-          <RunCard duration="13" rundate="2020-01-01" />
-          <RunCard duration="13" rundate="2020-01-01" />
+
+          {runs.map((run) => (
+            <RunCard
+              key={run.userId}
+              duration={run.duration ?? 0}
+              rundate={run.date ?? "no date"}
+              feedback={run.intensityFeedback ?? 0}
+            />
+          ))}
         </div>
       </Layout.Margin>
     </Layout.Page>

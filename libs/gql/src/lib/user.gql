@@ -5,6 +5,14 @@ query CurrentUser {
     lastName
     experience
     stage
+    runs {
+      userId
+      date
+      duration
+      heartRate
+      vo2max
+      intensityFeedback
+    }
     maxHr
     dob
     defaultRunDuration

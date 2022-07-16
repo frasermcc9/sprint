@@ -30,7 +30,7 @@ type User {
   lastName: String!
   experience: ExperienceLevel
   stage: AccountStage!
-  runs: [Run]
+  runs: [Run!]!
   maxHr: Int!
   dob: String!
   defaultRunDuration: Int!
