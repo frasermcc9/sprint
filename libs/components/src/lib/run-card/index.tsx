@@ -13,7 +13,7 @@ export const RunCard: React.FC<RunCardProps> = ({
   feedback,
 }) => {
   return (
-    <div className="mb-2 rounded-md border-2 border-gray-500 p-2">
+    <div className="mb-2 rounded-md border-2 border-gray-500 p-2 shadow-md">
       <div className="flex flex-row items-center gap-x-2">
         <div className="mr-2">
           <NumberInCircle number={feedback} />
