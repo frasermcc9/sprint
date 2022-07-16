@@ -1,9 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { Int } from "@nestjs/graphql";
 import { InjectModel } from "@nestjs/mongoose";
 import { Run, RunCollection } from "../../db/schema/run.schema";
-import { UserCollection } from "../../db/schema/user.schema";
-import { User } from "../../middleware/user.decorator";
+import { User, UserCollection } from "../../db/schema/user.schema";
 import { calculateVO2max } from "../../service/run-processing/runProcessing";
 
 @Injectable()

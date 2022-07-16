@@ -34,12 +34,13 @@ export interface IQuery {
     analyzeSleep(): Nullable<SleepAnalysis> | Promise<Nullable<SleepAnalysis>>;
     currentUser(): Nullable<User> | Promise<Nullable<User>>;
     prepRun(): Nullable<RunParams> | Promise<Nullable<RunParams>>;
+    generateRunFeedback(): Nullable<Feedback> | Promise<Nullable<Feedback>>;
 }
 
 export interface IMutation {
     login(code: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     refresh(token: string): Nullable<Auth> | Promise<Nullable<Auth>>;
-    createRun(token: string, startDate: string, endDate: string, startTime: string, endTime: string): Nullable<Run> | Promise<Nullable<Run>>;
+    createRun(startDate: string, endDate: string, startTime: string, endTime: string, intensity: number): Nullable<Run> | Promise<Nullable<Run>>;
     createEvent(event: string, payload?: Nullable<string>): Nullable<AnalyticsEvent> | Promise<Nullable<AnalyticsEvent>>;
     addSleepVariable(name: string, emoji: string, custom: boolean, sleepDate: string): Nullable<VariableEditResponse> | Promise<Nullable<VariableEditResponse>>;
     removeSleepVariable(name: string, sleepDate: string): Nullable<VariableEditResponse> | Promise<Nullable<VariableEditResponse>>;
@@ -140,6 +141,14 @@ export interface RunParams {
     repetitions?: Nullable<number>;
     sets?: Nullable<number>;
     restPeriod?: Nullable<number>;
+}
+
+export interface Feedback {
+    feedbackSummary?: Nullable<string>;
+    lastRunFeedback?: Nullable<string>;
+    intensityFeedback?: Nullable<string>;
+    volumeFeedback?: Nullable<string>;
+    performanceFeedback?: Nullable<string>;
 }
 
 export interface PublicUser {
