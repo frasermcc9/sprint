@@ -9,7 +9,7 @@ import {
 } from "@sprint/gql";
 
 export const RecordPage: React.FC = () => {
-  const { back } = useRouter();
+  const { back, push } = useRouter();
   const [startDate, setStartDate] = useState(toYYYYMMDD(new Date()));
   const [startTime, setStartTime] = useState("01:00");
   const [endDate, setEndDate] = useState(toYYYYMMDD(new Date()));
@@ -66,12 +66,11 @@ export const RecordPage: React.FC = () => {
         },
       });
       await result;
-      back();
     } catch (err) {
       console.error(err);
     }
-    back();
-  }, [startDate, startTime, endDate, endTime, intensityFB, createRun, back]);
+    push("/profile");
+  }, [startDate, startTime, endDate, endTime, intensityFB, push, createRun]);
 
   return (
     <Layout.Page animation={Layout.PageUpAnimation}>
