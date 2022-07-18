@@ -58,7 +58,8 @@ export const RecordPage: React.FC = () => {
                 ...data,
                 currentUser: {
                   ...data.currentUser,
-                  runs: [...data.currentUser.runs, result?.createRun],
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  runs: [...data.currentUser!.runs, result?.createRun],
                 },
               },
             });

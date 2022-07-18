@@ -33,38 +33,7 @@ export class User {
   @Prop({
     required: true,
     type: Array,
-    default: [
-      {
-        userId: "1234",
-        date: "2022-07-12",
-        duration: "14",
-        distance: "11",
-        heartRate: [63, 36, 23, 62],
-        speed: [21, 12, 12],
-        vo2max: 124,
-        intensityFeedback: "10",
-      },
-      {
-        userId: "1234",
-        date: "2022-07-13",
-        duration: "14",
-        distance: "11",
-        heartRate: [63, 36, 23, 62],
-        speed: [21, 12, 12],
-        vo2max: 124,
-        intensityFeedback: "18",
-      },
-      {
-        userId: "1234",
-        date: "2022-07-15",
-        duration: "14",
-        distance: "11",
-        heartRate: [63, 36, 23, 62],
-        speed: [21, 12, 12],
-        vo2max: 124,
-        intensityFeedback: "12",
-      },
-    ],
+    default: [],
   })
   runs?: Array<Run>;
 
