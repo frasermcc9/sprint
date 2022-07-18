@@ -40,8 +40,9 @@ export class AchievementListener {
 
     if (!Dates.dateIsBefore(lastUploadedSleep, sleepDate)) {
       await dbUser?.resetSleepTrackStreak();
+      return this.xpService.addXp(dbUser, XPRewards.ADD_SLEEP_DATA);
     }
-    // back-filled data shouldn't award streak bonus
-    await this.xpService.addXp(dbUser, XPRewards.ADD_SLEEP_DATA);
+
+    // Do not award XP if back-filled data
   }
 }
