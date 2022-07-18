@@ -3,6 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Run, RunCollection } from "../../db/schema/run.schema";
 import { User, UserCollection } from "../../db/schema/user.schema";
 import { calculateVO2max } from "../../service/run-processing/runProcessing";
+import fetch from "node-fetch";
 
 @Injectable()
 export class RunService {
@@ -72,7 +73,7 @@ export class RunService {
 
     try {
       const res = await fetch(
-        `https://api.fitbit.com/1/user/-/activities/heart/date/${dateStart}/${dateEnd}/1min/time/${startTime}/${endTime}.json1`,
+        `https://api.fitbit.com/1/user/-/activities/heart/date/${dateStart}/${dateEnd}/1min/time/${startTime}/${endTime}.json`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${access_token}` },
@@ -95,8 +96,7 @@ export class RunService {
       const durationMins =
         (timeEnd.getTime() - timeStart.getTime()) / 1000 / 60;
 
-      const vo2Max = calculateVO2max(hrActivityList, dbUser.maxHR);
-
+      const vo2Max = Math.round(calculateVO2max(hrActivityList, dbUser.maxHR));
       const newRun = {
         userId: dbUser.id,
         date: dateStart,
@@ -105,15 +105,14 @@ export class RunService {
         vo2max: vo2Max,
         intensityFeedback: intensityFB,
       };
-
       this.runModel.create(newRun);
-
       dbUser.runs?.push(newRun);
-      dbUser.save();
+      dbUser.markModified("runs");
+      await dbUser.save();
 
       return newRun;
     } catch (e) {
-      console.error(e.toJSON());
+      console.error(e.message);
     }
   }
 }

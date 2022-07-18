@@ -1,0 +1,22 @@
+mutation createRun(
+  $startDate: String!
+  $endDate: String!
+  $startTime: String!
+  $endTime: String!
+  $intensityFB: Int!
+) {
+  createRun(
+    startDate: $startDate
+    endDate: $endDate
+    startTime: $startTime
+    endTime: $endTime
+    intensity: $intensityFB
+  ) {
+    userId
+    date
+    duration
+    heartRate
+    vo2max
+    intensityFeedback
+  }
+}

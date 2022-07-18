@@ -17,7 +17,7 @@ export class RunResolver {
     @Args("endDate") endDate: string,
     @Args("startTime") startTime: string,
     @Args("endTime") endTime: string,
-    @Args("intensityFB") fb: number,
+    @Args("intensity") fb: number,
   ) {
     return this.runService.createRun(
       user.id,
@@ -28,7 +28,5 @@ export class RunResolver {
       endTime,
       fb,
     );
-
-    //TODO: get userID, create run object, add run to user
   }
 }

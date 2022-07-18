@@ -1,15 +1,78 @@
 import { toYYYYMMDD } from "@sprint/common";
 import { Layout, TextInput } from "@sprint/components";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
+import {
+  CurrentUserDocument,
+  CurrentUserQuery,
+  useCreateRunMutation,
+} from "@sprint/gql";
 
 export const RecordPage: React.FC = () => {
   const { back } = useRouter();
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState(toYYYYMMDD(new Date()));
   const [startTime, setStartTime] = useState("01:00");
-  const [endDate, setEndDate] = useState("");
+  const [endDate, setEndDate] = useState(toYYYYMMDD(new Date()));
   const [endTime, setEndTime] = useState("01:00");
-  const [feedback, setFeedback] = useState("10");
+  const [intensityFB, setFeedback] = useState(10);
+  const [createRun] = useCreateRunMutation();
+
+  const save = useCallback(async () => {
+    console.log(
+      toYYYYMMDD(new Date(startDate)),
+      startTime,
+      toYYYYMMDD(new Date(endDate)),
+      endTime,
+      intensityFB,
+    );
+
+    try {
+      const result = createRun({
+        variables: {
+          startDate: toYYYYMMDD(new Date(startDate)),
+          endDate: toYYYYMMDD(new Date(endDate)),
+          startTime,
+          endTime,
+          intensityFB,
+        },
+        optimisticResponse: {
+          __typename: "Mutation",
+          createRun: {
+            __typename: "Run",
+            userId: "",
+            date: toYYYYMMDD(new Date(startDate)),
+            duration: 0,
+            heartRate: [],
+            vo2max: 0,
+            intensityFeedback: intensityFB,
+          },
+        },
+        update: (cache, { data: result }) => {
+          const data = cache.readQuery<CurrentUserQuery>({
+            query: CurrentUserDocument,
+          });
+          if (data) {
+            cache.writeQuery({
+              query: CurrentUserDocument,
+              data: {
+                ...data,
+                currentUser: {
+                  ...data.currentUser,
+                  runs: [...data.currentUser.runs, result?.createRun],
+                },
+              },
+            });
+          }
+        },
+      });
+      await result;
+      back();
+    } catch (err) {
+      console.error(err);
+    }
+    back();
+  }, [startDate, startTime, endDate, endTime, intensityFB, createRun, back]);
+
   return (
     <Layout.Page animation={Layout.PageUpAnimation}>
       <Layout.Header>
@@ -103,16 +166,19 @@ export const RecordPage: React.FC = () => {
               </label>
               <TextInput
                 id="feedback"
-                value={feedback}
+                value={intensityFB.toString()}
                 type="range"
                 min="6"
                 max="20"
-                onChange={(e) => setFeedback(e.target.value)}
+                onChange={(e) => setFeedback(parseInt(e.target.value))}
               ></TextInput>
             </div>
-            <label className=" text-center ">{feedback}</label>
+            <label className=" text-center ">{intensityFB}</label>
           </div>
-          <button className="my-2 rounded-md bg-indigo-600 p-2 text-gray-50 ">
+          <button
+            className="my-2 rounded-md bg-indigo-600 p-2 text-gray-50"
+            onClick={save}
+          >
             Save
           </button>
         </section>
