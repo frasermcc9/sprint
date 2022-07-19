@@ -91,14 +91,20 @@ export default function Index() {
           </div>
           <span className="mb-2 text-sm font-thin">In the last 90 days</span>
 
-          {[...runs].reverse().map((run) => (
-            <RunCard
-              key={uuidv4()}
-              duration={run.duration ?? 0}
-              rundate={run.date ?? "no date"}
-              feedback={run.intensityFeedback ?? 0}
-            />
-          ))}
+          {runs.length > 0 ? (
+            [...runs]
+              .reverse()
+              .map((run) => (
+                <RunCard
+                  key={uuidv4()}
+                  duration={run.duration ?? 0}
+                  rundate={run.date ?? "no date"}
+                  feedback={run.intensityFeedback ?? 0}
+                />
+              ))
+          ) : (
+            <div className="text-base font-thin">No runs yet </div>
+          )}
         </div>
       </Layout.Margin>
     </Layout.Page>

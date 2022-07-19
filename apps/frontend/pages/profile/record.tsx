@@ -7,6 +7,7 @@ import {
   CurrentUserQuery,
   useCreateRunMutation,
 } from "@sprint/gql";
+import { toast } from "react-toastify";
 
 export const RecordPage: React.FC = () => {
   const { back, push } = useRouter();
@@ -66,6 +67,12 @@ export const RecordPage: React.FC = () => {
           }
         },
       });
+      toast.promise(result, {
+        error: "Failed to record run.",
+        pending: "Recording run...",
+        success: "Successfully recorded your run!",
+      });
+
       await result;
     } catch (err) {
       console.error(err);
@@ -89,7 +96,10 @@ export const RecordPage: React.FC = () => {
       </Layout.Header>
       <Layout.Margin>
         <section className="font-palanquin flex h-full flex-grow flex-col">
-          <h1 className="mb-4 text-2xl font-semibold text-gray-800">New Run</h1>
+          <h1 className="mb-4 text-lg font-semibold text-gray-800">
+            Please make sure your watch is synced with the FitBit app before
+            doing this.
+          </h1>
           <div className="flex flex-col items-center justify-center gap-y-2">
             <div className="w-full">
               <label
