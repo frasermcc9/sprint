@@ -10,6 +10,7 @@ import {
 import { useCurrentUserQuery, useGetAvailableEmblemsQuery } from "@sprint/gql";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Index() {
   const { data, loading, error } = useCurrentUserQuery();
@@ -77,17 +78,33 @@ export default function Index() {
 
         <hr className="mt-2"></hr>
         <div className="font-palanquin mt-2 flex flex-col text-gray-600">
-          <p className="text-2xl font-semibold text-gray-800">Your Runs</p>
+          <div>
+            <span className="mr-5 text-2xl font-semibold text-gray-800">
+              Your Runs
+            </span>
+            <button
+              className=" rounded-md bg-indigo-600 py-1 px-3 text-gray-50 "
+              onClick={() => push("/profile/record")}
+            >
+              +
+            </button>
+          </div>
           <span className="mb-2 text-sm font-thin">In the last 90 days</span>
 
-          {[...runs].reverse().map((run) => (
-            <RunCard
-              key={run.userId}
-              duration={run.duration ?? 0}
-              rundate={run.date ?? "no date"}
-              feedback={run.intensityFeedback ?? 0}
-            />
-          ))}
+          {runs.length > 0 ? (
+            [...runs]
+              .reverse()
+              .map((run) => (
+                <RunCard
+                  key={uuidv4()}
+                  duration={run.duration ?? 0}
+                  rundate={run.date ?? "no date"}
+                  feedback={run.intensityFeedback ?? 0}
+                />
+              ))
+          ) : (
+            <div className="text-base font-thin">No runs yet </div>
+          )}
         </div>
       </Layout.Margin>
     </Layout.Page>

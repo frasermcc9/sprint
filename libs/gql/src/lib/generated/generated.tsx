@@ -44,12 +44,22 @@ export enum ExperienceLevel {
   Intermediate = 'INTERMEDIATE'
 }
 
+export type Feedback = {
+  __typename?: 'Feedback';
+  feedbackSummary?: Maybe<Scalars['String']>;
+  intensityFeedback?: Maybe<Scalars['String']>;
+  lastRunFeedback?: Maybe<Scalars['String']>;
+  performanceFeedback?: Maybe<Scalars['String']>;
+  volumeFeedback?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   acceptFriendRequest: PublicUser;
   addSleepVariable?: Maybe<VariableEditResponse>;
   completeOnboarding?: Maybe<User>;
   createEvent?: Maybe<AnalyticsEvent>;
+  createRun?: Maybe<Run>;
   createSleepVariable: SleepVariable;
   login?: Maybe<Auth>;
   markFeatureSeen: Array<Maybe<Scalars['String']>>;
@@ -92,6 +102,15 @@ export type MutationCompleteOnboardingArgs = {
 export type MutationCreateEventArgs = {
   event: Scalars['String'];
   payload?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationCreateRunArgs = {
+  endDate: Scalars['String'];
+  endTime: Scalars['String'];
+  intensity: Scalars['Int'];
+  startDate: Scalars['String'];
+  startTime: Scalars['String'];
 };
 
 
@@ -182,6 +201,7 @@ export type Query = {
   __typename?: 'Query';
   analyzeSleep?: Maybe<SleepAnalysis>;
   currentUser?: Maybe<User>;
+  generateRunFeedback?: Maybe<Feedback>;
   getAuthLink: Scalars['String'];
   prepRun?: Maybe<RunParams>;
   testAuth?: Maybe<Scalars['String']>;
@@ -190,11 +210,9 @@ export type Query = {
 export type Run = {
   __typename?: 'Run';
   date?: Maybe<Scalars['String']>;
-  distance?: Maybe<Scalars['Int']>;
   duration?: Maybe<Scalars['Int']>;
   heartRate?: Maybe<Array<Maybe<Scalars['Int']>>>;
   intensityFeedback?: Maybe<Scalars['Int']>;
-  speed?: Maybe<Array<Maybe<Scalars['Int']>>>;
   userId?: Maybe<Scalars['String']>;
   vo2max?: Maybe<Scalars['Int']>;
 };
@@ -307,6 +325,17 @@ export type TestAuthQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type TestAuthQuery = { __typename?: 'Query', testAuth?: string | null };
+
+export type CreateRunMutationVariables = Exact<{
+  startDate: Scalars['String'];
+  endDate: Scalars['String'];
+  startTime: Scalars['String'];
+  endTime: Scalars['String'];
+  intensityFB: Scalars['Int'];
+}>;
+
+
+export type CreateRunMutation = { __typename?: 'Mutation', createRun?: { __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null } | null };
 
 export type AnalyticsObservationMutationVariables = Exact<{
   event: Scalars['String'];
@@ -600,6 +629,54 @@ export function useTestAuthLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<T
 export type TestAuthQueryHookResult = ReturnType<typeof useTestAuthQuery>;
 export type TestAuthLazyQueryHookResult = ReturnType<typeof useTestAuthLazyQuery>;
 export type TestAuthQueryResult = Apollo.QueryResult<TestAuthQuery, TestAuthQueryVariables>;
+export const CreateRunDocument = gql`
+    mutation createRun($startDate: String!, $endDate: String!, $startTime: String!, $endTime: String!, $intensityFB: Int!) {
+  createRun(
+    startDate: $startDate
+    endDate: $endDate
+    startTime: $startTime
+    endTime: $endTime
+    intensity: $intensityFB
+  ) {
+    userId
+    date
+    duration
+    heartRate
+    vo2max
+    intensityFeedback
+  }
+}
+    `;
+export type CreateRunMutationFn = Apollo.MutationFunction<CreateRunMutation, CreateRunMutationVariables>;
+
+/**
+ * __useCreateRunMutation__
+ *
+ * To run a mutation, you first call `useCreateRunMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateRunMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createRunMutation, { data, loading, error }] = useCreateRunMutation({
+ *   variables: {
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      startTime: // value for 'startTime'
+ *      endTime: // value for 'endTime'
+ *      intensityFB: // value for 'intensityFB'
+ *   },
+ * });
+ */
+export function useCreateRunMutation(baseOptions?: Apollo.MutationHookOptions<CreateRunMutation, CreateRunMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateRunMutation, CreateRunMutationVariables>(CreateRunDocument, options);
+      }
+export type CreateRunMutationHookResult = ReturnType<typeof useCreateRunMutation>;
+export type CreateRunMutationResult = Apollo.MutationResult<CreateRunMutation>;
+export type CreateRunMutationOptions = Apollo.BaseMutationOptions<CreateRunMutation, CreateRunMutationVariables>;
 export const AnalyticsObservationDocument = gql`
     mutation AnalyticsObservation($event: String!, $payload: String) {
   createEvent(event: $event, payload: $payload) {

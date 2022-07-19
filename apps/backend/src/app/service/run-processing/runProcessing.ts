@@ -67,8 +67,7 @@ export const calculateNewParams = (
   return newParams;
 };
 
-const calculateVO2max = (run: Run, hrMax: number) => {
-  const hrAverage =
-    run.heartRate.reduce((a, b) => a + b) / run.heartRate.length;
+export const calculateVO2max = (hrActivity: number[], hrMax: number) => {
+  const hrAverage = hrActivity.reduce((a, b) => a + b) / hrActivity.length;
   return 15 * (hrAverage / hrMax);
 };

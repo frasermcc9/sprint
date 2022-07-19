@@ -63,6 +63,11 @@ export class UserResolver {
     return formatDuration(dbUser.currentRunParams, duration);
   }
 
+  @Query()
+  async generateRunFeedback(@User() user: FitbitUser) {
+    return this.userService.generateRunFeedback(user.id);
+  }
+
   @Mutation()
   async completeOnboarding(
     @User() user: FitbitUser,

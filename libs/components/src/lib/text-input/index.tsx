@@ -8,6 +8,8 @@ export interface TextInputProps {
   id?: string;
   type?: React.HTMLInputTypeAttribute;
   placeholder?: string;
+  min?: string;
+  max?: string;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -17,6 +19,8 @@ export const TextInput: React.FC<TextInputProps> = ({
   id,
   type = "text",
   placeholder = "",
+  min = 0,
+  max = 100,
 }) => {
   return (
     <input
@@ -25,10 +29,12 @@ export const TextInput: React.FC<TextInputProps> = ({
       onChange={onChange}
       value={value}
       className={classNames(
-        "w-full rounded border py-2 px-3 text-gray-700 focus:outline-none focus:ring-2",
+        "w-full rounded border  py-2 px-3 text-gray-700 focus:outline-none focus:ring-2",
         className,
       )}
       placeholder={placeholder}
+      min={min}
+      max={max}
     />
   );
 };
