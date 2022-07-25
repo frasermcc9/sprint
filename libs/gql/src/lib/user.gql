@@ -53,6 +53,13 @@ query GetFriends($limit: Int) {
   }
 }
 
+query GetXp {
+  currentUser {
+    id
+    xp
+  }
+}
+
 query GetAvailableEmblems {
   currentUser {
     id

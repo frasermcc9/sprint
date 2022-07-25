@@ -382,6 +382,11 @@ export type GetFriendsQueryVariables = Exact<{
 
 export type GetFriendsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, friends: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string } | null>, friendRequests: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string } | null> } | null };
 
+export type GetXpQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetXpQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, xp: number } | null };
+
 export type GetAvailableEmblemsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1052,6 +1057,41 @@ export function useGetFriendsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetFriendsQueryHookResult = ReturnType<typeof useGetFriendsQuery>;
 export type GetFriendsLazyQueryHookResult = ReturnType<typeof useGetFriendsLazyQuery>;
 export type GetFriendsQueryResult = Apollo.QueryResult<GetFriendsQuery, GetFriendsQueryVariables>;
+export const GetXpDocument = gql`
+    query GetXp {
+  currentUser {
+    id
+    xp
+  }
+}
+    `;
+
+/**
+ * __useGetXpQuery__
+ *
+ * To run a query within a React component, call `useGetXpQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetXpQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetXpQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetXpQuery(baseOptions?: Apollo.QueryHookOptions<GetXpQuery, GetXpQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetXpQuery, GetXpQueryVariables>(GetXpDocument, options);
+      }
+export function useGetXpLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetXpQuery, GetXpQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetXpQuery, GetXpQueryVariables>(GetXpDocument, options);
+        }
+export type GetXpQueryHookResult = ReturnType<typeof useGetXpQuery>;
+export type GetXpLazyQueryHookResult = ReturnType<typeof useGetXpLazyQuery>;
+export type GetXpQueryResult = Apollo.QueryResult<GetXpQuery, GetXpQueryVariables>;
 export const GetAvailableEmblemsDocument = gql`
     query GetAvailableEmblems {
   currentUser {

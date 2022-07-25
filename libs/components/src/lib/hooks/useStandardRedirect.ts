@@ -3,6 +3,7 @@ import { AccountStage, useCurrentUserLazyQuery } from "@sprint/gql";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useExternalLog as externalLog } from "./useLog";
 
 const AUTH_REDIRECT = "/auth";
 const EXPERIENCE_REDIRECT = "/onboard";
@@ -16,6 +17,7 @@ export const useStandardRedirect = () => {
   useEffect(() => {
     const pushIfDifferent = (route: string) => {
       if (router.pathname !== route) {
+        externalLog("Different route! Redirecting to", route);
         router.push(route);
       }
     };
@@ -49,6 +51,7 @@ export const useStandardRedirect = () => {
       }
 
       if (!data?.currentUser) {
+        externalLog("Redirect", "No current user found, redirecting to login");
         pushIfDifferent(AUTH_REDIRECT);
         return;
       }
@@ -57,11 +60,13 @@ export const useStandardRedirect = () => {
       const { stage } = data.currentUser;
 
       if (stage === AccountStage.Initial) {
+        externalLog("Redirect", "Redirecting to onboarding page");
         pushIfDifferent(EXPERIENCE_REDIRECT);
         return;
       }
 
       if (stage === AccountStage.ExperienceLevelSelected) {
+        externalLog("Redirect", "Redirecting to home page");
         pushIfDifferent(INITIAL_RUN_REDIRECT);
         return;
       }

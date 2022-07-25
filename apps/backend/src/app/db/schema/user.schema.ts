@@ -24,7 +24,7 @@ export class User {
   @Prop({ required: true })
   id: string;
 
-  @Prop({ required: false, type: String })
+  @Prop({ required: false, type: String, default: "BEGINNER" })
   experience?: ExperienceLevel;
 
   @Prop({ required: true, type: String })

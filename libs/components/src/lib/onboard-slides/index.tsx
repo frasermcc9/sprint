@@ -85,7 +85,7 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
   );
 
   return (
-    <div className="mx-auto mb-8 flex h-full max-w-md flex-grow">
+    <div className="mx-auto mb-8 flex h-full w-full max-w-md flex-grow">
       <Swiper
         spaceBetween={100}
         slidesPerView={1}
@@ -241,6 +241,7 @@ export const OnboardingSlides: React.FC<OnboardingSlidesProps> = ({
                           lastName,
                           id: userId ?? "",
                           stage: AccountStage.ExperienceLevelSelected,
+                          experience,
                         },
                       },
                       update: (cache, { data }) => {
