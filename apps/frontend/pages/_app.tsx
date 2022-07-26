@@ -129,6 +129,10 @@ const authLink = setContext(async (_, { headers }) => {
       },
     });
 
+    if (!data || !data.refresh) {
+      useExternalLog("ApolloAuthentication", "Refresh token failed, was null.");
+    }
+
     // refresh expires_in is in seconds
     const expiryTime =
       Date.now() + (data?.refresh?.expires_in ?? 0) * 1000 - 1000;

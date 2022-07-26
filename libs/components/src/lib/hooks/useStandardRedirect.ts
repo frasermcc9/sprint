@@ -65,7 +65,10 @@ export const useStandardRedirect = () => {
         return;
       }
 
-      if (stage === AccountStage.ExperienceLevelSelected) {
+      if (
+        stage === AccountStage.ExperienceLevelSelected &&
+        (router.pathname === EXPERIENCE_REDIRECT || router.pathname === "/")
+      ) {
         externalLog("Redirect", "Redirecting to home page");
         pushIfDifferent(INITIAL_RUN_REDIRECT);
         return;
