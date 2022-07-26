@@ -14,6 +14,9 @@ export interface EventMap {
     xpAdded: number;
     userId: string;
   };
+  "action.run.added": {
+    userId: string;
+  };
 }
 
 export interface BaseEvent {
