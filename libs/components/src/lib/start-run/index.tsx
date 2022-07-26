@@ -74,9 +74,9 @@ export const useStartRunController = () => {
 
   const runDuration = data?.currentUser?.defaultRunDuration ?? 0;
 
-  const startRun = useCallback(() => {
+  const startRun = () => {
     push("/run/prepare?duration=" + runDuration);
-  }, [push]);
+  };
 
   const setRunDurationWrapper = useCallback(
     async (updater: (previous: number) => number) => {
