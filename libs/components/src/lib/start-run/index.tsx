@@ -61,7 +61,7 @@ export const StartRun: React.FC<StartRunProps> = ({ useController }) => {
         title="Confirmation"
         closeModal={() => setIsOpen(false)}
         isOpen={isOpen}
-        text={`Are you sure you want to start a ${runDuration} minute session?`}
+        text={`Are you sure you want to start a ${runDuration} minute session? Rember to warm up and warm down!`}
       />
     </>
   );
@@ -74,9 +74,9 @@ export const useStartRunController = () => {
 
   const runDuration = data?.currentUser?.defaultRunDuration ?? 0;
 
-  const startRun = useCallback(() => {
+  const startRun = () => {
     push("/run/prepare?duration=" + runDuration);
-  }, [push]);
+  };
 
   const setRunDurationWrapper = useCallback(
     async (updater: (previous: number) => number) => {

@@ -207,6 +207,11 @@ export type Query = {
   testAuth?: Maybe<Scalars['String']>;
 };
 
+
+export type QueryPrepRunArgs = {
+  duration: Scalars['Int'];
+};
+
 export type Run = {
   __typename?: 'Run';
   date?: Maybe<Scalars['String']>;
@@ -415,6 +420,13 @@ export type GetAvailableEmblemsQueryVariables = Exact<{ [key: string]: never; }>
 
 
 export type GetAvailableEmblemsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, availableEmblems: Array<string> } | null };
+
+export type PrepareRunQueryVariables = Exact<{
+  duration: Scalars['Int'];
+}>;
+
+
+export type PrepareRunQuery = { __typename?: 'Query', prepRun?: { __typename?: 'RunParams', highIntensity?: number | null, lowIntensity?: number | null, repetitions?: number | null, sets?: number | null, restPeriod?: number | null } | null };
 
 export type UpdateDefaultRunDurationMutationVariables = Exact<{
   duration: Scalars['Int'];
@@ -1164,6 +1176,45 @@ export function useGetAvailableEmblemsLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type GetAvailableEmblemsQueryHookResult = ReturnType<typeof useGetAvailableEmblemsQuery>;
 export type GetAvailableEmblemsLazyQueryHookResult = ReturnType<typeof useGetAvailableEmblemsLazyQuery>;
 export type GetAvailableEmblemsQueryResult = Apollo.QueryResult<GetAvailableEmblemsQuery, GetAvailableEmblemsQueryVariables>;
+export const PrepareRunDocument = gql`
+    query PrepareRun($duration: Int!) {
+  prepRun(duration: $duration) {
+    highIntensity
+    lowIntensity
+    repetitions
+    sets
+    restPeriod
+  }
+}
+    `;
+
+/**
+ * __usePrepareRunQuery__
+ *
+ * To run a query within a React component, call `usePrepareRunQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePrepareRunQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePrepareRunQuery({
+ *   variables: {
+ *      duration: // value for 'duration'
+ *   },
+ * });
+ */
+export function usePrepareRunQuery(baseOptions: Apollo.QueryHookOptions<PrepareRunQuery, PrepareRunQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PrepareRunQuery, PrepareRunQueryVariables>(PrepareRunDocument, options);
+      }
+export function usePrepareRunLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PrepareRunQuery, PrepareRunQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PrepareRunQuery, PrepareRunQueryVariables>(PrepareRunDocument, options);
+        }
+export type PrepareRunQueryHookResult = ReturnType<typeof usePrepareRunQuery>;
+export type PrepareRunLazyQueryHookResult = ReturnType<typeof usePrepareRunLazyQuery>;
+export type PrepareRunQueryResult = Apollo.QueryResult<PrepareRunQuery, PrepareRunQueryVariables>;
 export const UpdateDefaultRunDurationDocument = gql`
     mutation UpdateDefaultRunDuration($duration: Int!) {
   updateDefaultRunDuration(duration: $duration)

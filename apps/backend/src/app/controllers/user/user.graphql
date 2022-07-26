@@ -22,7 +22,7 @@ type Mutation {
 
 type Query {
   currentUser: User
-  prepRun: RunParams
+  prepRun(duration: Int!): RunParams
   generateRunFeedback: Feedback
 }
 

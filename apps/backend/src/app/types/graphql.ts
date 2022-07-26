@@ -33,7 +33,7 @@ export interface IQuery {
     testAuth(): Nullable<string> | Promise<Nullable<string>>;
     analyzeSleep(): Nullable<SleepAnalysis> | Promise<Nullable<SleepAnalysis>>;
     currentUser(): Nullable<User> | Promise<Nullable<User>>;
-    prepRun(): Nullable<RunParams> | Promise<Nullable<RunParams>>;
+    prepRun(duration: number): Nullable<RunParams> | Promise<Nullable<RunParams>>;
     generateRunFeedback(): Nullable<Feedback> | Promise<Nullable<Feedback>>;
 }
 
