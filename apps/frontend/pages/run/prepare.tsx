@@ -7,14 +7,31 @@ import {
 import classNames from "classnames";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { usePrepareRunQuery } from "@sprint/gql";
+import { toast } from "react-toastify";
 
 export const Prepare: React.FC = () => {
   const { back } = useRouter();
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const runDuration = parseInt(urlParams.get("duration") ?? "13", 10);
+
+  const { data, loading, error } = usePrepareRunQuery({
+    variables: {
+      duration: runDuration,
+    },
+  });
+  if (error) {
+    console.log(error.message);
+  }
 
   const sections = [
-    "Your run will be 15 minutes",
-    "Each high intensity section will be 3 minutes",
-    "Each low intensity section will be 5 minutes",
+    `Your run will be ~ ${runDuration} minutes`,
+    `Each high intensity section will be ${data?.prepRun?.highIntensity} seconds`,
+    `Each low intensity section will be ${data?.prepRun?.lowIntensity} seconds`,
+    `Number of reps will be ${data?.prepRun?.repetitions}`,
+    `Each rest period will be ${data?.prepRun?.restPeriod} seconds`,
+    `Number of sets will be ${data?.prepRun?.sets}`,
   ];
 
   const duration = 6;

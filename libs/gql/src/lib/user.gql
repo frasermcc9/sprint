@@ -60,6 +60,16 @@ query GetAvailableEmblems {
   }
 }
 
+query PrepareRun($duration: Int!) {
+  prepRun(duration: $duration) {
+    highIntensity
+    lowIntensity
+    repetitions
+    sets
+    restPeriod
+  }
+}
+
 mutation UpdateDefaultRunDuration($duration: Int!) {
   updateDefaultRunDuration(duration: $duration)
 }
