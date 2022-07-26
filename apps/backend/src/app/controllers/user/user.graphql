@@ -53,6 +53,16 @@ type User {
   todaysSleep(sourceUrl: String): [Sleep]!
   sleepVariables: [SleepVariable]
   trackedVariables: [String!]!
+  # Goals
+  dailyGoals: [DailyGoal!]!
+}
+
+type DailyGoal {
+  name: String!
+  description: String!
+  completed: Int!
+  quantity: Int!
+  reward: Int!
 }
 
 type RunParams {

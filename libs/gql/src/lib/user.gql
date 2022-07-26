@@ -140,3 +140,16 @@ mutation CreateSleepVariable($name: String!, $emoji: String!) {
     custom
   }
 }
+
+query GetDailyGoals {
+  currentUser {
+    id
+    dailyGoals {
+      name
+      description
+      completed
+      quantity
+      reward
+    }
+  }
+}

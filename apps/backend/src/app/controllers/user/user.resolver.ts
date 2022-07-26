@@ -12,6 +12,7 @@ import { User as UserModel } from "../../db/schema/user.schema";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
 import { DBUser, User } from "../../middleware/user.decorator";
+import { GoalsService } from "../../service/goals/goals.service";
 import { formatDuration } from "../../service/run-processing/run-duration";
 import { calculateNewParams } from "../../service/run-processing/runProcessing";
 import {
@@ -28,7 +29,10 @@ import { UserService } from "./user.service";
 @Resolver("PublicUser")
 @UseGuards(FitbitGuard)
 export class UserResolver {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly goalsService: GoalsService,
+  ) {}
 
   @Query()
   async currentUser(@User() user: FitbitUser): Promise<Partial<GQLUser>> {
@@ -317,5 +321,11 @@ export class UserResolver {
   async trackedVariables(@User() user: FitbitUser) {
     const dbUser = await this.userService.getUser(user.id);
     return dbUser?.trackedVariables ?? [];
+  }
+
+  @ResolveField()
+  async dailyGoals(@User() user: FitbitUser, @DBUser() dbUser: UserModel) {
+    const goals = this.goalsService.getDailyGoals();
+    return goals.map((g) => ({ ...g, completed: 0 }));
   }
 }
