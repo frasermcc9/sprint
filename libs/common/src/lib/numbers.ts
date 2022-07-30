@@ -19,7 +19,10 @@ const rndToRange = <T>(rndNum: number, arr: T[]) => {
   return arr[Math.floor(rndNum * arr.length)];
 };
 
-const uniqueRandomRange = <T>(randomNums: number[], arr: T[]) => {
+const uniqueRandomRange = <T>(
+  randomNums: number[],
+  arr: T[] | readonly T[],
+) => {
   ASSERT(() => randomNums.length <= arr.length);
 
   const arrCopy = [...arr];

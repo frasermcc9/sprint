@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Cron } from "@nestjs/schedule";
-import { ASSERT, Numbers } from "@sprint/common";
+import { LesserOrEqual, Numbers, STATIC_ASSERT_TRUE } from "@sprint/common";
 import { InjectEventEmitter } from "nest-typed-event-emitter";
 import { UserCollection } from "../../db/schema/user.schema";
 import { EventMap, TypedEventEmitter } from "../../events";
@@ -17,7 +17,7 @@ interface Goal<T extends keyof EventMap> {
   emoji: string;
 }
 
-const GOALS: Goal<keyof EventMap>[] = [
+const GOALS = [
   {
     name: "SleepTracker",
     description: "Fill in todays sleep information.",
@@ -34,16 +34,19 @@ const GOALS: Goal<keyof EventMap>[] = [
     event: "action.run.added",
     emoji: "👟",
   },
-];
+] as const;
+
+const DAILY_GOAL_COUNT = 2;
+
+type _ = STATIC_ASSERT_TRUE<
+  "DAILY_GOAL_COUNT cannot exceed GOALS.length",
+  LesserOrEqual<typeof DAILY_GOAL_COUNT, typeof GOALS.length>
+>;
 
 const GOAL_MEMO = GOALS.reduce((acc, goal) => {
   acc[goal.name] = goal;
   return acc;
 }, {} as Record<keyof GoalsCallbackService, Goal<keyof EventMap>>);
-
-const DAILY_GOAL_COUNT = 2;
-
-ASSERT(() => GOALS.length >= DAILY_GOAL_COUNT);
 
 @Injectable()
 export class GoalsCallbackService {
