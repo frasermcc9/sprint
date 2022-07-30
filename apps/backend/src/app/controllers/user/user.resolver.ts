@@ -326,6 +326,9 @@ export class UserResolver {
   @ResolveField()
   async dailyGoals(@User() user: FitbitUser, @DBUser() dbUser: UserDocument) {
     const goals = this.goalsService.getDailyGoals();
-    return goals.map((g) => ({ ...g, completed: 0 }));
+    return goals.map(async (g) => ({
+      ...g,
+      completed: await dbUser.getGoal({ name: g.name }),
+    }));
   }
 }

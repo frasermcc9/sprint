@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { EmblemImageUnion, Feature } from "@sprint/common";
+import { Dates, EmblemImageUnion, Feature, Numbers } from "@sprint/common";
 import { Document, Model } from "mongoose";
 import { AccountStage, ExperienceLevel, Run } from "../../types/graphql";
 
@@ -131,6 +131,12 @@ export class User {
 
   @Prop({ type: Number, default: 0 })
   sleepTrackStreak!: number;
+
+  @Prop({ type: Map, of: Object, default: {} })
+  /**
+   * Date -> { [goal]: value }
+   */
+  goals?: Map<string, { [k: string]: number }>;
 }
 
 interface Methods {
@@ -164,6 +170,12 @@ interface Methods {
     this: UserDocument,
     { emblem }: { emblem: EmblemImageUnion },
   ): Promise<void>;
+  /** Returns true if the goal became completed */
+  updateGoal(
+    this: UserDocument,
+    { name, increment, max }: { name: string; increment: number; max?: number },
+  ): Promise<boolean>;
+  getGoal(this: UserDocument, { name }: { name: string }): Promise<number>;
 }
 
 interface Statics {
@@ -263,6 +275,56 @@ const methods: Methods = {
     this.unlockedEmblems.push(emblem);
     this.markModified("unlockedEmblems");
     await this.save();
+  },
+  async updateGoal(this: UserDocument, { name, increment, max = Infinity }) {
+    const today = Dates.toYYYYMMDD(new Date());
+
+    if (!this.goals?.has(today)) {
+      this.goals?.set(today, {});
+      this.markModified("goals");
+    }
+
+    const goal = this.goals?.get(today);
+
+    if (!goal) throw new Error(`Goal ${name} not found for ID ${this.id}`);
+
+    if (!goal?.[name]) {
+      goal[name] = 0;
+      this.markModified("goals");
+    }
+
+    const willComplete = goal[name] < max && goal[name] + increment >= max;
+
+    const newValue = Numbers.clamp(goal[name] + increment, 0, max);
+
+    goal[name] = newValue;
+    await this.save();
+
+    return willComplete;
+  },
+  async getGoal(this: UserDocument, { name }): Promise<number> {
+    const today = Dates.toYYYYMMDD(new Date());
+    let modified = false;
+
+    if (!this.goals?.has(today)) {
+      this.goals?.set(today, {});
+      this.markModified("goals");
+      modified = true;
+    }
+
+    const goal = this.goals?.get(today);
+
+    if (!goal) throw new Error(`Goal ${name} not found for ID ${this.id}`);
+
+    if (typeof goal[name] === "undefined") {
+      console.log("missing goal name");
+      goal[name] = 0;
+      this.markModified("goals");
+      modified = true;
+    }
+
+    if (modified) await this.save();
+    return goal[name];
   },
 };
 

@@ -25,13 +25,16 @@ export default function Index() {
           Daily Goals
         </div>
         {data ? (
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-y-2">
             {data.currentUser?.dailyGoals.map((goal, index) => {
               const percent = goal.completed / goal.quantity;
               const unfilled = 1 - percent;
 
-              const widthPercent = percent * 100;
-              const unfilledPercent = unfilled * 100;
+              const [widthPercent, unfilledPercent, completed] = [
+                percent * 100,
+                unfilled * 100,
+                goal.completed >= goal.quantity,
+              ];
 
               return (
                 <div
@@ -39,9 +42,16 @@ export default function Index() {
                   className="font-palanquin w-full rounded-2xl border border-gray-500 p-4"
                 >
                   <div className="flex items-center gap-x-8">
-                    <div>{createEmoji("😴", "64px")}</div>
+                    <div>
+                      {createEmoji(completed ? "✅" : goal.emoji, "64px")}
+                    </div>
                     <div className="flex w-full flex-col gap-y-1">
-                      <h1 className="text-xl font-medium">
+                      <h1
+                        className={classNames("text-xl font-medium", {
+                          "underline underline-offset-[-0.4em]": completed,
+                        })}
+                        style={{ textDecorationSkipInk: "none" }}
+                      >
                         {goal.description}
                       </h1>
                       <div className="flex items-center gap-x-2">
