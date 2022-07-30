@@ -1,5 +1,5 @@
 import { xpDetails } from "@sprint/common";
-import { useCurrentUserQuery } from "@sprint/gql";
+import { useGetXpQuery } from "@sprint/gql";
 import { useRouter } from "next/router";
 import React, { useCallback, useState } from "react";
 import { LockClosedIcon } from "@heroicons/react/solid";
@@ -75,7 +75,9 @@ export const StartSleepAnalysis: React.FC<StartSleepAnalysisProps> = ({
 
 export const useStartSleepAnalysisController = () => {
   const { push } = useRouter();
-  const { data } = useCurrentUserQuery();
+  const { data } = useGetXpQuery({
+    fetchPolicy: "cache-and-network",
+  });
   const { level } = xpDetails(data?.currentUser?.xp);
 
   const canAccess = level >= 5;

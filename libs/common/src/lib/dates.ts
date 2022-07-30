@@ -60,7 +60,7 @@ const datesAreConsecutive = (a: string, b: string) =>
   Date.parse(b) - Date.parse(a) === 86400000;
 
 const dateIsBefore = (base: string, compare: string) =>
-  Date.parse(base) < Date.parse(compare);
+  Date.parse(base) > Date.parse(compare);
 
 export const Dates = {
   stripTime,

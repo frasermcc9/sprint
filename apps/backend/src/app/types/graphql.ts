@@ -133,6 +133,16 @@ export interface User {
     todaysSleep: Nullable<Sleep>[];
     sleepVariables?: Nullable<Nullable<SleepVariable>[]>;
     trackedVariables: string[];
+    dailyGoals: DailyGoal[];
+}
+
+export interface DailyGoal {
+    name: string;
+    description: string;
+    completed: number;
+    quantity: number;
+    reward: number;
+    emoji: string;
 }
 
 export interface RunParams {

@@ -17,6 +17,7 @@ import { User, UserSchema } from "./db/schema/user.schema";
 import { EventModule } from "./events/events.module";
 import { FitbitGuard } from "./middleware/fitbit.guard";
 import { FitbitStrategy } from "./middleware/fitbit.strategy";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { FitbitStrategy } from "./middleware/fitbit.strategy";
         path: join(process.cwd(), "apps/backend/src/app/types/graphql.ts"),
       },
     }),
+    ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
     EventModule,
     AuthModule,
