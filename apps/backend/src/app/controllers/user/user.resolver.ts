@@ -8,7 +8,7 @@ import {
   Resolver,
 } from "@nestjs/graphql";
 import { calculateMaxHr, Feature, isValidEmblem } from "@sprint/common";
-import { User as UserModel } from "../../db/schema/user.schema";
+import { UserDocument } from "../../db/schema/user.schema";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
 import { DBUser, User } from "../../middleware/user.decorator";
@@ -268,12 +268,12 @@ export class UserResolver {
   }
 
   @ResolveField()
-  async emblem(@DBUser() user: UserModel) {
+  async emblem(@DBUser() user: UserDocument) {
     return user.emblem;
   }
 
   @ResolveField()
-  async availableEmblems(@DBUser() user: UserModel) {
+  async availableEmblems(@DBUser() user: UserDocument) {
     return user.unlockedEmblems;
   }
 
@@ -324,7 +324,7 @@ export class UserResolver {
   }
 
   @ResolveField()
-  async dailyGoals(@User() user: FitbitUser, @DBUser() dbUser: UserModel) {
+  async dailyGoals(@User() user: FitbitUser, @DBUser() dbUser: UserDocument) {
     const goals = this.goalsService.getDailyGoals();
     return goals.map((g) => ({ ...g, completed: 0 }));
   }
