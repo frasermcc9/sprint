@@ -42,6 +42,7 @@ export type DailyGoal = {
   __typename?: 'DailyGoal';
   completed: Scalars['Int'];
   description: Scalars['String'];
+  emoji: Scalars['String'];
   name: Scalars['String'];
   quantity: Scalars['Int'];
   reward: Scalars['Int'];
@@ -481,7 +482,7 @@ export type CreateSleepVariableMutation = { __typename?: 'Mutation', createSleep
 export type GetDailyGoalsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDailyGoalsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, dailyGoals: Array<{ __typename?: 'DailyGoal', name: string, description: string, completed: number, quantity: number, reward: number }> } | null };
+export type GetDailyGoalsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, dailyGoals: Array<{ __typename?: 'DailyGoal', name: string, description: string, completed: number, quantity: number, reward: number, emoji: string }> } | null };
 
 
 export const LoginDocument = gql`
@@ -1497,6 +1498,7 @@ export const GetDailyGoalsDocument = gql`
       completed
       quantity
       reward
+      emoji
     }
   }
 }

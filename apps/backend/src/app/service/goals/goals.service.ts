@@ -26,10 +26,7 @@ const GOALS: Goal<keyof EventMap>[] = [
     reward: 50,
     quantity: 1,
     event: "action.sleep.added",
-    callback: async ({ user: { id } }: EventMap["action.sleep.added"]) => {
-      const dbUser = await UserCollectionReference?.findOne({ id });
-      console.log({ cb: dbUser?.firstName });
-    },
+    emoji: "😴",
   },
   {
     name: "Sprinter",
@@ -37,10 +34,7 @@ const GOALS: Goal<keyof EventMap>[] = [
     reward: 150,
     quantity: 1,
     event: "action.run.added",
-    callback: async ({ userId }: EventMap["action.run.added"]) => {
-      const dbUser = await UserCollectionReference?.findOne({ id: userId });
-      console.log({ cb: dbUser?.firstName });
-    },
+    emoji: "👟",
   },
 ];
 

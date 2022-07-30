@@ -142,6 +142,7 @@ export interface DailyGoal {
     completed: number;
     quantity: number;
     reward: number;
+    emoji: string;
 }
 
 export interface RunParams {

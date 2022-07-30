@@ -150,6 +150,7 @@ query GetDailyGoals {
       completed
       quantity
       reward
+      emoji
     }
   }
 }

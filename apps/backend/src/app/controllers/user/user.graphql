@@ -63,6 +63,7 @@ type DailyGoal {
   completed: Int!
   quantity: Int!
   reward: Int!
+  emoji: String!
 }
 
 type RunParams {
