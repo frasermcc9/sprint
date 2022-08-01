@@ -9,7 +9,6 @@ import classNames from "classnames";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { usePrepareRunQuery } from "@sprint/gql";
-import { toast } from "react-toastify";
 
 export const Prepare: React.FC = () => {
   const { back } = useRouter();
@@ -56,6 +55,10 @@ export const Prepare: React.FC = () => {
     setTimeout(() => setShowButton(true), 5500);
   }, []);
 
+  const startRun = () => {
+    console.log("start run");
+  };
+
   return (
     <Layout.Page
       animation={{
@@ -66,6 +69,7 @@ export const Prepare: React.FC = () => {
     >
       <Layout.Margin>
         <NativeModal
+          action={startRun}
           actionText="Let's Go!"
           title="Confirmation"
           closeModal={() => setIsOpen(false)}

@@ -61,7 +61,7 @@ export const StartRun: React.FC<StartRunProps> = ({ useController }) => {
         title="Confirmation"
         closeModal={() => setIsOpen(false)}
         isOpen={isOpen}
-        text={`Are you sure you want to start a ${runDuration} minute session? Rember to warm up and warm down!`}
+        text={`Are you sure you want to start a ${runDuration} minute session?`}
       />
     </>
   );
