@@ -18,6 +18,7 @@ type Mutation {
   updateRunParams(intensityFeedBack: Int!): User
   updateProfilePic(avatarUrl: String!): User
   createSleepVariable(emoji: String!, name: String!): SleepVariable!
+  updateInRun(inRun: InRun!): User
 }
 
 type Query {
@@ -54,6 +55,8 @@ type User {
   todaysSleep(sourceUrl: String): [Sleep]!
   sleepVariables: [SleepVariable]
   trackedVariables: [String!]!
+  # Run
+  inRun: InRun!
 }
 
 type RunParams {
@@ -91,4 +94,10 @@ enum AccountStage {
   INITIAL
   EXPERIENCE_LEVEL_SELECTED
   INITIAL_RUN
+}
+
+enum InRun {
+  YES
+  NO
+  FEEDBACK
 }

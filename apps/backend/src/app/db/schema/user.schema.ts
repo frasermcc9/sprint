@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { EmblemImageUnion, Feature } from "@sprint/common";
 import { Document, Model } from "mongoose";
-import { AccountStage, ExperienceLevel, Run } from "../../types/graphql";
+import { AccountStage, ExperienceLevel, Run, InRun } from "../../types/graphql";
 
 type Sleep = {
   date: string;
@@ -103,6 +103,9 @@ export class User {
 
   @Prop({ type: Number, default: 0 })
   sleepTrackStreak!: number;
+
+  @Prop({ required: true, type: String })
+  inRun: InRun;
 }
 
 interface Methods {

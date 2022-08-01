@@ -17,6 +17,7 @@ import { calculateNewParams } from "../../service/run-processing/runProcessing";
 import {
   AccountStage,
   ExperienceLevel,
+  InRun,
   PublicUser,
   Sleep,
   SleepVariable,
@@ -49,6 +50,7 @@ export class UserResolver {
       utcOffset: dbUser.utcOffset,
       xp: dbUser.xp,
       currentRunParams: dbUser.currentRunParams,
+      inRun: dbUser.inRun,
     };
   }
 
@@ -254,6 +256,15 @@ export class UserResolver {
     }
 
     return emblem;
+  }
+
+  @Mutation()
+  async updateInRun(@User() user: FitbitUser, @Args("inRun") inRun: InRun) {
+    const dbUser = await this.userService.getUser(user.id);
+    if (!dbUser) return null;
+
+    dbUser.inRun = inRun;
+    return await dbUser?.save();
   }
 
   @ResolveField()

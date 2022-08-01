@@ -53,6 +53,12 @@ export type Feedback = {
   volumeFeedback?: Maybe<Scalars['String']>;
 };
 
+export enum InRun {
+  Feedback = 'FEEDBACK',
+  No = 'NO',
+  Yes = 'YES'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   acceptFriendRequest: PublicUser;
@@ -72,6 +78,7 @@ export type Mutation = {
   updateDefaultRunDuration: Scalars['Int'];
   updateEmblem: Scalars['String'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
+  updateInRun?: Maybe<User>;
   updateProfile?: Maybe<User>;
   updateProfilePic?: Maybe<User>;
   updateRunParams?: Maybe<User>;
@@ -168,6 +175,11 @@ export type MutationUpdateDefaultRunDurationArgs = {
 
 export type MutationUpdateEmblemArgs = {
   emblem: Scalars['String'];
+};
+
+
+export type MutationUpdateInRunArgs = {
+  inRun: InRun;
 };
 
 
@@ -280,6 +292,7 @@ export type User = {
   friendRequests: Array<Maybe<PublicUser>>;
   friends: Array<Maybe<PublicUser>>;
   id: Scalars['String'];
+  inRun: InRun;
   lastName: Scalars['String'];
   maxHr: Scalars['Int'];
   runs: Array<Run>;
