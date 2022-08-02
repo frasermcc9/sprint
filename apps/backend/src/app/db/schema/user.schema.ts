@@ -106,6 +106,12 @@ export class User {
 
   @Prop({ required: true, type: String })
   inRun: InRun;
+
+  @Prop({ required: false, type: String })
+  nextRunStart?: string;
+
+  @Prop({ required: false, type: String })
+  nextRunEnd?: string;
 }
 
 interface Methods {

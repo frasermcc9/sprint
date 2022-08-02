@@ -123,7 +123,11 @@ export const Settings: React.FC = () => {
             Your Profile
           </h1>
           <div className="flex flex-col items-center justify-center gap-y-2">
-            <Avatar avatarUrl={avatarUrl} showEdit userId={data?.currentUser.id} />
+            <Avatar
+              avatarUrl={avatarUrl}
+              showEdit
+              userId={data?.currentUser.id}
+            />
             <div className="w-full">
               <label
                 className="ml-0.5 text-sm font-semibold underline"

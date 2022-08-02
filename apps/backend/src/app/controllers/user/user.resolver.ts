@@ -51,6 +51,8 @@ export class UserResolver {
       xp: dbUser.xp,
       currentRunParams: dbUser.currentRunParams,
       inRun: dbUser.inRun,
+      nextRunStart: dbUser.nextRunStart,
+      nextRunEnd: dbUser.nextRunEnd,
     };
   }
 
@@ -264,6 +266,20 @@ export class UserResolver {
     if (!dbUser) return null;
 
     dbUser.inRun = inRun;
+    return await dbUser?.save();
+  }
+
+  @Mutation()
+  async updateNextRunTimes(
+    @User() user: FitbitUser,
+    @Args("nextRunStart") nextRunStart: string,
+    @Args("nextRunEnd") nextRunEnd: string,
+  ) {
+    const dbUser = await this.userService.getUser(user.id);
+    if (!dbUser) return null;
+
+    dbUser.nextRunStart = nextRunStart;
+    dbUser.nextRunEnd = nextRunEnd;
     return await dbUser?.save();
   }
 

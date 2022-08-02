@@ -65,6 +65,7 @@ export interface IMutation {
     updateProfilePic(avatarUrl: string): Nullable<User> | Promise<Nullable<User>>;
     createSleepVariable(emoji: string, name: string): SleepVariable | Promise<SleepVariable>;
     updateInRun(inRun: InRun): Nullable<User> | Promise<Nullable<User>>;
+    updateNextRunTimes(nextRunStart: string, nextRunEnd: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export interface Run {
@@ -141,6 +142,8 @@ export interface User {
     sleepVariables?: Nullable<Nullable<SleepVariable>[]>;
     trackedVariables: string[];
     inRun: InRun;
+    nextRunStart: string;
+    nextRunEnd: string;
 }
 
 export interface RunParams {

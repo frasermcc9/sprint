@@ -8,13 +8,23 @@ import {
 import classNames from "classnames";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { usePrepareRunQuery } from "@sprint/gql";
+import {
+  CurrentUserDocument,
+  CurrentUserQuery,
+  InRun,
+  usePrepareRunQuery,
+  useUpdateInRunMutation,
+  useUpdateNextRunTimesMutation,
+} from "@sprint/gql";
+import { time } from "console";
 
 export const Prepare: React.FC = () => {
-  const { back } = useRouter();
+  const { back, push } = useRouter();
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const runDuration = parseInt(urlParams.get("duration") ?? "13", 10);
+  const [execInRunUpdate] = useUpdateInRunMutation();
+  const [execNextRunUpdate] = useUpdateNextRunTimesMutation();
 
   const { data, loading, error } = usePrepareRunQuery({
     variables: {
@@ -56,7 +66,81 @@ export const Prepare: React.FC = () => {
   }, []);
 
   const startRun = () => {
-    console.log("start run");
+    const timestamp = new Date();
+    const nextRunStart = timestamp.toString();
+    const nextRunEnd = new Date(
+      timestamp.getTime() + runDuration * 60 * 1000,
+    ).toString();
+    console.log(nextRunStart, nextRunEnd);
+    execNextRunUpdate({
+      variables: {
+        nextRunStart,
+        nextRunEnd,
+      },
+      optimisticResponse: {
+        updateNextRunTimes: {
+          nextRunStart,
+          nextRunEnd,
+        },
+      },
+      update: (cache, { data: updated }) => {
+        const old = cache.readQuery<CurrentUserQuery>({
+          query: CurrentUserDocument,
+        });
+
+        if (!updated || !old || !old.currentUser) {
+          return;
+        }
+
+        cache.writeQuery<CurrentUserQuery>({
+          query: CurrentUserDocument,
+          data: {
+            ...old,
+            currentUser: {
+              ...old.currentUser,
+              nextRunStart,
+              nextRunEnd,
+            },
+          },
+        });
+      },
+    });
+
+    const inRun = InRun.Yes;
+    execInRunUpdate({
+      variables: {
+        inRun,
+      },
+      optimisticResponse: {
+        __typename: "Mutation",
+        updateInRun: {
+          inRun,
+          __typename: "User",
+        },
+      },
+      update: (cache, { data: updated }) => {
+        const old = cache.readQuery<CurrentUserQuery>({
+          query: CurrentUserDocument,
+        });
+
+        if (!updated || !old || !old.currentUser) {
+          return;
+        }
+
+        cache.writeQuery<CurrentUserQuery>({
+          query: CurrentUserDocument,
+          data: {
+            ...old,
+            currentUser: {
+              ...old.currentUser,
+              inRun,
+            },
+          },
+        });
+      },
+    });
+
+    push("/run/active");
   };
 
   return (

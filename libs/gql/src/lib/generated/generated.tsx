@@ -79,6 +79,7 @@ export type Mutation = {
   updateEmblem: Scalars['String'];
   updateExperienceLevel?: Maybe<ExperienceLevel>;
   updateInRun?: Maybe<User>;
+  updateNextRunTimes?: Maybe<User>;
   updateProfile?: Maybe<User>;
   updateProfilePic?: Maybe<User>;
   updateRunParams?: Maybe<User>;
@@ -180,6 +181,12 @@ export type MutationUpdateEmblemArgs = {
 
 export type MutationUpdateInRunArgs = {
   inRun: InRun;
+};
+
+
+export type MutationUpdateNextRunTimesArgs = {
+  nextRunEnd: Scalars['String'];
+  nextRunStart: Scalars['String'];
 };
 
 
@@ -295,6 +302,8 @@ export type User = {
   inRun: InRun;
   lastName: Scalars['String'];
   maxHr: Scalars['Int'];
+  nextRunEnd: Scalars['String'];
+  nextRunStart: Scalars['String'];
   runs: Array<Run>;
   sleepVariables?: Maybe<Array<Maybe<SleepVariable>>>;
   stage: AccountStage;
@@ -415,7 +424,7 @@ export type AnalyzeSleepQuery = { __typename?: 'Query', analyzeSleep?: { __typen
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, emblem: string, runs: Array<{ __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null }> } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, emblem: string, inRun: InRun, nextRunStart: string, nextRunEnd: string, runs: Array<{ __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null }> } | null };
 
 export type FeaturesSeenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -516,6 +525,21 @@ export type CreateSleepVariableMutationVariables = Exact<{
 
 
 export type CreateSleepVariableMutation = { __typename?: 'Mutation', createSleepVariable: { __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } };
+
+export type UpdateInRunMutationVariables = Exact<{
+  inRun: InRun;
+}>;
+
+
+export type UpdateInRunMutation = { __typename?: 'Mutation', updateInRun?: { __typename?: 'User', inRun: InRun } | null };
+
+export type UpdateNextRunTimesMutationVariables = Exact<{
+  nextRunStart: Scalars['String'];
+  nextRunEnd: Scalars['String'];
+}>;
+
+
+export type UpdateNextRunTimesMutation = { __typename?: 'Mutation', updateNextRunTimes?: { __typename?: 'User', nextRunStart: string, nextRunEnd: string } | null };
 
 
 export const LoginDocument = gql`
@@ -1038,6 +1062,9 @@ export const CurrentUserDocument = gql`
     createdAtUTS
     xp
     emblem
+    inRun
+    nextRunStart
+    nextRunEnd
   }
 }
     `;
@@ -1573,3 +1600,71 @@ export function useCreateSleepVariableMutation(baseOptions?: Apollo.MutationHook
 export type CreateSleepVariableMutationHookResult = ReturnType<typeof useCreateSleepVariableMutation>;
 export type CreateSleepVariableMutationResult = Apollo.MutationResult<CreateSleepVariableMutation>;
 export type CreateSleepVariableMutationOptions = Apollo.BaseMutationOptions<CreateSleepVariableMutation, CreateSleepVariableMutationVariables>;
+export const UpdateInRunDocument = gql`
+    mutation updateInRun($inRun: InRun!) {
+  updateInRun(inRun: $inRun) {
+    inRun
+  }
+}
+    `;
+export type UpdateInRunMutationFn = Apollo.MutationFunction<UpdateInRunMutation, UpdateInRunMutationVariables>;
+
+/**
+ * __useUpdateInRunMutation__
+ *
+ * To run a mutation, you first call `useUpdateInRunMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateInRunMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateInRunMutation, { data, loading, error }] = useUpdateInRunMutation({
+ *   variables: {
+ *      inRun: // value for 'inRun'
+ *   },
+ * });
+ */
+export function useUpdateInRunMutation(baseOptions?: Apollo.MutationHookOptions<UpdateInRunMutation, UpdateInRunMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateInRunMutation, UpdateInRunMutationVariables>(UpdateInRunDocument, options);
+      }
+export type UpdateInRunMutationHookResult = ReturnType<typeof useUpdateInRunMutation>;
+export type UpdateInRunMutationResult = Apollo.MutationResult<UpdateInRunMutation>;
+export type UpdateInRunMutationOptions = Apollo.BaseMutationOptions<UpdateInRunMutation, UpdateInRunMutationVariables>;
+export const UpdateNextRunTimesDocument = gql`
+    mutation updateNextRunTimes($nextRunStart: String!, $nextRunEnd: String!) {
+  updateNextRunTimes(nextRunEnd: $nextRunEnd, nextRunStart: $nextRunStart) {
+    nextRunStart
+    nextRunEnd
+  }
+}
+    `;
+export type UpdateNextRunTimesMutationFn = Apollo.MutationFunction<UpdateNextRunTimesMutation, UpdateNextRunTimesMutationVariables>;
+
+/**
+ * __useUpdateNextRunTimesMutation__
+ *
+ * To run a mutation, you first call `useUpdateNextRunTimesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateNextRunTimesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateNextRunTimesMutation, { data, loading, error }] = useUpdateNextRunTimesMutation({
+ *   variables: {
+ *      nextRunStart: // value for 'nextRunStart'
+ *      nextRunEnd: // value for 'nextRunEnd'
+ *   },
+ * });
+ */
+export function useUpdateNextRunTimesMutation(baseOptions?: Apollo.MutationHookOptions<UpdateNextRunTimesMutation, UpdateNextRunTimesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateNextRunTimesMutation, UpdateNextRunTimesMutationVariables>(UpdateNextRunTimesDocument, options);
+      }
+export type UpdateNextRunTimesMutationHookResult = ReturnType<typeof useUpdateNextRunTimesMutation>;
+export type UpdateNextRunTimesMutationResult = Apollo.MutationResult<UpdateNextRunTimesMutation>;
+export type UpdateNextRunTimesMutationOptions = Apollo.BaseMutationOptions<UpdateNextRunTimesMutation, UpdateNextRunTimesMutationVariables>;

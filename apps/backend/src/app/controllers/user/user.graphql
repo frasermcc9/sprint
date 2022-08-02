@@ -19,6 +19,7 @@ type Mutation {
   updateProfilePic(avatarUrl: String!): User
   createSleepVariable(emoji: String!, name: String!): SleepVariable!
   updateInRun(inRun: InRun!): User
+  updateNextRunTimes(nextRunStart: String!, nextRunEnd: String!): User
 }
 
 type Query {
@@ -57,6 +58,8 @@ type User {
   trackedVariables: [String!]!
   # Run
   inRun: InRun!
+  nextRunStart: String!
+  nextRunEnd: String!
 }
 
 type RunParams {

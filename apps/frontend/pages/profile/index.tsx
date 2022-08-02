@@ -7,7 +7,11 @@ import {
   UserCard,
   RunCard,
 } from "@sprint/components";
-import { useCurrentUserQuery, useGetAvailableEmblemsQuery } from "@sprint/gql";
+import {
+  InRun,
+  useCurrentUserQuery,
+  useGetAvailableEmblemsQuery,
+} from "@sprint/gql";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
@@ -26,6 +30,10 @@ export default function Index() {
 
   if (loading || !data?.currentUser) {
     return <div>Loading...</div>;
+  }
+
+  if (data?.currentUser.inRun == InRun.Feedback) {
+    push("/run/feedback");
   }
 
   const {
@@ -97,7 +105,7 @@ export default function Index() {
               .map((run) => (
                 <RunCard
                   key={uuidv4()}
-                  duration={run.duration ?? 0}
+                  duration={run?.duration ?? 0}
                   rundate={run.date ?? "no date"}
                   feedback={run.intensityFeedback ?? 0}
                 />

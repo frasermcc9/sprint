@@ -21,6 +21,9 @@ query CurrentUser {
     createdAtUTS
     xp
     emblem
+    inRun
+    nextRunStart
+    nextRunEnd
   }
 }
 
@@ -141,5 +144,18 @@ mutation CreateSleepVariable($name: String!, $emoji: String!) {
     name
     emoji
     custom
+  }
+}
+
+mutation updateInRun($inRun: InRun!) {
+  updateInRun(inRun: $inRun) {
+    inRun
+  }
+}
+
+mutation updateNextRunTimes($nextRunStart: String!, $nextRunEnd: String!) {
+  updateNextRunTimes(nextRunEnd: $nextRunEnd, nextRunStart: $nextRunStart) {
+    nextRunStart
+    nextRunEnd
   }
 }
