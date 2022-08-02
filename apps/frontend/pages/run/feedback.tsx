@@ -1,5 +1,14 @@
+import { toYYYYMMDD } from "@sprint/common";
 import { Layout, NativeModal, TextInput } from "@sprint/components";
-import { InRun, useCurrentUserQuery } from "@sprint/gql";
+import {
+  InRun,
+  useCurrentUserQuery,
+  useCreateRunMutation,
+  CurrentUserQuery,
+  CurrentUserDocument,
+  useUpdateInRunMutation,
+} from "@sprint/gql";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -7,6 +16,9 @@ const Feedback: React.FC = () => {
   const { data, loading, error } = useCurrentUserQuery();
   const [intensityFB, setFeedback] = useState(10);
   const [isOpen, setIsOpen] = useState(false);
+  const [createRun] = useCreateRunMutation();
+  const [execInRunUpdate] = useUpdateInRunMutation();
+  const { back } = useRouter();
 
   if (loading || !data?.currentUser) {
     return <div>Loading...</div>;
@@ -17,13 +29,88 @@ const Feedback: React.FC = () => {
     return null;
   }
 
-  const saveRun = () => {
-    const inRun = InRun.No;
-  };
-
   const {
     currentUser: { nextRunEnd, nextRunStart },
   } = data;
+  const startTime = new Date(nextRunStart).toLocaleTimeString("en-US", {
+    hour12: false,
+  });
+  const endTime = new Date(nextRunEnd).toLocaleTimeString("en-US", {
+    hour12: false,
+  });
+
+  const saveRun = () => {
+    const inRun = InRun.No;
+
+    execInRunUpdate({
+      variables: {
+        inRun,
+      },
+      optimisticResponse: {
+        __typename: "Mutation",
+        updateInRun: {
+          inRun,
+          __typename: "User",
+        },
+      },
+      update: (cache, { data: updated }) => {
+        if (!updated?.updateInRun || !data?.currentUser) {
+          return;
+        }
+
+        cache.modify({
+          id: cache.identify(data.currentUser),
+          fields: {
+            inRun: () => updated.updateInRun?.inRun,
+          },
+        });
+      },
+    });
+
+    createRun({
+      variables: {
+        startDate: toYYYYMMDD(new Date(nextRunStart)),
+        endDate: toYYYYMMDD(new Date(nextRunEnd)),
+        startTime,
+        endTime,
+        intensityFB,
+      },
+      optimisticResponse: {
+        __typename: "Mutation",
+        createRun: {
+          __typename: "Run",
+          userId: "",
+          date: toYYYYMMDD(new Date(nextRunStart)),
+          duration: 0,
+          heartRate: [],
+          vo2max: 0,
+          intensityFeedback: intensityFB,
+        },
+      },
+      update: (cache, { data: result }) => {
+        const data = cache.readQuery<CurrentUserQuery>({
+          query: CurrentUserDocument,
+        });
+        if (data) {
+          cache.writeQuery({
+            query: CurrentUserDocument,
+            data: {
+              ...data,
+              currentUser: {
+                ...data.currentUser,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                runs: [...data.currentUser!.runs, result?.createRun],
+              },
+            },
+          });
+        }
+      },
+    });
+
+    setIsOpen(false);
+    back();
+  };
+
   return (
     <Layout.Page
       animation={{
