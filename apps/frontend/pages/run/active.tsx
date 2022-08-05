@@ -18,7 +18,7 @@ const active: React.FC = () => {
               <h1 className="text-3xl font-bold">Enjoy the Run!</h1>
             </div>
             <div>
-              <p>WIP</p>
+              <p>WIP - Timer/realtime updating</p>
             </div>
           </section>
 
