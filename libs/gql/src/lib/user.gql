@@ -164,19 +164,18 @@ mutation updateNextRunTimes($nextRunStart: String!, $nextRunEnd: String!) {
   updateNextRunTimes(nextRunEnd: $nextRunEnd, nextRunStart: $nextRunStart) {
     nextRunStart
     nextRunEnd
-    query
-    GetDailyGoals {
-      currentUser {
-        id
-        dailyGoals {
-          name
-          description
-          completed
-          quantity
-          reward
-          emoji
-        }
-      }
+  }
+}
+query GetDailyGoals {
+  currentUser {
+    id
+    dailyGoals {
+      name
+      description
+      completed
+      quantity
+      reward
+      emoji
     }
   }
 }

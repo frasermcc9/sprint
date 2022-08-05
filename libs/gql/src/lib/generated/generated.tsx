@@ -542,7 +542,6 @@ export type CreateSleepVariableMutationVariables = Exact<{
 
 export type CreateSleepVariableMutation = { __typename?: 'Mutation', createSleepVariable: { __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } };
 
-<<<<<<< HEAD
 export type UpdateInRunMutationVariables = Exact<{
   inRun: InRun;
 }>;
@@ -557,12 +556,11 @@ export type UpdateNextRunTimesMutationVariables = Exact<{
 
 
 export type UpdateNextRunTimesMutation = { __typename?: 'Mutation', updateNextRunTimes?: { __typename?: 'User', nextRunStart: string, nextRunEnd: string } | null };
-=======
+
 export type GetDailyGoalsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetDailyGoalsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, dailyGoals: Array<{ __typename?: 'DailyGoal', name: string, description: string, completed: number, quantity: number, reward: number, emoji: string }> } | null };
->>>>>>> main
 
 
 export const LoginDocument = gql`
