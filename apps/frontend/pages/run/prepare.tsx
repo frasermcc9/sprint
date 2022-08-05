@@ -22,7 +22,7 @@ export const Prepare: React.FC = () => {
   const { back, push } = useRouter();
   let runDuration = 13;
 
-  if (typeof window != undefined) {
+  if (typeof window != "undefined") {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     runDuration = parseInt(urlParams.get("duration") ?? "13", 10);
