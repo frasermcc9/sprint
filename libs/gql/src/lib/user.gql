@@ -56,6 +56,13 @@ query GetFriends($limit: Int) {
   }
 }
 
+query GetXp {
+  currentUser {
+    id
+    xp
+  }
+}
+
 query GetAvailableEmblems {
   currentUser {
     id
@@ -157,5 +164,19 @@ mutation updateNextRunTimes($nextRunStart: String!, $nextRunEnd: String!) {
   updateNextRunTimes(nextRunEnd: $nextRunEnd, nextRunStart: $nextRunStart) {
     nextRunStart
     nextRunEnd
+    query
+    GetDailyGoals {
+      currentUser {
+        id
+        dailyGoals {
+          name
+          description
+          completed
+          quantity
+          reward
+          emoji
+        }
+      }
+    }
   }
 }

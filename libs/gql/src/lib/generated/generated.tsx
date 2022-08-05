@@ -38,6 +38,16 @@ export type Auth = {
   user_id?: Maybe<Scalars['String']>;
 };
 
+export type DailyGoal = {
+  __typename?: 'DailyGoal';
+  completed: Scalars['Int'];
+  description: Scalars['String'];
+  emoji: Scalars['String'];
+  name: Scalars['String'];
+  quantity: Scalars['Int'];
+  reward: Scalars['Int'];
+};
+
 export enum ExperienceLevel {
   Advanced = 'ADVANCED',
   Beginner = 'BEGINNER',
@@ -290,6 +300,7 @@ export type User = {
   avatarUrl: Scalars['String'];
   createdAtUTS: Scalars['Float'];
   currentRunParams: RunParams;
+  dailyGoals: Array<DailyGoal>;
   defaultRunDuration: Scalars['Int'];
   dob: Scalars['String'];
   emblem: Scalars['String'];
@@ -438,6 +449,11 @@ export type GetFriendsQueryVariables = Exact<{
 
 export type GetFriendsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, friends: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string } | null>, friendRequests: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string } | null> } | null };
 
+export type GetXpQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetXpQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, xp: number } | null };
+
 export type GetAvailableEmblemsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -526,6 +542,7 @@ export type CreateSleepVariableMutationVariables = Exact<{
 
 export type CreateSleepVariableMutation = { __typename?: 'Mutation', createSleepVariable: { __typename?: 'SleepVariable', name: string, emoji?: string | null, custom: boolean } };
 
+<<<<<<< HEAD
 export type UpdateInRunMutationVariables = Exact<{
   inRun: InRun;
 }>;
@@ -540,6 +557,12 @@ export type UpdateNextRunTimesMutationVariables = Exact<{
 
 
 export type UpdateNextRunTimesMutation = { __typename?: 'Mutation', updateNextRunTimes?: { __typename?: 'User', nextRunStart: string, nextRunEnd: string } | null };
+=======
+export type GetDailyGoalsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetDailyGoalsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, dailyGoals: Array<{ __typename?: 'DailyGoal', name: string, description: string, completed: number, quantity: number, reward: number, emoji: string }> } | null };
+>>>>>>> main
 
 
 export const LoginDocument = gql`
@@ -1181,6 +1204,41 @@ export function useGetFriendsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetFriendsQueryHookResult = ReturnType<typeof useGetFriendsQuery>;
 export type GetFriendsLazyQueryHookResult = ReturnType<typeof useGetFriendsLazyQuery>;
 export type GetFriendsQueryResult = Apollo.QueryResult<GetFriendsQuery, GetFriendsQueryVariables>;
+export const GetXpDocument = gql`
+    query GetXp {
+  currentUser {
+    id
+    xp
+  }
+}
+    `;
+
+/**
+ * __useGetXpQuery__
+ *
+ * To run a query within a React component, call `useGetXpQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetXpQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetXpQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetXpQuery(baseOptions?: Apollo.QueryHookOptions<GetXpQuery, GetXpQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetXpQuery, GetXpQueryVariables>(GetXpDocument, options);
+      }
+export function useGetXpLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetXpQuery, GetXpQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetXpQuery, GetXpQueryVariables>(GetXpDocument, options);
+        }
+export type GetXpQueryHookResult = ReturnType<typeof useGetXpQuery>;
+export type GetXpLazyQueryHookResult = ReturnType<typeof useGetXpLazyQuery>;
+export type GetXpQueryResult = Apollo.QueryResult<GetXpQuery, GetXpQueryVariables>;
 export const GetAvailableEmblemsDocument = gql`
     query GetAvailableEmblems {
   currentUser {
@@ -1668,3 +1726,45 @@ export function useUpdateNextRunTimesMutation(baseOptions?: Apollo.MutationHookO
 export type UpdateNextRunTimesMutationHookResult = ReturnType<typeof useUpdateNextRunTimesMutation>;
 export type UpdateNextRunTimesMutationResult = Apollo.MutationResult<UpdateNextRunTimesMutation>;
 export type UpdateNextRunTimesMutationOptions = Apollo.BaseMutationOptions<UpdateNextRunTimesMutation, UpdateNextRunTimesMutationVariables>;
+export const GetDailyGoalsDocument = gql`
+    query GetDailyGoals {
+  currentUser {
+    id
+    dailyGoals {
+      name
+      description
+      completed
+      quantity
+      reward
+      emoji
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetDailyGoalsQuery__
+ *
+ * To run a query within a React component, call `useGetDailyGoalsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDailyGoalsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDailyGoalsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetDailyGoalsQuery(baseOptions?: Apollo.QueryHookOptions<GetDailyGoalsQuery, GetDailyGoalsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetDailyGoalsQuery, GetDailyGoalsQueryVariables>(GetDailyGoalsDocument, options);
+      }
+export function useGetDailyGoalsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDailyGoalsQuery, GetDailyGoalsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetDailyGoalsQuery, GetDailyGoalsQueryVariables>(GetDailyGoalsDocument, options);
+        }
+export type GetDailyGoalsQueryHookResult = ReturnType<typeof useGetDailyGoalsQuery>;
+export type GetDailyGoalsLazyQueryHookResult = ReturnType<typeof useGetDailyGoalsLazyQuery>;
+export type GetDailyGoalsQueryResult = Apollo.QueryResult<GetDailyGoalsQuery, GetDailyGoalsQueryVariables>;

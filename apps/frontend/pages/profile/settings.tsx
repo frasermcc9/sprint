@@ -84,9 +84,9 @@ export const Settings: React.FC = () => {
   const { cache } = useApolloClient();
 
   const logout = useCallback(async () => {
+    await push("/");
     localStorage.removeItem(LocalStorageKeys.AUTH_DETAILS);
     localStorage.removeItem(LocalStorageKeys.AUTH_EXPIRY);
-    push("/");
     await cache.reset();
   }, [cache, push]);
 
