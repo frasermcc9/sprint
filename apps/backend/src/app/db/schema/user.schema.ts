@@ -112,6 +112,10 @@ export class User {
 
   @Prop({ required: false, type: String })
   nextRunEnd?: string;
+
+  @Prop({ required: true, type: Number, default: 0 })
+  lastIntensityFeedback?: number;
+
   @Prop({ type: Map, of: Object, default: {} })
   /**
    * Date -> { [goal]: value }

@@ -127,7 +127,7 @@ export default function Index() {
             </span>
             <button
               className=" rounded-md bg-indigo-600 py-1 px-3 text-gray-50 "
-              onClick={() => push("/profile/record")}
+              onClick={() => console.log("Disabled Feature")}
             >
               +
             </button>

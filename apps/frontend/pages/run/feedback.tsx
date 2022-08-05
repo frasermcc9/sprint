@@ -7,6 +7,7 @@ import {
   CurrentUserQuery,
   CurrentUserDocument,
   useUpdateInRunMutation,
+  useUpdateRunParamsMutation,
 } from "@sprint/gql";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -18,6 +19,8 @@ const Feedback: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [createRun] = useCreateRunMutation();
   const [execInRunUpdate] = useUpdateInRunMutation();
+  const [execRunParamsUpdate] = useUpdateRunParamsMutation();
+
   const { back } = useRouter();
 
   if (loading || !data?.currentUser) {
@@ -104,6 +107,12 @@ const Feedback: React.FC = () => {
             },
           });
         }
+      },
+    });
+
+    execRunParamsUpdate({
+      variables: {
+        intensityFeedback: intensityFB,
       },
     });
 

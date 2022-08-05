@@ -213,7 +213,7 @@ export type MutationUpdateProfilePicArgs = {
 
 
 export type MutationUpdateRunParamsArgs = {
-  intensityFeedBack: Scalars['Int'];
+  intensityFeedback: Scalars['Int'];
 };
 
 export type PublicUser = {
@@ -311,6 +311,7 @@ export type User = {
   friends: Array<Maybe<PublicUser>>;
   id: Scalars['String'];
   inRun: InRun;
+  lastIntensityFeedback: Scalars['Int'];
   lastName: Scalars['String'];
   maxHr: Scalars['Int'];
   nextRunEnd: Scalars['String'];
@@ -561,6 +562,13 @@ export type GetDailyGoalsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetDailyGoalsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, dailyGoals: Array<{ __typename?: 'DailyGoal', name: string, description: string, completed: number, quantity: number, reward: number, emoji: string }> } | null };
+
+export type UpdateRunParamsMutationVariables = Exact<{
+  intensityFeedback: Scalars['Int'];
+}>;
+
+
+export type UpdateRunParamsMutation = { __typename?: 'Mutation', updateRunParams?: { __typename?: 'User', lastIntensityFeedback: number, currentRunParams: { __typename?: 'RunParams', highIntensity?: number | null, lowIntensity?: number | null, repetitions?: number | null, sets?: number | null, restPeriod?: number | null } } | null };
 
 
 export const LoginDocument = gql`
@@ -1766,3 +1774,43 @@ export function useGetDailyGoalsLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetDailyGoalsQueryHookResult = ReturnType<typeof useGetDailyGoalsQuery>;
 export type GetDailyGoalsLazyQueryHookResult = ReturnType<typeof useGetDailyGoalsLazyQuery>;
 export type GetDailyGoalsQueryResult = Apollo.QueryResult<GetDailyGoalsQuery, GetDailyGoalsQueryVariables>;
+export const UpdateRunParamsDocument = gql`
+    mutation updateRunParams($intensityFeedback: Int!) {
+  updateRunParams(intensityFeedback: $intensityFeedback) {
+    lastIntensityFeedback
+    currentRunParams {
+      highIntensity
+      lowIntensity
+      repetitions
+      sets
+      restPeriod
+    }
+  }
+}
+    `;
+export type UpdateRunParamsMutationFn = Apollo.MutationFunction<UpdateRunParamsMutation, UpdateRunParamsMutationVariables>;
+
+/**
+ * __useUpdateRunParamsMutation__
+ *
+ * To run a mutation, you first call `useUpdateRunParamsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateRunParamsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateRunParamsMutation, { data, loading, error }] = useUpdateRunParamsMutation({
+ *   variables: {
+ *      intensityFeedback: // value for 'intensityFeedback'
+ *   },
+ * });
+ */
+export function useUpdateRunParamsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateRunParamsMutation, UpdateRunParamsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateRunParamsMutation, UpdateRunParamsMutationVariables>(UpdateRunParamsDocument, options);
+      }
+export type UpdateRunParamsMutationHookResult = ReturnType<typeof useUpdateRunParamsMutation>;
+export type UpdateRunParamsMutationResult = Apollo.MutationResult<UpdateRunParamsMutation>;
+export type UpdateRunParamsMutationOptions = Apollo.BaseMutationOptions<UpdateRunParamsMutation, UpdateRunParamsMutationVariables>;

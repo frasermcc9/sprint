@@ -179,3 +179,16 @@ query GetDailyGoals {
     }
   }
 }
+
+mutation updateRunParams($intensityFeedback: Int!) {
+  updateRunParams(intensityFeedback: $intensityFeedback) {
+    lastIntensityFeedback
+    currentRunParams {
+      highIntensity
+      lowIntensity
+      repetitions
+      sets
+      restPeriod
+    }
+  }
+}

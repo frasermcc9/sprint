@@ -1,4 +1,5 @@
 import { Layout } from "@sprint/components";
+import { useRouter } from "next/router";
 import React from "react";
 
 const active: React.FC = () => {
@@ -16,11 +17,14 @@ const active: React.FC = () => {
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold">Enjoy the Run!</h1>
             </div>
+            <div>
+              <p>WIP</p>
+            </div>
           </section>
 
           <section className="mb-8 flex flex-col items-center">
             <div>
-              <button className=" w-36  rounded-full bg-gray-300 px-8 py-2 text-lg font-semibold text-gray-900">
+              <button className="disabled:true w-36  rounded-full bg-gray-300 px-8 py-2 text-lg font-semibold text-gray-900">
                 Close
               </button>
             </div>
