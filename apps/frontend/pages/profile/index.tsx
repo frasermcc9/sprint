@@ -7,7 +7,12 @@ import {
   UserCard,
   RunCard,
 } from "@sprint/components";
-import { useCurrentUserQuery, useGetAvailableEmblemsQuery } from "@sprint/gql";
+import {
+  InRun,
+  useCurrentUserQuery,
+  useGetAvailableEmblemsQuery,
+  useUpdateInRunMutation,
+} from "@sprint/gql";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
@@ -17,6 +22,7 @@ export default function Index() {
   const { push } = useRouter();
 
   const { data: emblems } = useGetAvailableEmblemsQuery();
+  const [execInRunUpdate] = useUpdateInRunMutation();
   console.log(emblems?.currentUser?.availableEmblems);
 
   if (error) {
@@ -26,6 +32,43 @@ export default function Index() {
 
   if (loading || !data?.currentUser) {
     return <div>Loading...</div>;
+  }
+
+  if (data?.currentUser.inRun == InRun.Yes) {
+    const timeEnd = new Date(data?.currentUser.nextRunEnd).getTime();
+    const timeNow = new Date().getTime();
+    console.log(timeEnd, timeNow);
+    if (timeEnd < timeNow) {
+      const inRun = InRun.Feedback;
+      execInRunUpdate({
+        variables: {
+          inRun,
+        },
+        optimisticResponse: {
+          __typename: "Mutation",
+          updateInRun: {
+            inRun,
+            __typename: "User",
+          },
+        },
+        update: (cache, { data: updated }) => {
+          if (!updated?.updateInRun || !data?.currentUser) {
+            return;
+          }
+
+          cache.modify({
+            id: cache.identify(data.currentUser),
+            fields: {
+              inRun: () => updated.updateInRun?.inRun,
+            },
+          });
+        },
+      });
+    }
+  }
+
+  if (data?.currentUser.inRun == InRun.Feedback) {
+    push("/run/feedback");
   }
 
   const {
@@ -84,7 +127,7 @@ export default function Index() {
             </span>
             <button
               className=" rounded-md bg-indigo-600 py-1 px-3 text-gray-50 "
-              onClick={() => push("/profile/record")}
+              onClick={() => console.log("Disabled Feature")}
             >
               +
             </button>
@@ -97,7 +140,7 @@ export default function Index() {
               .map((run) => (
                 <RunCard
                   key={uuidv4()}
-                  duration={run.duration ?? 0}
+                  duration={run?.duration ?? 0}
                   rundate={run.date ?? "no date"}
                   feedback={run.intensityFeedback ?? 0}
                 />

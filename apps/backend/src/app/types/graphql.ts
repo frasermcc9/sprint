@@ -19,6 +19,12 @@ export enum AccountStage {
     INITIAL_RUN = "INITIAL_RUN"
 }
 
+export enum InRun {
+    YES = "YES",
+    NO = "NO",
+    FEEDBACK = "FEEDBACK"
+}
+
 export interface Auth {
     access_token?: Nullable<string>;
     expires_in?: Nullable<number>;
@@ -33,7 +39,7 @@ export interface IQuery {
     testAuth(): Nullable<string> | Promise<Nullable<string>>;
     analyzeSleep(): Nullable<SleepAnalysis> | Promise<Nullable<SleepAnalysis>>;
     currentUser(): Nullable<User> | Promise<Nullable<User>>;
-    prepRun(): Nullable<RunParams> | Promise<Nullable<RunParams>>;
+    prepRun(duration: number): Nullable<RunParams> | Promise<Nullable<RunParams>>;
     generateRunFeedback(): Nullable<Feedback> | Promise<Nullable<Feedback>>;
 }
 
@@ -55,9 +61,11 @@ export interface IMutation {
     sendFriendRequest(friendId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
     acceptFriendRequest(friendId: string): PublicUser | Promise<PublicUser>;
     rejectFriendRequest(friendId: string): string | Promise<string>;
-    updateRunParams(intensityFeedBack: number): Nullable<User> | Promise<Nullable<User>>;
+    updateRunParams(intensityFeedback: number): Nullable<User> | Promise<Nullable<User>>;
     updateProfilePic(avatarUrl: string): Nullable<User> | Promise<Nullable<User>>;
     createSleepVariable(emoji: string, name: string): SleepVariable | Promise<SleepVariable>;
+    updateInRun(inRun: InRun): Nullable<User> | Promise<Nullable<User>>;
+    updateNextRunTimes(nextRunStart: string, nextRunEnd: string): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export interface Run {
@@ -133,6 +141,10 @@ export interface User {
     todaysSleep: Nullable<Sleep>[];
     sleepVariables?: Nullable<Nullable<SleepVariable>[]>;
     trackedVariables: string[];
+    inRun: InRun;
+    nextRunStart: string;
+    nextRunEnd: string;
+    lastIntensityFeedback: number;
     dailyGoals: DailyGoal[];
 }
 

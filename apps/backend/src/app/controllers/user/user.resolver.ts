@@ -18,6 +18,7 @@ import { calculateNewParams } from "../../service/run-processing/runProcessing";
 import {
   AccountStage,
   ExperienceLevel,
+  InRun,
   PublicUser,
   Sleep,
   SleepVariable,
@@ -53,6 +54,9 @@ export class UserResolver {
       utcOffset: dbUser.utcOffset,
       xp: dbUser.xp,
       currentRunParams: dbUser.currentRunParams,
+      inRun: dbUser.inRun,
+      nextRunStart: dbUser.nextRunStart,
+      nextRunEnd: dbUser.nextRunEnd,
     };
   }
 
@@ -217,7 +221,10 @@ export class UserResolver {
     const currentParams = dbUser.currentRunParams;
     const newParams = calculateNewParams(currentParams, intensityFeedback);
 
+    dbUser.markModified("currentRunParams");
     dbUser.currentRunParams = newParams;
+    console.log("New Params: ", newParams);
+    dbUser.lastIntensityFeedback = intensityFeedback;
 
     return await dbUser?.save();
   }
@@ -258,6 +265,29 @@ export class UserResolver {
     }
 
     return emblem;
+  }
+
+  @Mutation()
+  async updateInRun(@User() user: FitbitUser, @Args("inRun") inRun: InRun) {
+    const dbUser = await this.userService.getUser(user.id);
+    if (!dbUser) return null;
+
+    dbUser.inRun = inRun;
+    return await dbUser?.save();
+  }
+
+  @Mutation()
+  async updateNextRunTimes(
+    @User() user: FitbitUser,
+    @Args("nextRunStart") nextRunStart: string,
+    @Args("nextRunEnd") nextRunEnd: string,
+  ) {
+    const dbUser = await this.userService.getUser(user.id);
+    if (!dbUser) return null;
+
+    dbUser.nextRunStart = nextRunStart;
+    dbUser.nextRunEnd = nextRunEnd;
+    return await dbUser?.save();
   }
 
   @ResolveField()

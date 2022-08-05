@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Dates, EmblemImageUnion, Feature, Numbers } from "@sprint/common";
 import { Document, Model } from "mongoose";
-import { AccountStage, ExperienceLevel, Run } from "../../types/graphql";
+import { AccountStage, ExperienceLevel, Run, InRun } from "../../types/graphql";
 
 type Sleep = {
   date: string;
@@ -103,6 +103,18 @@ export class User {
 
   @Prop({ type: Number, default: 0 })
   sleepTrackStreak!: number;
+
+  @Prop({ required: true, type: String })
+  inRun: InRun;
+
+  @Prop({ required: false, type: String })
+  nextRunStart?: string;
+
+  @Prop({ required: false, type: String })
+  nextRunEnd?: string;
+
+  @Prop({ required: true, type: Number, default: 0 })
+  lastIntensityFeedback?: number;
 
   @Prop({ type: Map, of: Object, default: {} })
   /**

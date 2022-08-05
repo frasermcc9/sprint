@@ -21,6 +21,9 @@ query CurrentUser {
     createdAtUTS
     xp
     emblem
+    inRun
+    nextRunStart
+    nextRunEnd
   }
 }
 
@@ -64,6 +67,16 @@ query GetAvailableEmblems {
   currentUser {
     id
     availableEmblems
+  }
+}
+
+query PrepareRun($duration: Int!) {
+  prepRun(duration: $duration) {
+    highIntensity
+    lowIntensity
+    repetitions
+    sets
+    restPeriod
   }
 }
 
@@ -141,6 +154,18 @@ mutation CreateSleepVariable($name: String!, $emoji: String!) {
   }
 }
 
+mutation updateInRun($inRun: InRun!) {
+  updateInRun(inRun: $inRun) {
+    inRun
+  }
+}
+
+mutation updateNextRunTimes($nextRunStart: String!, $nextRunEnd: String!) {
+  updateNextRunTimes(nextRunEnd: $nextRunEnd, nextRunStart: $nextRunStart) {
+    nextRunStart
+    nextRunEnd
+  }
+}
 query GetDailyGoals {
   currentUser {
     id
@@ -151,6 +176,19 @@ query GetDailyGoals {
       quantity
       reward
       emoji
+    }
+  }
+}
+
+mutation updateRunParams($intensityFeedback: Int!) {
+  updateRunParams(intensityFeedback: $intensityFeedback) {
+    lastIntensityFeedback
+    currentRunParams {
+      highIntensity
+      lowIntensity
+      repetitions
+      sets
+      restPeriod
     }
   }
 }

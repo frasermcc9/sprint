@@ -15,14 +15,16 @@ type Mutation {
   acceptFriendRequest(friendId: ID!): PublicUser!
   # Returns the rejected user ID
   rejectFriendRequest(friendId: ID!): ID!
-  updateRunParams(intensityFeedBack: Int!): User
+  updateRunParams(intensityFeedback: Int!): User
   updateProfilePic(avatarUrl: String!): User
   createSleepVariable(emoji: String!, name: String!): SleepVariable!
+  updateInRun(inRun: InRun!): User
+  updateNextRunTimes(nextRunStart: String!, nextRunEnd: String!): User
 }
 
 type Query {
   currentUser: User
-  prepRun: RunParams
+  prepRun(duration: Int!): RunParams
   generateRunFeedback: Feedback
 }
 
@@ -54,6 +56,11 @@ type User {
   todaysSleep(sourceUrl: String): [Sleep]!
   sleepVariables: [SleepVariable]
   trackedVariables: [String!]!
+  # Run
+  inRun: InRun!
+  nextRunStart: String!
+  nextRunEnd: String!
+  lastIntensityFeedback: Int!
   # Goals
   dailyGoals: [DailyGoal!]!
 }
@@ -102,4 +109,10 @@ enum AccountStage {
   INITIAL
   EXPERIENCE_LEVEL_SELECTED
   INITIAL_RUN
+}
+
+enum InRun {
+  YES
+  NO
+  FEEDBACK
 }

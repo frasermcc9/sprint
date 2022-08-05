@@ -7,9 +7,10 @@ import { Request } from "express";
 import { FitbitUser } from "./fitbit.types";
 import { InjectModel } from "@nestjs/mongoose";
 import { User, UserCollection } from "../db/schema/user.schema";
-import { AccountStage } from "../types/graphql";
+import { AccountStage, InRun } from "../types/graphql";
 import LRU = require("lru-cache");
 import { calculateMaxHr } from "@sprint/common";
+import { NOMEM } from "dns";
 
 interface JWT {
   aud: string;
@@ -109,6 +110,7 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
         trackedVariables: [],
         sleepTrackStreak: 0,
         unlockedEmblems: ["Level1"],
+        inRun: InRun.NO,
       });
 
       (request as Record<string, any>).dbUser = dbUser;

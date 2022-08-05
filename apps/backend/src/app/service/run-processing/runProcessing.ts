@@ -1,5 +1,3 @@
-import { Run } from "../../db/schema/run.schema";
-
 /**
  * Example Running params:
  */
@@ -41,15 +39,13 @@ export const calculateNewParams = (
 
   if (rpeFeedback < 9) {
     const multiplier = ((10 - rpeFeedback) / 8) * 0.3;
-    newParams.highIntensity = Math.min(
-      currentParams.highIntensity * (1 + multiplier),
-      600,
+    newParams.highIntensity = Math.round(
+      Math.min(currentParams.highIntensity * (1 + multiplier), 600),
     );
   } else if (rpeFeedback > 11) {
     const multiplier = ((rpeFeedback - 11) / 10) * 0.3;
-    newParams.highIntensity = Math.max(
-      currentParams.highIntensity * (1 - multiplier),
-      15,
+    newParams.highIntensity = Math.round(
+      Math.max(currentParams.highIntensity * (1 - multiplier), 15),
     );
   }
 
@@ -62,8 +58,9 @@ export const calculateNewParams = (
   newParams.restPeriod = 120;
   remainingTime -= 120 * (currentParams.sets - 1);
 
-  newParams.lowIntensity =
-    remainingTime / currentParams.repetitions / currentParams.sets;
+  newParams.lowIntensity = Math.round(
+    remainingTime / currentParams.repetitions / currentParams.sets,
+  );
   return newParams;
 };
 
