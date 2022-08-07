@@ -4,10 +4,8 @@
 import { Fuzzy } from "./fuzzyHelpers";
 import { explanations } from "./HIITreasoning";
 import { differenceInDays } from "date-fns";
-import { last, partition, sumBy, maxBy } from "lodash";
+import { last, sumBy } from "lodash";
 import { Run } from "../../db/schema/run.schema";
-import { User } from "../../db/schema/user.schema";
-import { calculateMaxHr } from "@sprint/common";
 
 // >>> all membership functions take in a percentage change (i.e 10 is 10% increase). Should be clamped to -100 .. 100
 // normalized to 0 .. 200
@@ -92,8 +90,8 @@ fuzzyModel
 
 // calculate the average of metrics for a user for a set of runs
 // (user baseline)
-const calculateAverages = (user: User, runs: [Run]) => {
-  const highHR = 0.8 * calculateMaxHr(user.dob);
+const calculateAverages = (maxHR: number, runs: [Run]) => {
+  const highHR = 0.8 * maxHR;
 
   // cardiac drift is difference between max change in speed vs. max change in hr
   const result = {
@@ -103,15 +101,15 @@ const calculateAverages = (user: User, runs: [Run]) => {
     rpe: 0,
   };
 
+  console.log("Run analysing: ", runs);
+
   runs.forEach((run) => {
     const timeInHighHR = sumBy(run.heartRate, (hr) => (hr >= highHR ? 1 : 0));
     result.intensity += timeInHighHR / run.heartRate.length;
     result.performance += run.vo2max;
     result.rpe += run.intensityFeedback;
 
-    let avSpeed = 0;
     let avHR = 0;
-    let maxSpeed = 0;
     let maxHR = 0;
 
     run.heartRate.forEach((hr) => {
@@ -119,18 +117,11 @@ const calculateAverages = (user: User, runs: [Run]) => {
       avHR += hr;
     });
 
-    run.speed.forEach((speed) => {
-      maxSpeed = Math.max(speed, maxSpeed);
-      avSpeed += speed;
-    });
-
     avHR /= run.heartRate.length;
-    avSpeed /= run.speed.length;
 
     const changeInHR = (maxHR - avHR) / avHR;
-    const changeInSpeed = (maxSpeed - avSpeed) / avSpeed;
 
-    result.cardiacDrift += Math.max(changeInHR - changeInSpeed, 0);
+    result.cardiacDrift += Math.max(changeInHR, 0);
   });
 
   result.intensity /= runs.length;
@@ -166,24 +157,24 @@ const calculateAverages = (user: User, runs: [Run]) => {
 /**
  * Generates long-term feedback for a user using their runs (both single run and over time)
  */
-export const generateFeedback = (user: User, runs: Run[]) => {
+export const generateFeedback = (maxHR: number, runs: Run[]) => {
   const feedback = {
     feedbackSummary:
-      "Once you've completed more than 1 week of runs, we will start comparing your progress over the past few weeks.",
+      "Feedback Summary goes here. This is a placeholder for now.",
     lastRunFeedback:
-      "Your last run was an calibration run. We'll provide more feedback after each run!",
+      "Last Run Feedback goes here. This is a placeholder for now.",
     intensityFeedback: "",
     volumeFeedback: "",
     performanceFeedback: "",
   };
 
   // technically need at least 2 runs (including onboarding)
-  if (!runs || runs.length < 2) return feedback;
+  if (!runs) return feedback;
 
   const lastRun = last(runs);
 
   // add lastRunFeedback
-  const lastRunStats = calculateAverages(user, [lastRun]);
+  const lastRunStats = calculateAverages(maxHR, [lastRun]);
 
   const intensity = (val: number) => {
     if (val < 0.7)

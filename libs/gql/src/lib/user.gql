@@ -192,3 +192,13 @@ mutation updateRunParams($intensityFeedback: Int!) {
     }
   }
 }
+
+query AnalyseRun($run: RunInput!) {
+  generateRunFeedback(run: $run) {
+    feedbackSummary
+    lastRunFeedback
+    intensityFeedback
+    volumeFeedback
+    performanceFeedback
+  }
+}

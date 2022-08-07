@@ -25,7 +25,7 @@ type Mutation {
 type Query {
   currentUser: User
   prepRun(duration: Int!): RunParams
-  generateRunFeedback: Feedback
+  generateRunFeedback(run: RunInput!): Feedback
 }
 
 type User {
@@ -115,4 +115,13 @@ enum InRun {
   YES
   NO
   FEEDBACK
+}
+
+input RunInput {
+  userId: String
+  date: String
+  duration: Int
+  heartRate: [Int]
+  vo2max: Int
+  intensityFeedback: Int
 }

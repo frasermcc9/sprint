@@ -1,9 +1,46 @@
 import { Layout } from "@sprint/components";
 import { useRouter } from "next/router";
 import React from "react";
+import { RunInput, useAnalyseRunQuery } from "@sprint/gql";
+import { toast } from "react-toastify";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const RunAnalysisPage: React.FC = () => {
   const { back } = useRouter();
+  const router = useRouter();
+  const { object } = router.query;
+  const runObject: RunInput = JSON.parse(object as string);
+  const { data, loading, error } = useAnalyseRunQuery({
+    variables: {
+      run: runObject,
+    },
+  });
+  if (error) {
+    toast.error(error.message);
+    return null;
+  }
+
+  if (loading || !data?.generateRunFeedback?.feedbackSummary) {
+    return <div>Loading...</div>;
+  }
+
+  const {
+    generateRunFeedback: {
+      //   feedbackSummary,
+      //   intensityFeedback,
+      lastRunFeedback,
+      //   performanceFeedback,
+      //   volumeFeedback,
+    },
+  } = data;
+
   return (
     <Layout.Page
       animation={{
@@ -16,10 +53,32 @@ const RunAnalysisPage: React.FC = () => {
         <section className="font-palanquin flex h-full flex-grow flex-col">
           <section className="mx-4 mt-8 flex flex-grow flex-col">
             <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">Run Analysis</h1>
+              <h1 className="mb-2 text-3xl font-bold">Run Analysis</h1>
             </div>
             <div>
-              <p>WIP</p>
+              <p className="text-center">Heart Rate / Time (min)</p>
+              <div className="">
+                <LineChart
+                  width={320}
+                  height={300}
+                  data={runObject.heartRate ?? []}
+                  margin={{ top: 5, right: 25, left: -25, bottom: 5 }}
+                >
+                  <YAxis dataKey={(v) => v} />
+                  <XAxis />
+                  <Tooltip />
+                  <CartesianGrid stroke="#f5f5f5" />
+                  <Line
+                    type="monotone"
+                    dataKey={(v) => v}
+                    stroke="#ff2152"
+                    yAxisId={0}
+                  />
+                </LineChart>
+              </div>
+              <p>
+                <b>RunFeedback:</b> {lastRunFeedback}
+              </p>
             </div>
           </section>
 
