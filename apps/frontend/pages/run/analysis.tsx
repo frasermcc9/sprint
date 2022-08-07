@@ -16,7 +16,20 @@ const RunAnalysisPage: React.FC = () => {
   const { back } = useRouter();
   const router = useRouter();
   const { object } = router.query;
-  const runObject: RunInput = JSON.parse(object as string);
+  let runObject: RunInput = {
+    date: "",
+    duration: 0,
+    heartRate: [],
+    userId: "",
+    vo2max: 0,
+  };
+
+  if (typeof object != "undefined") {
+    runObject = JSON.parse(object as string);
+  } else {
+    return <div>No Run Selected</div>;
+  }
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data, loading, error } = useAnalyseRunQuery({
     variables: {
       run: runObject,
