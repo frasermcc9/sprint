@@ -5,12 +5,14 @@ export interface RunCardProps {
   rundate: string;
   duration: number;
   feedback: number;
+  onClick: () => void;
 }
 
 export const RunCard: React.FC<RunCardProps> = ({
   rundate,
   duration,
   feedback,
+  onClick,
 }) => {
   return (
     <div className="mb-2 rounded-md border-2 border-gray-500 p-2 shadow-md">
@@ -24,7 +26,10 @@ export const RunCard: React.FC<RunCardProps> = ({
           <div className="text-sm font-semibold">Duration: {duration}mins</div>
         </div>
 
-        <button className="ml-auto rounded-md bg-indigo-600 p-2 text-gray-50 ">
+        <button
+          className="ml-auto rounded-md bg-indigo-600 p-2 text-gray-50 "
+          onClick={onClick}
+        >
           Analyse Run
         </button>
       </div>

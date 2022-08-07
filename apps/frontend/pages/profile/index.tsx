@@ -9,6 +9,7 @@ import {
 } from "@sprint/components";
 import {
   InRun,
+  Run,
   useCurrentUserQuery,
   useGetAvailableEmblemsQuery,
   useUpdateInRunMutation,
@@ -66,6 +67,10 @@ export default function Index() {
       });
     }
   }
+
+  const anaylseRun = (run: Run) => {
+    push("/run/analysis");
+  };
 
   if (data?.currentUser.inRun == InRun.Feedback) {
     push("/run/feedback");
@@ -143,6 +148,7 @@ export default function Index() {
                   duration={run?.duration ?? 0}
                   rundate={run.date ?? "no date"}
                   feedback={run.intensityFeedback ?? 0}
+                  onClick={() => anaylseRun(run)}
                 />
               ))
           ) : (

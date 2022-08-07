@@ -2,7 +2,7 @@ import { Layout } from "@sprint/components";
 import { useRouter } from "next/router";
 import React from "react";
 
-const RunActivePage: React.FC = () => {
+const RunAnalysisPage: React.FC = () => {
   const { back } = useRouter();
   return (
     <Layout.Page
@@ -16,10 +16,10 @@ const RunActivePage: React.FC = () => {
         <section className="font-palanquin flex h-full flex-grow flex-col">
           <section className="mx-4 mt-8 flex flex-grow flex-col">
             <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">Enjoy the Run!</h1>
+              <h1 className="text-3xl font-bold">Run Analysis</h1>
             </div>
             <div>
-              <p>WIP - Timer/realtime updating</p>
+              <p>WIP</p>
             </div>
           </section>
 
@@ -39,4 +39,4 @@ const RunActivePage: React.FC = () => {
   );
 };
 
-export default RunActivePage;
+export default RunAnalysisPage;
