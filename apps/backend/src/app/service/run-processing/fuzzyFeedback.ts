@@ -196,18 +196,18 @@ export const generateFeedback = (maxHR: number, runs: Run[]) => {
   )} The cardiac drift of your run was ${cardiac(lastRunStats.cardiacDrift)}`;
 
   // check weeks
-  const numberOfDays = differenceInDays(lastRun.date, runs[0].date);
-  if (numberOfDays < 7) return feedback;
+  // const numberOfDays = differenceInDays(lastRun.date, runs[0].date);
+  // if (numberOfDays < 7) return feedback;
 
-  const firstWeek: Run[] = [];
-  let i = 1;
-  let dayDiff = 0;
+  // const firstWeek: Run[] = [];
+  // let i = 1;
+  // let dayDiff = 0;
 
-  while (i < runs.length && dayDiff < 7) {
-    firstWeek.push(runs[i]);
-    dayDiff = differenceInDays(runs[i].date, runs[0].date);
-    i++;
-  }
+  // while (i < runs.length && dayDiff < 7) {
+  //   firstWeek.push(runs[i]);
+  //   dayDiff = differenceInDays(runs[i].date, runs[0].date);
+  //   i++;
+  // }
 
   return feedback;
 };
