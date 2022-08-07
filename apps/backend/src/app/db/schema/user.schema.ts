@@ -107,10 +107,10 @@ export class User {
   @Prop({ required: true, type: String })
   inRun: InRun;
 
-  @Prop({ required: false, type: String })
+  @Prop({ required: false, type: String, default: "" })
   nextRunStart?: string;
 
-  @Prop({ required: false, type: String })
+  @Prop({ required: false, type: String, default: "" })
   nextRunEnd?: string;
 
   @Prop({ required: true, type: Number, default: 0 })
