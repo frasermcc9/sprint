@@ -38,10 +38,10 @@ const GOALS = [
 
 const DAILY_GOAL_COUNT = 2;
 
-type _ = STATIC_ASSERT_TRUE<
+STATIC_ASSERT_TRUE<
   "DAILY_GOAL_COUNT cannot exceed GOALS.length",
   LesserOrEqual<typeof DAILY_GOAL_COUNT, typeof GOALS.length>
->;
+>();
 
 const GOAL_MEMO = GOALS.reduce((acc, goal) => {
   acc[goal.name] = goal;

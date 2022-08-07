@@ -56,7 +56,12 @@ type _ToArray<
   A extends Array<unknown>,
 > = ToNumber<A> extends N ? A : _ToArray<N, [...A, undefined]>;
 
-export type STATIC_ASSERT_TRUE<M extends string, T extends M | true> = never;
+export function STATIC_ASSERT_TRUE<
+  M extends string,
+  T extends true | M,
+>(): T | null {
+  return null;
+}
 
 export type TUPLE_LENGTH<T extends unknown[]> = T extends Array<unknown>
   ? T["length"]
