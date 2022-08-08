@@ -361,9 +361,22 @@ export class UserResolver {
   @ResolveField()
   async dailyGoals(@User() user: FitbitUser, @DBUser() dbUser: UserDocument) {
     const goals = this.goalsService.getDailyGoals();
-    return goals.map(async (g) => ({
-      ...g,
-      completed: await dbUser.getGoal({ name: g.name }),
-    }));
+    let modified = false;
+    const goalStates = await Promise.all(
+      goals.map(async (g) => {
+        const goalState = await dbUser.getGoal({ name: g.name });
+        modified ||= goalState.modified;
+        return {
+          ...g,
+          completed: goalState.amount,
+        };
+      }),
+    );
+
+    if (modified) {
+      await dbUser.save();
+    }
+
+    return goalStates;
   }
 }

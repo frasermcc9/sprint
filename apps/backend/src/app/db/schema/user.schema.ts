@@ -159,7 +159,10 @@ interface Methods {
     this: UserDocument,
     { name, increment, max }: { name: string; increment: number; max?: number },
   ): Promise<boolean>;
-  getGoal(this: UserDocument, { name }: { name: string }): Promise<number>;
+  getGoal(
+    this: UserDocument,
+    { name }: { name: string },
+  ): Promise<{ amount: number; modified: boolean }>;
 }
 
 interface Statics {
@@ -286,7 +289,10 @@ const methods: Methods = {
 
     return willComplete;
   },
-  async getGoal(this: UserDocument, { name }): Promise<number> {
+  async getGoal(
+    this: UserDocument,
+    { name },
+  ): Promise<{ amount: number; modified: boolean }> {
     const today = Dates.toYYYYMMDD(new Date());
     let modified = false;
 
@@ -301,14 +307,12 @@ const methods: Methods = {
     if (!goal) throw new Error(`Goal ${name} not found for ID ${this.id}`);
 
     if (typeof goal[name] === "undefined") {
-      console.log("missing goal name");
       goal[name] = 0;
       this.markModified("goals");
       modified = true;
     }
 
-    if (modified) await this.save();
-    return goal[name];
+    return { amount: goal[name], modified };
   },
 };
 
