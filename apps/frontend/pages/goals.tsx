@@ -47,12 +47,19 @@ export default function Index() {
                     </div>
                     <div className="flex w-full flex-col gap-y-1">
                       <h1
-                        className={classNames("text-xl font-medium", {
-                          "underline underline-offset-[-0.4em]": completed,
-                        })}
+                        className={classNames("text-xl font-medium")}
                         style={{ textDecorationSkipInk: "none" }}
                       >
-                        {goal.description}
+                        <span className="pr-2 font-bold text-emerald-500">
+                          {goal.reward}XP
+                        </span>
+                        <span
+                          className={classNames({
+                            "underline underline-offset-[-0.4em]": completed,
+                          })}
+                        >
+                          {goal.description}
+                        </span>
                       </h1>
                       <div className="flex items-center gap-x-2">
                         <div className="relative flex w-full items-center">
@@ -74,14 +81,6 @@ export default function Index() {
                             )}
                             style={{ width: `${unfilledPercent}%` }}
                           />
-                          <div
-                            className="absolute right-0 bottom-0 -rotate-12 text-3xl font-bold text-emerald-400"
-                            style={{
-                              textShadow: "1px 2px 3px rgba(0,0,0,0.5)",
-                            }}
-                          >
-                            {goal.reward}XP
-                          </div>
                         </div>
                         <div className="w-max whitespace-pre text-lg">
                           {goal.completed} / {goal.quantity}
