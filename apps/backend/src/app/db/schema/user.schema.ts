@@ -6,6 +6,7 @@ import { AccountStage, ExperienceLevel, Run, InRun } from "../../types/graphql";
 type Sleep = {
   date: string;
   variables?: string[];
+  score?: number;
 };
 
 type SleepVariable = {
@@ -147,7 +148,10 @@ interface Methods {
     { date }: { date: string },
   ): Promise<Sleep | null>;
   earliestSleep(this: UserDocument): Sleep | null;
-  latestSleep(this: UserDocument): Sleep | null;
+  latestSleep<T extends number>(
+    this: UserDocument,
+    count?: T,
+  ): T extends 1 ? Sleep | null : Sleep[] | null;
   incrementSleepTrackStreak(this: UserDocument): Promise<void>;
   resetSleepTrackStreak(this: UserDocument): Promise<void>;
   unlockEmblem(
@@ -218,7 +222,7 @@ const methods: Methods = {
       await this.save();
     }
   },
-  async addSleep(this: UserDocument, { sleep }: { sleep: Sleep }) {
+  async addSleep(this: UserDocument, { sleep }) {
     if (this.sleeps?.has(sleep.date)) return false;
     this.sleeps?.set(sleep.date, sleep);
     this.markModified("sleeps");
@@ -239,13 +243,30 @@ const methods: Methods = {
     });
     return this.sleeps?.get(earliestDate) ?? null;
   },
-  latestSleep(this: UserDocument): Sleep | null {
+  latestSleep<T extends number>(
+    this: UserDocument,
+    count: T = 1 as T,
+  ): T extends 1 ? Sleep | null : Sleep[] | null {
     const dates = Array.from(this.sleeps?.keys() ?? []);
     if (dates.length === 0) return null;
-    const latestDate = dates.reduce((a, b) => {
-      return a > b ? a : b;
-    });
-    return this.sleeps?.get(latestDate) ?? null;
+
+    if (count === 1) {
+      const latestDate = dates.reduce((a, b) => {
+        return a > b ? a : b;
+      });
+      return (this.sleeps?.get(latestDate) ?? null) as T extends 1
+        ? Sleep | null
+        : Sleep[] | null;
+    } else {
+      const latestDates = dates
+        .sort((a, b) => {
+          return a > b ? -1 : 1;
+        })
+        .slice(0, count);
+      return latestDates
+        .map((date) => this.sleeps?.get(date) ?? null)
+        .filter((s) => !!s) as T extends 1 ? Sleep | null : Sleep[] | null;
+    }
   },
   async incrementSleepTrackStreak(this: UserDocument) {
     this.sleepTrackStreak++;

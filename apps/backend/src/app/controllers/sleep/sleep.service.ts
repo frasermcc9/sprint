@@ -1,58 +1,37 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Numbers, Sleep as SleepCommon } from "@sprint/common";
-import { readFileSync } from "fs";
+import { Sleep as SleepCommon } from "@sprint/common";
 import { HttpService } from "nestjs-http-promise";
+import { PolynomialRegressor } from "regression-multivariate-polynomial";
 import {
   User,
   UserCollection,
   UserDocument,
 } from "../../db/schema/user.schema";
+import { SleepScoreService } from "../../service/sleep-score/sleep-score.service";
 import { Sleep } from "../../types/graphql";
 import { SleepRangeResponse } from "./interfaces/sleep-range.interface";
-import { PolynomialRegressor } from "regression-multivariate-polynomial";
 
 @Injectable()
 export class SleepService {
-  private polyModel: PolynomialRegressor;
-
   constructor(
     @InjectModel(User.name) private readonly userModel: UserCollection,
     private readonly httpService: HttpService,
+    private readonly sleepScoreService: SleepScoreService,
   ) {}
-
-  async onModuleInit() {
-    this.polyModel = new PolynomialRegressor();
-    this.polyModel.fromConfig(
-      JSON.parse(
-        readFileSync(`${__dirname}/assets/poly-model/model.json`, "utf8"),
-      ),
-    );
-  }
 
   async findUser(id: string) {
     return await this.userModel.findOne({ id });
   }
 
-  getSleepScore({
-    awake,
-    awakenings,
-    deep,
-    light,
-    rem,
-  }: {
+  getSleepScore(args: {
     awake: number;
     rem: number;
     deep: number;
     light: number;
     awakenings: number;
   }) {
-    return Numbers.clamp(
-      this.polyModel.predict([[awake, awakenings, rem, light, deep]])[0][0],
-      0,
-      100,
-      { round: true },
-    );
+    return this.sleepScoreService.getSleepScore(args);
   }
 
   async setVariables(id: string, variables: string[], sleepDate: string) {
@@ -167,7 +146,7 @@ export class SleepService {
     const dbSleeps = dbUser?.sleeps;
 
     const oldestSleep = dbUser.earliestSleep();
-    const newestSleep = dbUser.latestSleep();
+    const newestSleep = dbUser.latestSleep(1);
     if (!oldestSleep || !newestSleep || !dbSleeps) return null;
 
     try {

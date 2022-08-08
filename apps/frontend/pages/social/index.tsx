@@ -1,7 +1,9 @@
 import {
   FriendsList,
   Layout,
+  Leaderboard,
   useFriendsListController,
+  useLeaderboardController,
 } from "@sprint/components";
 
 export default function Index() {
@@ -13,7 +15,10 @@ export default function Index() {
         </div>
       </Layout.Header>
       <Layout.Margin>
-        <section className="flex w-full items-center justify-between">
+        <section className="flex w-full flex-col items-center justify-between">
+          <div className="font-palanquin flex w-full flex-col text-gray-600">
+            <Leaderboard useController={useLeaderboardController} />
+          </div>
           <div className="font-palanquin flex w-full flex-col text-gray-600">
             <FriendsList useController={useFriendsListController} />
           </div>
