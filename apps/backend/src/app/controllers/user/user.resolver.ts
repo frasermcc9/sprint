@@ -8,6 +8,7 @@ import {
   Resolver,
 } from "@nestjs/graphql";
 import { calculateMaxHr, Feature, isValidEmblem } from "@sprint/common";
+import { Run } from "../../db/schema/run.schema";
 import { UserDocument } from "../../db/schema/user.schema";
 import { FitbitGuard } from "../../middleware/fitbit.guard";
 import { FitbitUser } from "../../middleware/fitbit.types";
@@ -15,6 +16,7 @@ import { DBUser, User } from "../../middleware/user.decorator";
 import { GoalsService } from "../../service/goals/goals.service";
 import { formatDuration } from "../../service/run-processing/run-duration";
 import { calculateNewParams } from "../../service/run-processing/runProcessing";
+import { generateFeedback } from "../../service/run-processing/fuzzyFeedback";
 import {
   AccountStage,
   ExperienceLevel,
@@ -72,8 +74,9 @@ export class UserResolver {
   }
 
   @Query()
-  async generateRunFeedback(@User() user: FitbitUser) {
-    return this.userService.generateRunFeedback(user.id);
+  async generateRunFeedback(@User() user: FitbitUser, @Args("run") run: Run) {
+    const dbUser = await this.userService.getUser(user.id);
+    return generateFeedback(dbUser.maxHR, [run]);
   }
 
   @Mutation()

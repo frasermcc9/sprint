@@ -238,6 +238,11 @@ export type Query = {
 };
 
 
+export type QueryGenerateRunFeedbackArgs = {
+  run: RunInput;
+};
+
+
 export type QueryPrepRunArgs = {
   duration: Scalars['Int'];
 };
@@ -250,6 +255,15 @@ export type Run = {
   intensityFeedback?: Maybe<Scalars['Int']>;
   userId?: Maybe<Scalars['String']>;
   vo2max?: Maybe<Scalars['Int']>;
+};
+
+export type RunInput = {
+  date?: InputMaybe<Scalars['String']>;
+  duration?: InputMaybe<Scalars['Int']>;
+  heartRate?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  intensityFeedback?: InputMaybe<Scalars['Int']>;
+  userId?: InputMaybe<Scalars['String']>;
+  vo2max?: InputMaybe<Scalars['Int']>;
 };
 
 export type RunParams = {
@@ -576,6 +590,13 @@ export type UpdateRunParamsMutationVariables = Exact<{
 
 
 export type UpdateRunParamsMutation = { __typename?: 'Mutation', updateRunParams?: { __typename?: 'User', lastIntensityFeedback: number, currentRunParams: { __typename?: 'RunParams', highIntensity?: number | null, lowIntensity?: number | null, repetitions?: number | null, sets?: number | null, restPeriod?: number | null } } | null };
+
+export type AnalyseRunQueryVariables = Exact<{
+  run: RunInput;
+}>;
+
+
+export type AnalyseRunQuery = { __typename?: 'Query', generateRunFeedback?: { __typename?: 'Feedback', feedbackSummary?: string | null, lastRunFeedback?: string | null, intensityFeedback?: string | null, volumeFeedback?: string | null, performanceFeedback?: string | null } | null };
 
 
 export const LoginDocument = gql`
@@ -1865,3 +1886,42 @@ export function useUpdateRunParamsMutation(baseOptions?: Apollo.MutationHookOpti
 export type UpdateRunParamsMutationHookResult = ReturnType<typeof useUpdateRunParamsMutation>;
 export type UpdateRunParamsMutationResult = Apollo.MutationResult<UpdateRunParamsMutation>;
 export type UpdateRunParamsMutationOptions = Apollo.BaseMutationOptions<UpdateRunParamsMutation, UpdateRunParamsMutationVariables>;
+export const AnalyseRunDocument = gql`
+    query AnalyseRun($run: RunInput!) {
+  generateRunFeedback(run: $run) {
+    feedbackSummary
+    lastRunFeedback
+    intensityFeedback
+    volumeFeedback
+    performanceFeedback
+  }
+}
+    `;
+
+/**
+ * __useAnalyseRunQuery__
+ *
+ * To run a query within a React component, call `useAnalyseRunQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAnalyseRunQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAnalyseRunQuery({
+ *   variables: {
+ *      run: // value for 'run'
+ *   },
+ * });
+ */
+export function useAnalyseRunQuery(baseOptions: Apollo.QueryHookOptions<AnalyseRunQuery, AnalyseRunQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AnalyseRunQuery, AnalyseRunQueryVariables>(AnalyseRunDocument, options);
+      }
+export function useAnalyseRunLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AnalyseRunQuery, AnalyseRunQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AnalyseRunQuery, AnalyseRunQueryVariables>(AnalyseRunDocument, options);
+        }
+export type AnalyseRunQueryHookResult = ReturnType<typeof useAnalyseRunQuery>;
+export type AnalyseRunLazyQueryHookResult = ReturnType<typeof useAnalyseRunLazyQuery>;
+export type AnalyseRunQueryResult = Apollo.QueryResult<AnalyseRunQuery, AnalyseRunQueryVariables>;

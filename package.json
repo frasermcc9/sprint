@@ -145,6 +145,7 @@
     "react-circular-progressbar": "^2.0.4",
     "react-dom": "18.0.0",
     "react-toastify": "^9.0.3",
+    "recharts": "^2.1.12",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.7",
     "regression-multivariate-polynomial": "^1.2.0",

@@ -2,7 +2,8 @@ import { Layout } from "@sprint/components";
 import { useRouter } from "next/router";
 import React from "react";
 
-const active: React.FC = () => {
+const RunActivePage: React.FC = () => {
+  const { push } = useRouter();
   return (
     <Layout.Page
       animation={{
@@ -24,7 +25,10 @@ const active: React.FC = () => {
 
           <section className="mb-8 flex flex-col items-center">
             <div>
-              <button className="disabled:true w-36  rounded-full bg-gray-300 px-8 py-2 text-lg font-semibold text-gray-900">
+              <button
+                className="disabled:true w-36  rounded-full bg-gray-300 px-8 py-2 text-lg font-semibold text-gray-900"
+                onClick={() => push("/home")}
+              >
                 Close
               </button>
             </div>
@@ -35,4 +39,4 @@ const active: React.FC = () => {
   );
 };
 
-export default active;
+export default RunActivePage;

@@ -143,6 +143,7 @@ export default function Index() {
                   duration={run?.duration ?? 0}
                   rundate={run.date ?? "no date"}
                   feedback={run.intensityFeedback ?? 0}
+                  runObj={run}
                 />
               ))
           ) : (

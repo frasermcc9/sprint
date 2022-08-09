@@ -25,6 +25,15 @@ export enum InRun {
     FEEDBACK = "FEEDBACK"
 }
 
+export interface RunInput {
+    userId?: Nullable<string>;
+    date?: Nullable<string>;
+    duration?: Nullable<number>;
+    heartRate?: Nullable<Nullable<number>[]>;
+    vo2max?: Nullable<number>;
+    intensityFeedback?: Nullable<number>;
+}
+
 export interface Auth {
     access_token?: Nullable<string>;
     expires_in?: Nullable<number>;
@@ -40,7 +49,7 @@ export interface IQuery {
     analyzeSleep(): Nullable<SleepAnalysis> | Promise<Nullable<SleepAnalysis>>;
     currentUser(): Nullable<User> | Promise<Nullable<User>>;
     prepRun(duration: number): Nullable<RunParams> | Promise<Nullable<RunParams>>;
-    generateRunFeedback(): Nullable<Feedback> | Promise<Nullable<Feedback>>;
+    generateRunFeedback(run: RunInput): Nullable<Feedback> | Promise<Nullable<Feedback>>;
 }
 
 export interface IMutation {
