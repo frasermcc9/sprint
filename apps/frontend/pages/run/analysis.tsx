@@ -69,7 +69,7 @@ const RunAnalysisPage: React.FC = () => {
               <h1 className="mb-2 text-3xl font-bold">Run Analysis</h1>
             </div>
             <div>
-              <p className="text-center">Heart Rate / Time (min)</p>
+              <p className="text-center">Heart Rate / Time (Min)</p>
               <div className="">
                 <LineChart
                   width={320}
@@ -82,10 +82,11 @@ const RunAnalysisPage: React.FC = () => {
                   <Tooltip />
                   <CartesianGrid stroke="#f5f5f5" />
                   <Line
-                    type="monotone"
                     dataKey={(v) => v}
                     stroke="#ff2152"
                     yAxisId={0}
+                    dot={false}
+                    activeDot={true}
                   />
                 </LineChart>
               </div>
