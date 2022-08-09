@@ -73,7 +73,7 @@ export class RunService {
 
     try {
       const res = await fetch(
-        `https://api.fitbit.com/1/user/-/activities/heart/date/${dateStart}/${dateEnd}/1min/time/${startTime}/${endTime}.json`,
+        `https://api.fitbit.com/1/user/-/activities/heart/date/${dateStart}/${dateEnd}/1sec/time/${startTime}/${endTime}.json`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${access_token}` },
