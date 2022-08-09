@@ -60,6 +60,7 @@ export const useMockFriendsListController: typeof useFriendsListController =
           xp: 234,
           id: "0",
           emblem: "Level1",
+          shareableSleepScore: 80,
         },
       ],
       requests: [

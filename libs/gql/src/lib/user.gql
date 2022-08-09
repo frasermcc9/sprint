@@ -24,6 +24,7 @@ query CurrentUser {
     inRun
     nextRunStart
     nextRunEnd
+    shareableSleepScore
   }
 }
 
@@ -52,6 +53,21 @@ query GetFriends($limit: Int) {
       avatarUrl
       xp
       emblem
+    }
+  }
+}
+
+query GetSleepLeaderboard {
+  currentUser {
+    id
+    friends(limit: 10) {
+      id
+      firstName
+      lastName
+      avatarUrl
+      emblem
+      shareableSleepScore
+      xp
     }
   }
 }

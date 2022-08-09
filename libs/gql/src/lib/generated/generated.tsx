@@ -223,6 +223,7 @@ export type PublicUser = {
   firstName: Scalars['String'];
   id: Scalars['String'];
   lastName: Scalars['String'];
+  shareableSleepScore: Scalars['Int'];
   xp: Scalars['Int'];
 };
 
@@ -308,7 +309,7 @@ export type User = {
   features: Array<Maybe<Scalars['String']>>;
   firstName: Scalars['String'];
   friendRequests: Array<Maybe<PublicUser>>;
-  friends: Array<Maybe<PublicUser>>;
+  friends: Array<PublicUser>;
   id: Scalars['String'];
   inRun: InRun;
   lastIntensityFeedback: Scalars['Int'];
@@ -317,6 +318,7 @@ export type User = {
   nextRunEnd: Scalars['String'];
   nextRunStart: Scalars['String'];
   runs: Array<Run>;
+  shareableSleepScore: Scalars['Int'];
   sleepVariables?: Maybe<Array<Maybe<SleepVariable>>>;
   stage: AccountStage;
   todaysSleep: Array<Maybe<Sleep>>;
@@ -436,7 +438,7 @@ export type AnalyzeSleepQuery = { __typename?: 'Query', analyzeSleep?: { __typen
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, emblem: string, inRun: InRun, nextRunStart: string, nextRunEnd: string, runs: Array<{ __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null }> } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, emblem: string, inRun: InRun, nextRunStart: string, nextRunEnd: string, shareableSleepScore: number, runs: Array<{ __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null }> } | null };
 
 export type FeaturesSeenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -448,7 +450,12 @@ export type GetFriendsQueryVariables = Exact<{
 }>;
 
 
-export type GetFriendsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, friends: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string } | null>, friendRequests: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string } | null> } | null };
+export type GetFriendsQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, friends: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string }>, friendRequests: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, xp: number, emblem: string } | null> } | null };
+
+export type GetSleepLeaderboardQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSleepLeaderboardQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, friends: Array<{ __typename?: 'PublicUser', id: string, firstName: string, lastName: string, avatarUrl: string, emblem: string, shareableSleepScore: number, xp: number }> } | null };
 
 export type GetXpQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1094,6 +1101,7 @@ export const CurrentUserDocument = gql`
     inRun
     nextRunStart
     nextRunEnd
+    shareableSleepScore
   }
 }
     `;
@@ -1210,6 +1218,49 @@ export function useGetFriendsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetFriendsQueryHookResult = ReturnType<typeof useGetFriendsQuery>;
 export type GetFriendsLazyQueryHookResult = ReturnType<typeof useGetFriendsLazyQuery>;
 export type GetFriendsQueryResult = Apollo.QueryResult<GetFriendsQuery, GetFriendsQueryVariables>;
+export const GetSleepLeaderboardDocument = gql`
+    query GetSleepLeaderboard {
+  currentUser {
+    id
+    friends(limit: 10) {
+      id
+      firstName
+      lastName
+      avatarUrl
+      emblem
+      shareableSleepScore
+      xp
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetSleepLeaderboardQuery__
+ *
+ * To run a query within a React component, call `useGetSleepLeaderboardQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSleepLeaderboardQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSleepLeaderboardQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSleepLeaderboardQuery(baseOptions?: Apollo.QueryHookOptions<GetSleepLeaderboardQuery, GetSleepLeaderboardQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSleepLeaderboardQuery, GetSleepLeaderboardQueryVariables>(GetSleepLeaderboardDocument, options);
+      }
+export function useGetSleepLeaderboardLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSleepLeaderboardQuery, GetSleepLeaderboardQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSleepLeaderboardQuery, GetSleepLeaderboardQueryVariables>(GetSleepLeaderboardDocument, options);
+        }
+export type GetSleepLeaderboardQueryHookResult = ReturnType<typeof useGetSleepLeaderboardQuery>;
+export type GetSleepLeaderboardLazyQueryHookResult = ReturnType<typeof useGetSleepLeaderboardLazyQuery>;
+export type GetSleepLeaderboardQueryResult = Apollo.QueryResult<GetSleepLeaderboardQuery, GetSleepLeaderboardQueryVariables>;
 export const GetXpDocument = gql`
     query GetXp {
   currentUser {

@@ -50,7 +50,7 @@ type User {
   emblem: String!
   availableEmblems: [String!]!
   xp: Int!
-  friends(limit: Int = 10): [PublicUser]!
+  friends(limit: Int = 10): [PublicUser!]!
   friendRequests: [PublicUser]!
   # Sleep
   todaysSleep(sourceUrl: String): [Sleep]!

@@ -317,7 +317,14 @@ export class UserResolver {
     @Parent() user: FitbitUser,
     @Args("limit") limit: number,
   ): Promise<Partial<PublicUser>[]> {
-    return this.userService.findFriends(user.id, limit);
+    const friends = await this.userService.findFriends(user.id, limit);
+
+    const f = friends.map((friend) => ({
+      ...friend.toObject(),
+      shareableSleepScore: this.getShareableSleepScore(friend),
+    }));
+
+    return f;
   }
 
   @ResolveField()
@@ -388,7 +395,10 @@ export class UserResolver {
     }
 
     const user = await this.userService.getUser(parent.id);
+    return this.getShareableSleepScore(user);
+  }
 
+  private getShareableSleepScore(user: UserDocument): number {
     const sleeps = user.latestSleep(7);
 
     if (!sleeps) {
