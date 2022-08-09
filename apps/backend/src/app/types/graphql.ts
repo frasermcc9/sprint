@@ -136,7 +136,7 @@ export interface User {
     emblem: string;
     availableEmblems: string[];
     xp: number;
-    friends: Nullable<PublicUser>[];
+    friends: PublicUser[];
     friendRequests: Nullable<PublicUser>[];
     todaysSleep: Nullable<Sleep>[];
     sleepVariables?: Nullable<Nullable<SleepVariable>[]>;

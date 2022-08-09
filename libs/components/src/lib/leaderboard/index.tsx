@@ -1,3 +1,4 @@
+import { NOT_NULL } from "@sprint/common";
 import { useCurrentUserQuery, useGetSleepLeaderboardQuery } from "@sprint/gql";
 import classNames from "classnames";
 import React, { useMemo } from "react";
@@ -159,7 +160,11 @@ export const useLeaderboardController = () => {
     const joined = [...friendDataList, userDataList];
 
     return joined
-      .sort((a, b) => b!.shareableSleepScore - a!.shareableSleepScore)
+      .sort(
+        (a, b) =>
+          NOT_NULL(0, b?.shareableSleepScore) -
+          NOT_NULL(0, a?.shareableSleepScore),
+      )
       .slice(0, 10);
   }, [friendData?.currentUser?.friends, loading, userData?.currentUser]);
 
