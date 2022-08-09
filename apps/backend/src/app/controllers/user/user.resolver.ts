@@ -317,7 +317,14 @@ export class UserResolver {
     @Parent() user: FitbitUser,
     @Args("limit") limit: number,
   ): Promise<Partial<PublicUser>[]> {
-    return this.userService.findFriends(user.id, limit);
+    const friends = await this.userService.findFriends(user.id, limit);
+
+    const f = friends.map((friend) => ({
+      ...friend.toObject(),
+      shareableSleepScore: this.getShareableSleepScore(friend),
+    }));
+
+    return f;
   }
 
   @ResolveField()
@@ -378,5 +385,40 @@ export class UserResolver {
     }
 
     return goalStates;
+  }
+
+  @ResolveField()
+  async shareableSleepScore(@Parent() parent: Partial<GQLUser>) {
+    if (!parent.id) {
+      console.error("ShareableSleepScore: ID Required");
+      return 0;
+    }
+
+    const user = await this.userService.getUser(parent.id);
+    return this.getShareableSleepScore(user);
+  }
+
+  private getShareableSleepScore(user: UserDocument): number {
+    const sleeps = user.latestSleep(7);
+
+    if (!sleeps) {
+      return 0;
+    }
+
+    const mostRecent = sleeps[0];
+    const dateOfMostRecent = new Date(mostRecent.date);
+    const monthBefore = new Date(
+      dateOfMostRecent.setDate(dateOfMostRecent.getDate() - 30),
+    );
+
+    const filteredSleeps = sleeps
+      .filter((s) => new Date(s.date) > monthBefore)
+      .map((s) => s.score ?? 0);
+
+    const currentLen = filteredSleeps.length;
+    filteredSleeps.length = 7;
+    filteredSleeps.fill(0, currentLen);
+
+    return Math.round(filteredSleeps.reduce((a, b) => a + b, 0) / 7);
   }
 }

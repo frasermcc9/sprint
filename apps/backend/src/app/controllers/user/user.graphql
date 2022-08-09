@@ -50,12 +50,13 @@ type User {
   emblem: String!
   availableEmblems: [String!]!
   xp: Int!
-  friends(limit: Int = 10): [PublicUser]!
+  friends(limit: Int = 10): [PublicUser!]!
   friendRequests: [PublicUser]!
   # Sleep
   todaysSleep(sourceUrl: String): [Sleep]!
   sleepVariables: [SleepVariable]
   trackedVariables: [String!]!
+  shareableSleepScore: Int!
   # Run
   inRun: InRun!
   nextRunStart: String!
@@ -64,7 +65,15 @@ type User {
   # Goals
   dailyGoals: [DailyGoal!]!
 }
-
+type PublicUser {
+  id: String!
+  firstName: String!
+  lastName: String!
+  avatarUrl: String!
+  xp: Int!
+  emblem: String!
+  shareableSleepScore: Int!
+}
 type DailyGoal {
   name: String!
   description: String!
@@ -88,15 +97,6 @@ type Feedback {
   intensityFeedback: String
   volumeFeedback: String
   performanceFeedback: String
-}
-
-type PublicUser {
-  id: String!
-  firstName: String!
-  lastName: String!
-  avatarUrl: String!
-  xp: Int!
-  emblem: String!
 }
 
 enum ExperienceLevel {

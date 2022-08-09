@@ -136,16 +136,27 @@ export interface User {
     emblem: string;
     availableEmblems: string[];
     xp: number;
-    friends: Nullable<PublicUser>[];
+    friends: PublicUser[];
     friendRequests: Nullable<PublicUser>[];
     todaysSleep: Nullable<Sleep>[];
     sleepVariables?: Nullable<Nullable<SleepVariable>[]>;
     trackedVariables: string[];
+    shareableSleepScore: number;
     inRun: InRun;
     nextRunStart: string;
     nextRunEnd: string;
     lastIntensityFeedback: number;
     dailyGoals: DailyGoal[];
+}
+
+export interface PublicUser {
+    id: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl: string;
+    xp: number;
+    emblem: string;
+    shareableSleepScore: number;
 }
 
 export interface DailyGoal {
@@ -171,15 +182,6 @@ export interface Feedback {
     intensityFeedback?: Nullable<string>;
     volumeFeedback?: Nullable<string>;
     performanceFeedback?: Nullable<string>;
-}
-
-export interface PublicUser {
-    id: string;
-    firstName: string;
-    lastName: string;
-    avatarUrl: string;
-    xp: number;
-    emblem: string;
 }
 
 type Nullable<T> = T | null;

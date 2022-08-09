@@ -3,6 +3,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { HttpModule } from "nestjs-http-promise";
 import { User, UserSchema } from "../../db/schema/user.schema";
 import { GoalsModule } from "../../service/goals/goals.module";
+import { SleepScoreModule } from "../../service/sleep-score/sleep-score.module";
 import { UserResolver } from "./user.resolver";
 import { UserService } from "./user.service";
 
@@ -12,6 +13,7 @@ import { UserService } from "./user.service";
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     HttpModule,
     GoalsModule,
+    SleepScoreModule,
   ],
 })
 export class UserModule {}

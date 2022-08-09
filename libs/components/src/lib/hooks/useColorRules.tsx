@@ -61,3 +61,15 @@ export const useColorRangeRule = (ranges: ColorRuleRange[]) => {
     [ranges],
   );
 };
+
+export const useSleepColors = () =>
+  useColorRangeRule([
+    {
+      className:
+        "bg-clip-text text-transparent bg-gradient-to-r from-red-400 via-purple-500 to-indigo-400",
+      range: [95, 100],
+    },
+    { className: "text-emerald-500", range: [80, 94] },
+    { className: "text-amber-400", range: [51, 79] },
+    { className: "text-red-500", range: [0, 50] },
+  ]);

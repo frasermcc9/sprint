@@ -15,6 +15,7 @@ import { Run } from "../../db/schema/run.schema";
 import { InjectEventEmitter } from "nest-typed-event-emitter";
 import { TypedEventEmitter } from "../../events";
 import { FitbitUser } from "../../middleware/fitbit.types";
+import { SleepScoreService } from "../../service/sleep-score/sleep-score.service";
 
 @Injectable()
 export class UserService {
@@ -22,6 +23,7 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: UserCollection,
     private readonly httpService: HttpService,
     @InjectEventEmitter() private readonly eventEmitter: TypedEventEmitter,
+    private readonly sleepScoreService: SleepScoreService,
   ) {}
 
   async getUser(fitbitId: string) {
@@ -168,12 +170,19 @@ export class UserService {
         tomorrow: data.pagination.previous,
       };
 
-      const previousLatest = user.latestSleep();
+      const previousLatest = user.latestSleep(1);
 
       const added = await user.addSleep({
         sleep: {
           date: mainSleep.dateOfSleep,
           variables: [],
+          score: this.sleepScoreService.getSleepScore({
+            awake: sleep.awake,
+            awakenings: sleep.awakenings,
+            deep: sleep.deep,
+            light: sleep.light,
+            rem: sleep.rem,
+          }),
         },
       });
 
