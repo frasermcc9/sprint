@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import React from "react";
 
 const RunActivePage: React.FC = () => {
-  const { back } = useRouter();
+  const { push } = useRouter();
   return (
     <Layout.Page
       animation={{
@@ -27,7 +27,7 @@ const RunActivePage: React.FC = () => {
             <div>
               <button
                 className="disabled:true w-36  rounded-full bg-gray-300 px-8 py-2 text-lg font-semibold text-gray-900"
-                onClick={back}
+                onClick={() => push("/home")}
               >
                 Close
               </button>
