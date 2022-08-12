@@ -65,7 +65,9 @@ const tabs: Tab[] = [
 ];
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:3333/graphql",
+  uri: `${
+    process.env.NEXT_PUBLIC_GQL_ENDPOINT ?? "http://localhost:3000"
+  }/graphql`,
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -225,8 +227,6 @@ const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
       "color: rgb(79 70 229); font-size: 4em; -webkit-text-stroke-width: 1.5px; -webkit-text-stroke-color: black;",
     );
   }, []);
-
-  console.log(process.env.NEXT_PUBLIC_GQL_ENDPOINT);
 
   return (
     <ApolloProvider client={client}>
