@@ -32,6 +32,12 @@
         "buildTarget": "backend:build"
       }
     },
+    "serve-prod": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "backend:build:production"
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
