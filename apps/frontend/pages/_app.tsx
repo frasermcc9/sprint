@@ -226,7 +226,7 @@ const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
     );
   }, []);
 
-  console.log(process.env.GQL_ENDPOINT);
+  console.log(process.env.NEXT_PUBLIC_GQL_ENDPOINT);
 
   return (
     <ApolloProvider client={client}>
