@@ -226,6 +226,8 @@ const App = ({ Component, pageProps, router: { pathname } }: AppProps) => {
     );
   }, []);
 
+  console.log(process.env.GQL_ENDPOINT);
+
   return (
     <ApolloProvider client={client}>
       <ToastContainer position="bottom-left" />
