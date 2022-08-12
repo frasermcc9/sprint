@@ -66,7 +66,7 @@ const tabs: Tab[] = [
 
 const httpLink = createHttpLink({
   uri: `${
-    process.env.NEXT_PUBLIC_GQL_ENDPOINT ?? "http://localhost:3000"
+    process.env.NEXT_PUBLIC_GQL_ENDPOINT ?? "http://localhost:3333"
   }/graphql`,
 });
 
