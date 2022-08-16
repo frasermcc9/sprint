@@ -64,8 +64,6 @@ const tabs: Tab[] = [
   },
 ];
 
-console.log(process.env);
-
 const httpLink = createHttpLink({
   uri: `${
     process.env.NEXT_PUBLIC_GQL_ENDPOINT ?? "http://localhost:3333"
