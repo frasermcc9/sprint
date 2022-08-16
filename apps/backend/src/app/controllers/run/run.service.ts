@@ -124,6 +124,7 @@ export class RunService {
         userId: dbUser.id,
         runDate: dateStart,
         latestRunDate: latestRunDate,
+
       });
 
       return newRun;
