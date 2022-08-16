@@ -45,4 +45,15 @@ export class AchievementListener {
 
     // Do not award XP if back-filled data
   }
+
+  @ListenTo("action.run.added")
+  async handleRunAdded({ userId }: EventMap["action.run.added"]) {
+    console.log(`[AchievementListener] Handling run added for user ${userId}`);
+    const dbUser = await this.userModel.findOne({ id: userId });
+    if (!dbUser) {
+      return;
+    }
+    console.log("[AchievementListener] Adding XP for user:", userId);
+    return this.xpService.addXp(dbUser, XPRewards.ADD_RUN_DATA);
+  }
 }
