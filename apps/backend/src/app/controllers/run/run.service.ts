@@ -108,6 +108,13 @@ export class RunService {
         vo2max: vo2Max,
         intensityFeedback: intensityFB,
       };
+
+      let latestRunDate;
+      if (dbUser.runs != undefined) {
+        const latestRun = dbUser.runs[dbUser.runs.length - 1] ?? null;
+        latestRunDate = latestRun?.date ?? null;
+      }
+
       this.runModel.create(newRun);
       dbUser.runs?.push(newRun);
       dbUser.markModified("runs");
@@ -115,6 +122,9 @@ export class RunService {
 
       this.eventEmitter.emit("action.run.added", {
         userId: dbUser.id,
+        runDate: dateStart,
+        latestRunDate: latestRunDate,
+
       });
 
       return newRun;

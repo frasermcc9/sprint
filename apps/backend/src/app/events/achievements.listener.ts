@@ -47,13 +47,29 @@ export class AchievementListener {
   }
 
   @ListenTo("action.run.added")
-  async handleRunAdded({ userId }: EventMap["action.run.added"]) {
-    console.log(`[AchievementListener] Handling run added for user ${userId}`);
+
+  async handleRunAdded({
+    userId,
+    runDate,
+    latestRunDate,
+  }: EventMap["action.run.added"]) {
+
     const dbUser = await this.userModel.findOne({ id: userId });
     if (!dbUser) {
       return;
     }
-    console.log("[AchievementListener] Adding XP for user:", userId);
-    return this.xpService.addXp(dbUser, XPRewards.ADD_RUN_DATA);
+
+    if (!latestRunDate) {
+      return this.xpService.addXp(dbUser, XPRewards.ADD_RUN_DATA);
+    }
+
+    if (Dates.dateWithin2Days(latestRunDate, runDate)) {
+      await dbUser?.incrementRunTrackStreak();
+      return this.xpService.addXp(dbUser, XPRewards.ADD_RUN_DATA);
+    } else {
+      await dbUser?.resetRunTrackStreak();
+      return this.xpService.addXp(dbUser, XPRewards.ADD_RUN_DATA);
+    }
+
   }
 }

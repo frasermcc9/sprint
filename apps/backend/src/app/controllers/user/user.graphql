@@ -64,6 +64,7 @@ type User {
   lastIntensityFeedback: Int!
   # Goals
   dailyGoals: [DailyGoal!]!
+  runTrackStreak: Int!
 }
 type PublicUser {
   id: String!

@@ -25,6 +25,7 @@ query CurrentUser {
     nextRunStart
     nextRunEnd
     shareableSleepScore
+    runTrackStreak
   }
 }
 
