@@ -45,4 +45,28 @@ export class AchievementListener {
 
     // Do not award XP if back-filled data
   }
+
+  @ListenTo("action.run.added")
+  async handleRunAdded({
+    userId,
+    runDate,
+    latestRunDate,
+  }: EventMap["action.run.added"]) {
+    const dbUser = await this.userModel.findOne({ id: userId });
+    if (!dbUser) {
+      return;
+    }
+
+    if (!latestRunDate) {
+      return this.xpService.addXp(dbUser, XPRewards.ADD_RUN_DATA);
+    }
+
+    if (Dates.dateWithin2Days(latestRunDate, runDate)) {
+      await dbUser?.incrementRunTrackStreak();
+      return this.xpService.addXp(dbUser, XPRewards.ADD_RUN_DATA);
+    } else {
+      await dbUser?.resetRunTrackStreak();
+      return this.xpService.addXp(dbUser, XPRewards.ADD_RUN_DATA);
+    }
+  }
 }

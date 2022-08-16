@@ -16,6 +16,8 @@ export interface EventMap {
   };
   "action.run.added": {
     userId: string;
+    runDate: string;
+    latestRunDate?: string;
   };
 }
 

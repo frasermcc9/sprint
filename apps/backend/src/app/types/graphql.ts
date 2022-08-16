@@ -156,6 +156,7 @@ export interface User {
     nextRunEnd: string;
     lastIntensityFeedback: number;
     dailyGoals: DailyGoal[];
+    runTrackStreak: number;
 }
 
 export interface PublicUser {

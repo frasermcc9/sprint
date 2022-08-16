@@ -1,16 +1,30 @@
 import React from "react";
 import { StreakPopover } from "../streaks";
 import { useXpPopupController, XpPopup } from "../xp-meter";
+import { useCurrentUserQuery } from "@sprint/gql";
 
 export interface HomeHeaderProps {
   useController: typeof useHomeHeaderController;
 }
 
 export const HomeHeader: React.FC<HomeHeaderProps> = ({ useController }) => {
+  const { data, loading, error } = useCurrentUserQuery();
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error</div>;
+  if (!data) return <div>No data</div>;
+
+  let runStreak = 0;
+  if (data?.currentUser?.runTrackStreak) {
+    runStreak = data.currentUser.runTrackStreak;
+  }
+
   return (
     <div className="relative my-2 flex h-8 w-full flex-row justify-around">
       <XpPopup useController={useXpPopupController} />
-      <StreakPopover streakSize={4} days={[false, true, false, false, true]} />
+      <StreakPopover
+        streakSize={runStreak}
+        days={[false, true, false, false, true]}
+      />
     </div>
   );
 };

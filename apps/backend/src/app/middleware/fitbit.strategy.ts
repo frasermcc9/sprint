@@ -111,6 +111,7 @@ export class FitbitStrategy extends PassportStrategy(Strategy, "fitbit-auth") {
         sleepTrackStreak: 0,
         unlockedEmblems: ["Level1"],
         inRun: InRun.NO,
+        runTrackStreak: 0,
       });
 
       (request as Record<string, any>).dbUser = dbUser;

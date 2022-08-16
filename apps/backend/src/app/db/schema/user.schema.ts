@@ -122,6 +122,9 @@ export class User {
    * Date -> { [goal]: value }
    */
   goals?: Map<string, { [k: string]: number }>;
+
+  @Prop({ type: Number, default: 0 })
+  runTrackStreak!: number;
 }
 
 interface Methods {
@@ -154,6 +157,10 @@ interface Methods {
   ): T extends 1 ? Sleep | null : Sleep[] | null;
   incrementSleepTrackStreak(this: UserDocument): Promise<void>;
   resetSleepTrackStreak(this: UserDocument): Promise<void>;
+
+  incrementRunTrackStreak(this: UserDocument): Promise<void>;
+  resetRunTrackStreak(this: UserDocument): Promise<void>;
+
   unlockEmblem(
     this: UserDocument,
     { emblem }: { emblem: EmblemImageUnion },
@@ -274,6 +281,15 @@ const methods: Methods = {
   },
   async resetSleepTrackStreak(this: UserDocument) {
     this.sleepTrackStreak = 0;
+    await this.save();
+  },
+
+  async incrementRunTrackStreak(this: UserDocument) {
+    this.runTrackStreak++;
+    await this.save();
+  },
+  async resetRunTrackStreak(this: UserDocument) {
+    this.runTrackStreak = 0;
     await this.save();
   },
   async unlockEmblem(

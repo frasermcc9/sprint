@@ -4,12 +4,15 @@ import { Run, RunCollection } from "../../db/schema/run.schema";
 import { User, UserCollection } from "../../db/schema/user.schema";
 import { calculateVO2max } from "../../service/run-processing/runProcessing";
 import fetch from "node-fetch";
+import { InjectEventEmitter } from "nest-typed-event-emitter";
+import { TypedEventEmitter } from "../../events";
 
 @Injectable()
 export class RunService {
   constructor(
     @InjectModel(Run.name) private readonly runModel: RunCollection,
     @InjectModel(User.name) private readonly userModel: UserCollection,
+    @InjectEventEmitter() private readonly eventEmitter: TypedEventEmitter,
   ) {}
 
   getRun(userId: string) {
@@ -105,10 +108,23 @@ export class RunService {
         vo2max: vo2Max,
         intensityFeedback: intensityFB,
       };
+
+      let latestRunDate;
+      if (dbUser.runs != undefined) {
+        const latestRun = dbUser.runs[dbUser.runs.length - 1] ?? null;
+        latestRunDate = latestRun?.date ?? null;
+      }
+
       this.runModel.create(newRun);
       dbUser.runs?.push(newRun);
       dbUser.markModified("runs");
       await dbUser.save();
+
+      this.eventEmitter.emit("action.run.added", {
+        userId: dbUser.id,
+        runDate: dateStart,
+        latestRunDate: latestRunDate,
+      });
 
       return newRun;
     } catch (e) {

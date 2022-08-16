@@ -59,6 +59,7 @@ export class UserResolver {
       inRun: dbUser.inRun,
       nextRunStart: dbUser.nextRunStart,
       nextRunEnd: dbUser.nextRunEnd,
+      runTrackStreak: dbUser.runTrackStreak,
     };
   }
 

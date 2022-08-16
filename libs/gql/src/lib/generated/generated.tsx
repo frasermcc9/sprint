@@ -331,6 +331,7 @@ export type User = {
   maxHr: Scalars['Int'];
   nextRunEnd: Scalars['String'];
   nextRunStart: Scalars['String'];
+  runTrackStreak: Scalars['Int'];
   runs: Array<Run>;
   shareableSleepScore: Scalars['Int'];
   sleepVariables?: Maybe<Array<Maybe<SleepVariable>>>;
@@ -452,7 +453,7 @@ export type AnalyzeSleepQuery = { __typename?: 'Query', analyzeSleep?: { __typen
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, emblem: string, inRun: InRun, nextRunStart: string, nextRunEnd: string, shareableSleepScore: number, runs: Array<{ __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null }> } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, firstName: string, lastName: string, experience?: ExperienceLevel | null, stage: AccountStage, maxHr: number, dob: string, defaultRunDuration: number, createdAtUTS: number, avatarUrl: string, xp: number, emblem: string, inRun: InRun, nextRunStart: string, nextRunEnd: string, shareableSleepScore: number, runTrackStreak: number, runs: Array<{ __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null }> } | null };
 
 export type FeaturesSeenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1123,6 +1124,7 @@ export const CurrentUserDocument = gql`
     nextRunStart
     nextRunEnd
     shareableSleepScore
+    runTrackStreak
   }
 }
     `;

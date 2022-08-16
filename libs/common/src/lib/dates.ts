@@ -62,6 +62,16 @@ const datesAreConsecutive = (a: string, b: string) =>
 const dateIsBefore = (base: string, compare: string) =>
   Date.parse(base) > Date.parse(compare);
 
+export const dateWithin2Days = (dateOne: string, dateTwo) => {
+  const d1 = new Date(dateOne);
+  const d2 = new Date(dateTwo);
+
+  const diffInTime = d2.getTime() - d1.getTime();
+  const diffInDays = diffInTime / (1000 * 3600 * 24);
+
+  return diffInDays <= 2;
+};
+
 export const Dates = {
   stripTime,
   daysForLocale,
@@ -73,4 +83,5 @@ export const Dates = {
   calculateAge,
   datesAreConsecutive,
   dateIsBefore,
+  dateWithin2Days,
 };
