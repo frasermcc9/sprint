@@ -29,4 +29,22 @@ export class RunResolver {
       fb,
     );
   }
+
+  @Mutation()
+  async resyncRun(
+    @User() user: FitbitUser,
+    @Args("startDate") startDate: string,
+    @Args("startTime") startTime: string,
+    @Args("duration") duration: number,
+    @Args("intensity") fb: number,
+  ) {
+    return this.runService.resyncRun(
+      user.id,
+      user.token,
+      startDate,
+      startTime,
+      duration,
+      fb,
+    );
+  }
 }

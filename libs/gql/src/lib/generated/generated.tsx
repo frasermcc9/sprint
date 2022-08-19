@@ -82,6 +82,7 @@ export type Mutation = {
   refresh?: Maybe<Auth>;
   rejectFriendRequest: Scalars['ID'];
   removeSleepVariable?: Maybe<VariableEditResponse>;
+  resyncRun?: Maybe<Run>;
   sendFriendRequest?: Maybe<Scalars['Boolean']>;
   trackVariable: Array<Scalars['String']>;
   untrackVariable: Array<Scalars['String']>;
@@ -161,6 +162,14 @@ export type MutationRejectFriendRequestArgs = {
 export type MutationRemoveSleepVariableArgs = {
   name: Scalars['String'];
   sleepDate: Scalars['String'];
+};
+
+
+export type MutationResyncRunArgs = {
+  duration: Scalars['Int'];
+  intensity: Scalars['Int'];
+  startDate: Scalars['String'];
+  startTime: Scalars['String'];
 };
 
 
@@ -392,6 +401,16 @@ export type CreateRunMutationVariables = Exact<{
 
 
 export type CreateRunMutation = { __typename?: 'Mutation', createRun?: { __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null } | null };
+
+export type ResyncRunMutationVariables = Exact<{
+  startDate: Scalars['String'];
+  startTime: Scalars['String'];
+  duration: Scalars['Int'];
+  intensityFeedback: Scalars['Int'];
+}>;
+
+
+export type ResyncRunMutation = { __typename?: 'Mutation', resyncRun?: { __typename?: 'Run', userId?: string | null, date?: string | null, duration?: number | null, heartRate?: Array<number | null> | null, vo2max?: number | null, intensityFeedback?: number | null } | null };
 
 export type AnalyticsObservationMutationVariables = Exact<{
   event: Scalars['String'];
@@ -784,6 +803,52 @@ export function useCreateRunMutation(baseOptions?: Apollo.MutationHookOptions<Cr
 export type CreateRunMutationHookResult = ReturnType<typeof useCreateRunMutation>;
 export type CreateRunMutationResult = Apollo.MutationResult<CreateRunMutation>;
 export type CreateRunMutationOptions = Apollo.BaseMutationOptions<CreateRunMutation, CreateRunMutationVariables>;
+export const ResyncRunDocument = gql`
+    mutation resyncRun($startDate: String!, $startTime: String!, $duration: Int!, $intensityFeedback: Int!) {
+  resyncRun(
+    startDate: $startDate
+    startTime: $startTime
+    duration: $duration
+    intensity: $intensityFeedback
+  ) {
+    userId
+    date
+    duration
+    heartRate
+    vo2max
+    intensityFeedback
+  }
+}
+    `;
+export type ResyncRunMutationFn = Apollo.MutationFunction<ResyncRunMutation, ResyncRunMutationVariables>;
+
+/**
+ * __useResyncRunMutation__
+ *
+ * To run a mutation, you first call `useResyncRunMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResyncRunMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resyncRunMutation, { data, loading, error }] = useResyncRunMutation({
+ *   variables: {
+ *      startDate: // value for 'startDate'
+ *      startTime: // value for 'startTime'
+ *      duration: // value for 'duration'
+ *      intensityFeedback: // value for 'intensityFeedback'
+ *   },
+ * });
+ */
+export function useResyncRunMutation(baseOptions?: Apollo.MutationHookOptions<ResyncRunMutation, ResyncRunMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ResyncRunMutation, ResyncRunMutationVariables>(ResyncRunDocument, options);
+      }
+export type ResyncRunMutationHookResult = ReturnType<typeof useResyncRunMutation>;
+export type ResyncRunMutationResult = Apollo.MutationResult<ResyncRunMutation>;
+export type ResyncRunMutationOptions = Apollo.BaseMutationOptions<ResyncRunMutation, ResyncRunMutationVariables>;
 export const AnalyticsObservationDocument = gql`
     mutation AnalyticsObservation($event: String!, $payload: String) {
   createEvent(event: $event, payload: $payload) {

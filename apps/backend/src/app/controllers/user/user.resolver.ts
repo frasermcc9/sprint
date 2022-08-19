@@ -227,7 +227,6 @@ export class UserResolver {
 
     dbUser.markModified("currentRunParams");
     dbUser.currentRunParams = newParams;
-    console.log("New Params: ", newParams);
     dbUser.lastIntensityFeedback = intensityFeedback;
 
     return await dbUser?.save();
