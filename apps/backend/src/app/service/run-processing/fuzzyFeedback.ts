@@ -101,8 +101,6 @@ const calculateAverages = (maxHR: number, runs: [Run]) => {
     rpe: 0,
   };
 
-  console.log("Run analysing: ", runs);
-
   runs.forEach((run) => {
     const timeInHighHR = sumBy(run.heartRate, (hr) => (hr >= highHR ? 1 : 0));
     result.intensity += timeInHighHR / run.heartRate.length;

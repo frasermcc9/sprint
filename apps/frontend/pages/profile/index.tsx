@@ -37,7 +37,6 @@ export default function Index() {
   if (data?.currentUser.inRun == InRun.Yes) {
     const timeEnd = new Date(data?.currentUser.nextRunEnd).getTime();
     const timeNow = new Date().getTime();
-    console.log(timeEnd, timeNow);
     if (timeEnd < timeNow) {
       const inRun = InRun.Feedback;
       execInRunUpdate({

@@ -76,7 +76,6 @@ export const Prepare: React.FC = () => {
     const nextRunEnd = new Date(
       timestamp.getTime() + runDuration * 60 * 1000,
     ).toString();
-    console.log(nextRunStart, nextRunEnd);
     execNextRunUpdate({
       variables: {
         nextRunStart,

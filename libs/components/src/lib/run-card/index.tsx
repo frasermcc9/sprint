@@ -3,9 +3,7 @@ import React, { useMemo } from "react";
 import NumberInCircle from "../number-in-circle";
 import Link from "next/link";
 import { useResyncRunMutation } from "@sprint/gql";
-import { da } from "date-fns/locale";
 import { toast } from "react-toastify";
-import cx from "classnames";
 
 export interface RunCardProps {
   rundate: string;
@@ -31,7 +29,6 @@ export const RunCard: React.FC<RunCardProps> = ({
   const [execResyncRun] = useResyncRunMutation();
 
   const resyncRun = () => {
-    console.log("resyncRun");
     const res = execResyncRun({
       variables: {
         startDate: rundate.split("T")[0],
@@ -66,8 +63,6 @@ export const RunCard: React.FC<RunCardProps> = ({
           ...data.currentUser.runs.slice(0, -1),
           result.resyncRun,
         ];
-        console.log("resynced Run: ", result.resyncRun);
-        console.log("new Runs:", newRuns);
 
         if (data) {
           cache.writeQuery({

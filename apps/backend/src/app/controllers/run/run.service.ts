@@ -111,7 +111,6 @@ export class RunService {
         vo2max: vo2Max,
         intensityFeedback: intensityFB,
       };
-      console.log("newRun", newRun);
 
       let latestRunDate;
       if (dbUser.runs != undefined) {
@@ -156,7 +155,6 @@ export class RunService {
     const endTime = new Date(endDate).toLocaleTimeString("en-US", {
       hour12: false,
     });
-    console.log("times:", dateStart, dateEnd, startTime, endTime);
 
     try {
       const res = await fetch(
@@ -179,7 +177,6 @@ export class RunService {
       dataset2.forEach((element) => hrActivityList.push(element.value));
 
       let vo2Max = -1;
-      console.log("hrActivityList", hrActivityList);
       if (hrActivityList.length != 0) {
         vo2Max = Math.round(calculateVO2max(hrActivityList, dbUser.maxHR));
       }
