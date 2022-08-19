@@ -1,8 +1,11 @@
 import { CurrentUserDocument, CurrentUserQuery, Run } from "@sprint/gql";
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import NumberInCircle from "../number-in-circle";
 import Link from "next/link";
 import { useResyncRunMutation } from "@sprint/gql";
+import { da } from "date-fns/locale";
+import { toast } from "react-toastify";
+import cx from "classnames";
 
 export interface RunCardProps {
   rundate: string;
@@ -29,7 +32,7 @@ export const RunCard: React.FC<RunCardProps> = ({
 
   const resyncRun = () => {
     console.log("resyncRun");
-    execResyncRun({
+    const res = execResyncRun({
       variables: {
         startDate: rundate.split("T")[0],
         startTime: rundate.split("T")[1],
@@ -52,6 +55,20 @@ export const RunCard: React.FC<RunCardProps> = ({
         const data = cache.readQuery<CurrentUserQuery>({
           query: CurrentUserDocument,
         });
+
+        if (!data) return;
+
+        if (!data.currentUser) return;
+
+        if (!result?.resyncRun) return;
+
+        const newRuns = [
+          ...data.currentUser.runs.slice(0, -1),
+          result.resyncRun,
+        ];
+        console.log("resynced Run: ", result.resyncRun);
+        console.log("new Runs:", newRuns);
+
         if (data) {
           cache.writeQuery({
             query: CurrentUserDocument,
@@ -59,15 +76,23 @@ export const RunCard: React.FC<RunCardProps> = ({
               ...data,
               currentUser: {
                 ...data.currentUser,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                runs: [...data.currentUser!.runs],
+                runs: newRuns,
               },
             },
           });
         }
       },
     });
+    toast.promise(res, {
+      error: "Failed to record run.",
+      pending: "Resyncing Run",
+      success: "Run resynced",
+    });
   };
+
+  const isRunValid = useMemo<boolean>(() => {
+    return FilteredRunObj?.heartRate?.length !== duration + 1;
+  }, [FilteredRunObj?.heartRate, duration]);
 
   return (
     <div className="mb-2 rounded-md border-2 border-gray-500 p-2 shadow-md">
@@ -81,9 +106,9 @@ export const RunCard: React.FC<RunCardProps> = ({
           <div className="text-sm font-semibold">Duration: {duration}mins</div>
         </div>
 
-        {FilteredRunObj?.heartRate?.length !== duration + 1 ? (
+        {isRunValid ? (
           <button
-            className="ml-auto rounded-md bg-gray-600 p-2 text-gray-50 "
+            className="ml-auto min-w-[105px] rounded-md bg-gray-600 p-2 text-gray-50 "
             onClick={resyncRun}
           >
             Resync Run
@@ -95,7 +120,7 @@ export const RunCard: React.FC<RunCardProps> = ({
               query: { object: JSON.stringify(FilteredRunObj) },
             }}
           >
-            <button className="ml-auto rounded-md bg-indigo-600 p-2 text-gray-50 ">
+            <button className="ml-auto min-w-[105px] rounded-md bg-indigo-600 p-2 text-gray-50 ">
               Analyse Run
             </button>
           </Link>
