@@ -195,10 +195,8 @@ export class RunService {
 
       this.runModel.create(updatedRun);
       if (dbUser.runs != undefined) {
-        console.log("Run to be changed", dbUser.runs[dbUser.runs.length - 1]);
         dbUser.runs[dbUser.runs.length - 1] = updatedRun;
         dbUser.markModified("runs");
-        console.log("new Run", updatedRun);
         await dbUser.save();
       }
       return updatedRun;
