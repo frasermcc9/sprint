@@ -20,3 +20,24 @@ mutation createRun(
     intensityFeedback
   }
 }
+
+mutation resyncRun(
+  $startDate: String!
+  $startTime: String!
+  $duration: Int!
+  $intensityFeedback: Int!
+) {
+  resyncRun(
+    startDate: $startDate
+    startTime: $startTime
+    duration: $duration
+    intensity: $intensityFeedback
+  ) {
+    userId
+    date
+    duration
+    heartRate
+    vo2max
+    intensityFeedback
+  }
+}

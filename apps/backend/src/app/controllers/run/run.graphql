@@ -6,6 +6,12 @@ type Mutation {
     endTime: String!
     intensity: Int!
   ): Run
+  resyncRun(
+    startDate: String!
+    startTime: String!
+    duration: Int!
+    intensity: Int!
+  ): Run
 }
 
 type Run {

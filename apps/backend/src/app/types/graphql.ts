@@ -56,6 +56,7 @@ export interface IMutation {
     login(code: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     refresh(token: string): Nullable<Auth> | Promise<Nullable<Auth>>;
     createRun(startDate: string, endDate: string, startTime: string, endTime: string, intensity: number): Nullable<Run> | Promise<Nullable<Run>>;
+    resyncRun(startDate: string, startTime: string, duration: number, intensity: number): Nullable<Run> | Promise<Nullable<Run>>;
     createEvent(event: string, payload?: Nullable<string>): Nullable<AnalyticsEvent> | Promise<Nullable<AnalyticsEvent>>;
     addSleepVariable(name: string, emoji: string, custom: boolean, sleepDate: string): Nullable<VariableEditResponse> | Promise<Nullable<VariableEditResponse>>;
     removeSleepVariable(name: string, sleepDate: string): Nullable<VariableEditResponse> | Promise<Nullable<VariableEditResponse>>;
