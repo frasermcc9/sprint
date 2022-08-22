@@ -86,9 +86,10 @@ export const RunCard: React.FC<RunCardProps> = ({
       },
     });
     toast.promise(res, {
-      error: "Failed to record run.",
+      error: "Error: Failed resync run",
       pending: "Resyncing Run",
-      success: "Run resynced",
+      success:
+        "Run resynced, if button is still gray, fitbit is not fully synced",
     });
   };
 
