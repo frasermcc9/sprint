@@ -192,7 +192,11 @@ export class RunService {
 
       this.runModel.create(updatedRun);
       if (dbUser.runs != undefined) {
-        dbUser.runs[dbUser.runs.length - 1] = updatedRun;
+        dbUser.runs.forEach((item, i, self) => {
+          if (item.date === dateStart + "T" + startTime) {
+            self[i] = updatedRun;
+          }
+        });
         dbUser.markModified("runs");
         await dbUser.save();
       }

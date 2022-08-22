@@ -60,9 +60,16 @@ export const RunCard: React.FC<RunCardProps> = ({
         if (!result?.resyncRun) return;
 
         const newRuns = [
-          ...data.currentUser.runs.slice(0, -1),
-          result.resyncRun,
+          // ...data.currentUser.runs.slice(0, -1),
+          // result.resyncRun,
+          ...data.currentUser.runs,
         ];
+        newRuns.forEach((item, i, self) => {
+          if (!result.resyncRun) return;
+          if (item.date === rundate) {
+            self[i] = result.resyncRun;
+          }
+        });
 
         if (data) {
           cache.writeQuery({
