@@ -37,7 +37,6 @@ export default function Index() {
   if (data?.currentUser.inRun == InRun.Yes) {
     const timeEnd = new Date(data?.currentUser.nextRunEnd).getTime();
     const timeNow = new Date().getTime();
-    console.log(timeEnd, timeNow);
     if (timeEnd < timeNow) {
       const inRun = InRun.Feedback;
       execInRunUpdate({
@@ -125,12 +124,6 @@ export default function Index() {
             <span className="mr-5 text-2xl font-semibold text-gray-800">
               Your Runs
             </span>
-            <button
-              className=" rounded-md bg-indigo-600 py-1 px-3 text-gray-50 "
-              onClick={() => console.log("Disabled Feature")}
-            >
-              +
-            </button>
           </div>
           <span className="mb-2 text-sm font-thin">In the last 90 days</span>
 
@@ -141,8 +134,8 @@ export default function Index() {
                 <RunCard
                   key={uuidv4()}
                   duration={run?.duration ?? 0}
-                  rundate={run.date ?? "no date"}
-                  feedback={run.intensityFeedback ?? 0}
+                  rundate={run?.date ?? "no date"}
+                  feedback={run?.intensityFeedback ?? 0}
                   runObj={run}
                 />
               ))
