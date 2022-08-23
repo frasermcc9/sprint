@@ -68,7 +68,9 @@ console.log(process.env);
 
 const httpLink = createHttpLink({
   uri: `${
-    process.env.NEXT_PUBLIC_GQL_ENDPOINT ?? "http://localhost:3333"
+    process.env.NODE_ENV === "production"
+      ? "https://flatshare.fraserm.cc"
+      : "http://localhost:3333"
   }/graphql`,
 });
 
