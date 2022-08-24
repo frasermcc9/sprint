@@ -64,8 +64,6 @@ const tabs: Tab[] = [
   },
 ];
 
-console.log(process.env);
-
 const httpLink = createHttpLink({
   uri: `${
     process.env.NODE_ENV === "production"

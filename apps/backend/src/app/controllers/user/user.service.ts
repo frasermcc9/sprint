@@ -142,7 +142,7 @@ export class UserService {
       let mainSleep = data.sleep.find((s) => s.isMainSleep);
 
       let tries = 0;
-      while (!mainSleep) {
+      while (!mainSleep || !mainSleep.levels.shortData) {
         mainSleep = await retry();
         if (tries++ > 10) {
           throw new InternalServerErrorException(
