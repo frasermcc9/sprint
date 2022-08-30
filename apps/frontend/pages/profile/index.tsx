@@ -128,7 +128,7 @@ export default function Index() {
               .reverse()
               .map((run) => (
                 <RunCard
-                  key={uuidv4()}
+                  key={run?.date}
                   duration={run?.duration ?? 0}
                   rundate={run?.date ?? "no date"}
                   feedback={run?.intensityFeedback ?? 0}
