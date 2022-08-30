@@ -1,5 +1,5 @@
 import { LocalStorageKeys } from "@sprint/common";
-import { AccountStage, useCurrentUserLazyQuery } from "@sprint/gql";
+import { AccountStage, InRun, useCurrentUserLazyQuery } from "@sprint/gql";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -72,6 +72,11 @@ export const useStandardRedirect = () => {
         externalLog("Redirect", "Redirecting to home page");
         pushIfDifferent(INITIAL_RUN_REDIRECT);
         return;
+      }
+
+      if (data?.currentUser.inRun === InRun.Feedback) {
+        externalLog("Redirect", "Doing run feedback");
+        pushIfDifferent("/run/feedback");
       }
     })();
   }, [getCurrentUser, router]);

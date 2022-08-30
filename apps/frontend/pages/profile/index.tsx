@@ -66,10 +66,6 @@ export default function Index() {
     }
   }
 
-  if (data?.currentUser.inRun == InRun.Feedback) {
-    push("/run/feedback");
-  }
-
   const {
     currentUser: {
       createdAtUTS,
