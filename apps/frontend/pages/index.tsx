@@ -1,9 +1,4 @@
-import {
-  Layout,
-  SignInButton,
-  useSignInButtonController,
-  useStandardRedirect,
-} from "@sprint/components";
+import { Layout, useStandardRedirect } from "@sprint/components";
 
 export default function Index() {
   useStandardRedirect();
