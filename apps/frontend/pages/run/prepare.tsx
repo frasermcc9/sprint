@@ -16,7 +16,6 @@ import {
   useUpdateInRunMutation,
   useUpdateNextRunTimesMutation,
 } from "@sprint/gql";
-import { time } from "console";
 
 export const Prepare: React.FC = () => {
   const { back, push } = useRouter();
@@ -31,7 +30,7 @@ export const Prepare: React.FC = () => {
   const [execInRunUpdate] = useUpdateInRunMutation();
   const [execNextRunUpdate] = useUpdateNextRunTimesMutation();
 
-  const { data, loading, error } = usePrepareRunQuery({
+  const { data, error } = usePrepareRunQuery({
     variables: {
       duration: runDuration,
     },
@@ -76,17 +75,20 @@ export const Prepare: React.FC = () => {
     const nextRunEnd = new Date(
       timestamp.getTime() + runDuration * 60 * 1000,
     ).toString();
+
     execNextRunUpdate({
       variables: {
         nextRunStart,
         nextRunEnd,
       },
+
       optimisticResponse: {
         updateNextRunTimes: {
           nextRunStart,
           nextRunEnd,
         },
       },
+
       update: (cache, { data: updated }) => {
         const old = cache.readQuery<CurrentUserQuery>({
           query: CurrentUserDocument,

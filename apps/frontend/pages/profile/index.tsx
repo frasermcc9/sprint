@@ -4,26 +4,19 @@ import {
   Avatar,
   EditIcon,
   Layout,
-  UserCard,
   RunCard,
+  UserCard,
+  useStandardRedirect,
 } from "@sprint/components";
-import {
-  InRun,
-  useCurrentUserQuery,
-  useGetAvailableEmblemsQuery,
-  useUpdateInRunMutation,
-} from "@sprint/gql";
+import { useCurrentUserQuery } from "@sprint/gql";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-import { v4 as uuidv4 } from "uuid";
 
 export default function Index() {
   const { data, loading, error } = useCurrentUserQuery();
   const { push } = useRouter();
 
-  const { data: emblems } = useGetAvailableEmblemsQuery();
-  const [execInRunUpdate] = useUpdateInRunMutation();
-  console.log(emblems?.currentUser?.availableEmblems);
+  useStandardRedirect();
 
   if (error) {
     toast.error(error.message);
@@ -32,38 +25,6 @@ export default function Index() {
 
   if (loading || !data?.currentUser) {
     return <div>Loading...</div>;
-  }
-
-  if (data?.currentUser.inRun == InRun.Yes) {
-    const timeEnd = new Date(data?.currentUser.nextRunEnd).getTime();
-    const timeNow = new Date().getTime();
-    if (timeEnd < timeNow) {
-      const inRun = InRun.Feedback;
-      execInRunUpdate({
-        variables: {
-          inRun,
-        },
-        optimisticResponse: {
-          __typename: "Mutation",
-          updateInRun: {
-            inRun,
-            __typename: "User",
-          },
-        },
-        update: (cache, { data: updated }) => {
-          if (!updated?.updateInRun || !data?.currentUser) {
-            return;
-          }
-
-          cache.modify({
-            id: cache.identify(data.currentUser),
-            fields: {
-              inRun: () => updated.updateInRun?.inRun,
-            },
-          });
-        },
-      });
-    }
   }
 
   const {

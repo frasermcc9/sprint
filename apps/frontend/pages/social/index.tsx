@@ -3,11 +3,13 @@ import {
   FriendsList,
   Layout,
   useFriendsListController,
+  useStandardRedirect,
 } from "@sprint/components";
 import { useRouter } from "next/router";
 
 export default function Index() {
   const { push } = useRouter();
+  useStandardRedirect();
 
   return (
     <Layout.Page>
