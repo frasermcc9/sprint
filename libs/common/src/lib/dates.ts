@@ -1,8 +1,7 @@
 import { format } from "date-fns";
 
-export const calculateAge = (dob: string) => {
-  return new Date().getFullYear() - new Date(dob).getFullYear();
-};
+export const calculateAge = (dob: string) =>
+  Math.floor((new Date().getTime() - new Date(dob).getTime()) / 3.15576e10);
 
 export const readableTime = (seconds: number) =>
   format(seconds * 1000, "hh:mm:ss");
