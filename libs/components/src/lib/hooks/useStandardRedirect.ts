@@ -1,5 +1,10 @@
 import { LocalStorageKeys } from "@sprint/common";
-import { AccountStage, InRun, useCurrentUserLazyQuery } from "@sprint/gql";
+import {
+  AccountStage,
+  InRun,
+  useCurrentUserLazyQuery,
+  useUpdateInRunMutation,
+} from "@sprint/gql";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -13,6 +18,8 @@ export const useStandardRedirect = () => {
   const router = useRouter();
   const [getCurrentUser] = useCurrentUserLazyQuery();
   const [authenticated, setAuthenticated] = useState(false);
+
+  const [execInRunUpdate] = useUpdateInRunMutation();
 
   useEffect(() => {
     const pushIfDifferent = (route: string) => {
@@ -74,12 +81,44 @@ export const useStandardRedirect = () => {
         return;
       }
 
+      if (data?.currentUser.inRun === InRun.Yes) {
+        const timeEnd = new Date(data?.currentUser.nextRunEnd).getTime();
+        const timeNow = new Date().getTime();
+        if (timeEnd < timeNow) {
+          const inRun = InRun.Feedback;
+          execInRunUpdate({
+            variables: {
+              inRun,
+            },
+            optimisticResponse: {
+              __typename: "Mutation",
+              updateInRun: {
+                inRun,
+                __typename: "User",
+              },
+            },
+            update: (cache, { data: updated }) => {
+              if (!updated?.updateInRun || !data?.currentUser) {
+                return;
+              }
+
+              cache.modify({
+                id: cache.identify(data.currentUser),
+                fields: {
+                  inRun: () => updated.updateInRun?.inRun,
+                },
+              });
+            },
+          });
+        }
+      }
+
       if (data?.currentUser.inRun === InRun.Feedback) {
         externalLog("Redirect", "Doing run feedback");
         pushIfDifferent("/run/feedback");
       }
     })();
-  }, [getCurrentUser, router]);
+  }, [execInRunUpdate, getCurrentUser, router]);
 
   return { loggedIn: authenticated };
 };
