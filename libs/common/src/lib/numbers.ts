@@ -38,8 +38,19 @@ const uniqueRandomRange = <T>(
   return result;
 };
 
+const leadingZeros = (num: number, digits: number) => {
+  const str = num.toString();
+  try {
+    const zeros = "0".repeat(digits - str.length);
+    return zeros + str;
+  } catch {
+    return num.toString();
+  }
+};
+
 export const Numbers = {
   clamp,
   rndToRange,
   uniqueRandomRange,
+  leadingZeros,
 };

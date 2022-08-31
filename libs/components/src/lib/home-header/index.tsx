@@ -1,7 +1,8 @@
 import React from "react";
 import { StreakPopover } from "../streaks";
 import { useXpPopupController, XpPopup } from "../xp-meter";
-import { useCurrentUserQuery } from "@sprint/gql";
+import { InRun, useCurrentUserQuery } from "@sprint/gql";
+import RunPageHeader from "../run-page-header";
 
 export interface HomeHeaderProps {
   useController: typeof useHomeHeaderController;
@@ -21,6 +22,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({ useController }) => {
   return (
     <div className="relative my-2 flex h-8 w-full flex-row justify-around">
       <XpPopup useController={useXpPopupController} />
+      {data.currentUser?.inRun === InRun.Yes && <RunPageHeader />}
       <StreakPopover
         streakSize={runStreak}
         days={[false, true, false, false, true]}

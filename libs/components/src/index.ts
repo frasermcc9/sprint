@@ -24,3 +24,4 @@ export * from "./lib/start-sleep-analysis";
 export * from "./lib/run-card";
 export * from "./lib/edit-icon";
 export * from "./lib/leaderboard";
+export * from "./lib/run-page-header";

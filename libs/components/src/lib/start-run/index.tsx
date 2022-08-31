@@ -3,27 +3,39 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid";
 import {
   CurrentUserDocument,
   CurrentUserQuery,
+  InRun,
   useCurrentUserQuery,
   useUpdateDefaultRunDurationMutation,
 } from "@sprint/gql";
 import { NativeModal } from "@sprint/components";
 import { useRouter } from "next/router";
+import classNames from "classnames";
 
 export interface StartRunProps {
   useController: typeof useStartRunController;
 }
 
 export const StartRun: React.FC<StartRunProps> = ({ useController }) => {
-  const { runDuration, setRunDuration, startRun } = useController();
+  const { runDuration, setRunDuration, startRun, blocked } = useController();
 
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <div className="font-palanquin relative mx-auto h-44 w-full max-w-xl select-none overflow-hidden rounded-lg p-2 shadow-lg">
+      <div
+        className={classNames(
+          "font-palanquin relative mx-auto h-44 w-full max-w-xl select-none overflow-hidden rounded-lg p-2 shadow-lg",
+        )}
+      >
         <img
           draggable={false}
-          className="back-ease absolute left-0 top-0 z-10 h-full w-full scale-110 transform cursor-pointer overflow-hidden object-cover brightness-75 transition-all hover:rotate-2 hover:scale-125"
+          className={classNames(
+            "back-ease absolute left-0 top-0 z-10 h-full w-full scale-110 transform cursor-pointer overflow-hidden object-cover brightness-75 transition-all hover:rotate-2 hover:scale-125",
+            {
+              "pointer-events-auto": !blocked,
+              "pointer-events-none saturate-0": blocked,
+            },
+          )}
           src={
             "https://www.si.com/.image/t_share/MTg5NDMzOTYwNzAxMzcyMDAx/best-running-shoes_lead.png"
           }
@@ -31,7 +43,14 @@ export const StartRun: React.FC<StartRunProps> = ({ useController }) => {
           alt=""
         />
 
-        <div className="pointer-events-none absolute left-0 top-0 z-20 h-full w-full bg-gradient-to-br from-indigo-500 to-red-500 opacity-75" />
+        <div
+          className={classNames(
+            "pointer-events-none absolute left-0 top-0 z-20 h-full w-full bg-gradient-to-br from-indigo-500 to-red-500 opacity-75",
+            {
+              "saturate-0": blocked,
+            },
+          )}
+        />
         <div className="pointer-events-none absolute top-0 left-0 z-30 h-full w-full text-white ">
           <div className="flex h-full items-center justify-around p-1">
             <div className="text-shadow-md flex flex-col gap-y-2">
@@ -40,7 +59,12 @@ export const StartRun: React.FC<StartRunProps> = ({ useController }) => {
                 Quickly start a new running session
               </div>
             </div>
-            <div className="pointer-events-auto flex flex-col items-center">
+            <div
+              className={classNames("flex flex-col items-center", {
+                "pointer-events-auto": !blocked,
+                "pointer-events-none": blocked,
+              })}
+            >
               <ChevronUpIcon
                 className="h-10 w-10 cursor-pointer rounded-lg p-1 hover:bg-gray-50 hover:bg-opacity-20"
                 onClick={() => setRunDuration((e) => Math.min(e + 5, 28))}
@@ -110,7 +134,12 @@ export const useStartRunController = () => {
     [runDuration, updateRunDuration],
   );
 
-  return { runDuration, setRunDuration: setRunDurationWrapper, startRun };
+  return {
+    runDuration,
+    setRunDuration: setRunDurationWrapper,
+    startRun,
+    blocked: data?.currentUser?.inRun !== InRun.No,
+  };
 };
 
 export const useMockStartRunController: typeof useStartRunController = () => {
@@ -118,6 +147,7 @@ export const useMockStartRunController: typeof useStartRunController = () => {
     runDuration: 13,
     setRunDuration: () => new Promise((r) => r()),
     startRun: () => null,
+    blocked: false,
   };
 };
 
