@@ -8,7 +8,10 @@ export const RunPageHeader: React.FC = ({}) => {
   const { push } = useRouter();
 
   return (
-    <div className="relative w-10" onClick={() => push("/run/active")}>
+    <div
+      className="relative w-10 cursor-pointer"
+      onClick={() => push("/run/active")}
+    >
       <Shoe className="absolute" />
       <Shoe className="absolute scale-50 animate-ping opacity-50" />
     </div>
