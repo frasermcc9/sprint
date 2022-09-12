@@ -72,10 +72,10 @@ const RunActivePage: React.FC = () => {
     for (let i = 0; i < (sets ?? 0); i++) {
       for (let j = 0; j < (repetitions ?? 0); j++) {
         phases.push([currentTime, `Low Intensity (${lowIntensity}s)`]);
-        currentTime += highIntensity ?? 0;
+        currentTime += lowIntensity ?? 0;
 
         phases.push([currentTime, `High Intensity (${highIntensity}s)`]);
-        currentTime += lowIntensity ?? 0;
+        currentTime += highIntensity ?? 0;
       }
       phases.push([currentTime, `Rest Period (${restPeriod}s)`]);
       currentTime += restPeriod ?? 0;
@@ -159,6 +159,9 @@ const RunActivePage: React.FC = () => {
                   const [time, name] = phases.at(index) ?? [0, ""];
 
                   const timeFromEnd = (endTime - startTime) / 1000 - time;
+
+                  // console.log({ time });
+
                   return (
                     <ul
                       key={index}
