@@ -81,6 +81,12 @@ export const useStandardRedirect = () => {
         return;
       }
 
+      if (router.pathname.includes(AUTH_REDIRECT)) {
+        externalLog("Redirect", "Redirecting to home page");
+        pushIfDifferent(INITIAL_RUN_REDIRECT);
+        return;
+      }
+
       if (data?.currentUser.inRun === InRun.Yes) {
         const timeEnd = new Date(data?.currentUser.nextRunEnd).getTime();
         const timeNow = new Date().getTime();
