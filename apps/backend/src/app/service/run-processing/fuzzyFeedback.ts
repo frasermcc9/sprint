@@ -2,8 +2,6 @@
 //@ts-nocheck
 
 import { Fuzzy } from "./fuzzyHelpers";
-import { explanations } from "./HIITreasoning";
-import { differenceInDays } from "date-fns";
 import { last, sumBy } from "lodash";
 import { Run } from "../../db/schema/run.schema";
 
@@ -82,75 +80,23 @@ fuzzyModel
   .and(RPE_OK)
   .then("okPerformance");
 
-// calculate percentage changes and feedback
-// Never used
-// const percentDifference = (original, current) => {
-//   return ((current - original) / original) * 100;
-// };
-
 // calculate the average of metrics for a user for a set of runs
-// (user baseline)
 const calculateAverages = (maxHR: number, runs: [Run]) => {
   const highHR = 0.8 * maxHR;
 
-  // cardiac drift is difference between max change in speed vs. max change in hr
   const result = {
     intensity: 0,
-    cardiacDrift: 0,
-    performance: 0,
-    rpe: 0,
   };
 
   runs.forEach((run) => {
     const timeInHighHR = sumBy(run.heartRate, (hr) => (hr >= highHR ? 1 : 0));
     result.intensity += timeInHighHR / run.heartRate.length;
-    result.performance += run.vo2max;
-    result.rpe += run.intensityFeedback;
-
-    let avHR = 0;
-    let maxHR = 0;
-
-    run.heartRate.forEach((hr) => {
-      maxHR = Math.max(hr, maxHR);
-      avHR += hr;
-    });
-
-    avHR /= run.heartRate.length;
-
-    const changeInHR = (maxHR - avHR) / avHR;
-
-    result.cardiacDrift += Math.max(changeInHR, 0);
   });
 
   result.intensity /= runs.length;
-  result.rpe /= runs.length;
-  result.performance /= runs.length;
-  result.cardiacDrift /= runs.length;
 
   return result;
 };
-
-// calculate the change in metrics for a user between two sets of runs
-// (Not used in previous implementation?)
-// const calculateChange = (user: User, firstRuns: [Run], secondRuns: [Run]) => {
-//   const firstAverages = calculateAverages(user, firstRuns);
-//   const secondAverages = calculateAverages(user, secondRuns);
-//   const diff = {
-//     changeInIntensity: percentDifference(
-//       firstAverages.intensity,
-//       secondAverages.intensity,
-//     ),
-//     changeInPerformance: percentDifference(
-//       firstAverages.performance,
-//       secondAverages.performance,
-//     ),
-//     changeInCardiacDrift: percentDifference(
-//       firstAverages.cardiacDrift,
-//       secondAverages.cardiacDrift,
-//     ),
-//   };
-//   return diff;
-// };
 
 /**
  * Generates long-term feedback for a user using their runs (both single run and over time)
@@ -161,6 +107,7 @@ export const generateFeedback = (maxHR: number, runs: Run[]) => {
       "Feedback Summary goes here. This is a placeholder for now.",
     lastRunFeedback:
       "Last Run Feedback goes here. This is a placeholder for now.",
+
     intensityFeedback: "",
     volumeFeedback: "",
     performanceFeedback: "",
@@ -175,37 +122,16 @@ export const generateFeedback = (maxHR: number, runs: Run[]) => {
   const lastRunStats = calculateAverages(maxHR, [lastRun]);
 
   const intensity = (val: number) => {
-    if (val < 0.7)
-      return "lower than optimal. Try to keep your exertion higher and constant throughout your sprinting! You can also try a more challenging warm-up to get to the correct heart-zone more easily. If you found the run to be difficult, the next one will be easier.";
-    if (val < 0.85)
-      return "ok. If you found the run to be not too challenging, you can try a more exerting warm up to keep you in the optimal heartrate zone. Well done!";
-    return "very optimal. Well done!";
-  };
-
-  const cardiac = (val: number) => {
-    if (val < 0.3) return "low. Excellent!";
     if (val < 0.5)
-      return "moderate. This means at the same pace, your body had to work harder. Remember to take adequate rest (48 hours between runs) and stay hydrated. Keep training at a good exertion level and this will improve!";
-    return "high. If this isn't due to faulty hardware sensors, you are probably overexerting yourself and should train at lower intensities.";
+      return "lower than optimal.\n Try to keep your exertion higher and constant throughout your sprinting! You can also try a more challenging warm-up to get to the correct heart-zone more easily.";
+    if (val < 0.75)
+      return "ok. \n If you found the run to be not too challenging, you can try a more exerting warm up to keep you in the optimal heartrate zone. Well done!";
+    return "very optimal.\n Well done!";
   };
 
-  feedback.lastRunFeedback = `The time spent at the right intensity (> 80% max heartrate) of your run was ${intensity(
+  feedback.lastRunFeedback = `The time spent at the right intensity of your run was ${intensity(
     lastRunStats.intensity,
-  )} The cardiac drift of your run was ${cardiac(lastRunStats.cardiacDrift)}`;
-
-  // check weeks
-  // const numberOfDays = differenceInDays(lastRun.date, runs[0].date);
-  // if (numberOfDays < 7) return feedback;
-
-  // const firstWeek: Run[] = [];
-  // let i = 1;
-  // let dayDiff = 0;
-
-  // while (i < runs.length && dayDiff < 7) {
-  //   firstWeek.push(runs[i]);
-  //   dayDiff = differenceInDays(runs[i].date, runs[0].date);
-  //   i++;
-  // }
+  )} `;
 
   return feedback;
 };
