@@ -193,6 +193,22 @@ export const Prepare: React.FC = () => {
                 );
               })}
             </div>
+            <div
+              className={classNames(
+                "mb-3 mt-4 self-center transition-opacity duration-500",
+                {
+                  "opacity-0": !showButton,
+                  "opacity-100": showButton,
+                },
+              )}
+            >
+              <button
+                className="rounded-full bg-gray-300 px-8 py-2 text-lg font-semibold text-gray-900"
+                onClick={() => push("/run/info")}
+              >
+                More Info
+              </button>
+            </div>
           </section>
 
           <section className="mb-8 flex flex-col items-center">
@@ -209,6 +225,7 @@ export const Prepare: React.FC = () => {
                 Continue
               </button>
             </div>
+
             <div>
               <button
                 className=" w-36  rounded-full bg-gray-300 px-8 py-2 text-lg font-semibold text-gray-900"
