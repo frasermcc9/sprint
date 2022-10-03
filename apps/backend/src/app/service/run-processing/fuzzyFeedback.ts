@@ -92,9 +92,7 @@ const calculateAverages = (maxHR: number, runs: [Run]) => {
     const timeInHighHR = sumBy(run.heartRate, (hr) => (hr >= highHR ? 1 : 0));
     result.intensity += timeInHighHR / run.heartRate.length;
   });
-
   result.intensity /= runs.length;
-
   return result;
 };
 
@@ -107,7 +105,6 @@ export const generateFeedback = (maxHR: number, runs: Run[]) => {
       "Feedback Summary goes here. This is a placeholder for now.",
     lastRunFeedback:
       "Last Run Feedback goes here. This is a placeholder for now.",
-
     intensityFeedback: "",
     volumeFeedback: "",
     performanceFeedback: "",
@@ -122,9 +119,9 @@ export const generateFeedback = (maxHR: number, runs: Run[]) => {
   const lastRunStats = calculateAverages(maxHR, [lastRun]);
 
   const intensity = (val: number) => {
-    if (val < 0.5)
+    if (val < 0.1)
       return "lower than optimal. Try to keep your exertion higher and constant throughout your sprinting! You can also try a more challenging warm-up to get to the correct heart-zone more easily.";
-    if (val < 0.75)
+    if (val < 0.4)
       return "ok. If you found the run to be not too challenging, you can try a more exerting warm up to keep you in the optimal heartrate zone. Well done!";
     return "very optimal. Well done!";
   };
