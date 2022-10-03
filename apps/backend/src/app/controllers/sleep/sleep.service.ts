@@ -168,7 +168,7 @@ export class SleepService {
       const sleepScoresAndVars = Array.from(dbSleeps.values()).flatMap(
         (sleep) => {
           const sleepData = findSleep(sleep.date);
-          if (!sleepData) return [];
+          if (!sleepData?.levels?.summary?.wake?.minutes) return [];
 
           const scoreDiscriminants = {
             awake: sleepData.levels.summary.wake.minutes,

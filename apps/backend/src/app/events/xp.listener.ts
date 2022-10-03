@@ -36,8 +36,15 @@ export class XpListener {
       const emblemVersion = newLevel / 5;
       if (emblemVersion in levelToEmblem) {
         const newEmblem = levelToEmblem[emblemVersion];
-        const dbUser = await this.userModel.findOne({ id: userId });
-        await dbUser?.unlockEmblem({ emblem: newEmblem });
+
+        this.userModel.findOneAndUpdate(
+          { id: userId },
+          {
+            $push: {
+              unlockedEmblems: newEmblem,
+            },
+          },
+        );
       }
     }
   }
