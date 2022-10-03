@@ -11,6 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import cx from "classnames";
 
 const RunAnalysisPage: React.FC = () => {
   const { back } = useRouter();
@@ -54,6 +55,31 @@ const RunAnalysisPage: React.FC = () => {
     },
   } = data;
 
+  if (!lastRunFeedback) {
+    return <div>Loading...</div>;
+  }
+  const feedbackString = lastRunFeedback.split(
+    "The time spent at the right intensity of your run was ",
+  );
+  const resultSplit = feedbackString[1].split(" ");
+
+  let textColour = "";
+  let text = "";
+  switch (resultSplit[0]) {
+    case "lower":
+      textColour = "text-red-500";
+      text = "Poor";
+      break;
+    case "ok.":
+      textColour = "text-orange-500";
+      text = "Ok";
+      break;
+    case "very":
+      textColour = "text-green-500";
+      text = "Good";
+      break;
+  }
+
   return (
     <Layout.Page
       animation={{
@@ -91,7 +117,14 @@ const RunAnalysisPage: React.FC = () => {
                 </LineChart>
               </div>
               <p>
-                <b>RunFeedback:</b> {lastRunFeedback}
+                <b>Run Feedback: </b>
+              </p>
+              <p className={cx(textColour)}>
+                <b>{text}</b>
+              </p>
+
+              <p className=" rounded-lg border-2 border-black bg-gray-100 p-2">
+                {lastRunFeedback}
               </p>
             </div>
           </section>
